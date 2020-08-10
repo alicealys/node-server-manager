@@ -1,0 +1,44 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=0.7">
+        <title>Server Overview | Node Server Manager</title>
+        <meta property="og:title" content="Server Overview | Node Server Manager">
+        <meta property="og:type" content="website">
+        <meta property="og:description" content="Node Server Manager is a administration tool for Plutonium IW5">
+        <meta name="description" content="Node Server Manager is a administration tool for Plutonium IW5">
+        <meta name="keywords" content="IW4MAdmin, IW5, Plutonium, T6, NodeJs, server, administration, IW4x, MW2, Modern Warfare 3">
+        <script type='text/javascript' src='/js/main.js'></script>
+        <script type='text/javascript' src='/js/notifications.js'></script>
+        <script type='text/javascript' src='/js/font-awesome.js'></script>
+        <link rel='stylesheet' type='text/css' href='css/global.css'></link>
+    </head>
+    <body class='nice-scrollbar'>
+        <%- header%>
+        <div class='wf-client-search'>
+            <div class='wf-client-search-desc'>
+                <% if (!error) { %>
+                    <%= Clients.length %> client/s matching '<%= query %>'
+                <% } else {%>
+                    <%= error %>
+                <% }%>
+            </div>
+            <div class='wf-profile wf-default'>
+            <div class='wf-client-search-list'>
+                <div class='wf-client-search-client wf-client-search-label'>
+                    <div class='wf-search-date'>Name</div>
+                    <div class='wf-search-level'>Role</div>
+                    <div class='wf-search-date'>Last seen</div>
+                </div>
+                <% Clients.forEach(Client => { %>
+                    <div class='wf-client-search-client'>
+                        <a class='wf-search-name' href='/id/<%= Client.ClientId %>'><%= Client.Name %></a>
+                        <div class='wf-search-level'><%= Client.Role %></div>
+                        <div class='wf-search-date'><%= moment(Client.Date).calendar()  %></div>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+        </div>
+    </body>
+</html>

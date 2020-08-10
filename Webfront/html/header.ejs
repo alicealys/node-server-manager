@@ -1,0 +1,27 @@
+<div id='wf-header'>
+    <% if (session.ClientId) { %>
+        <div class='wf-profile-menu' id='profile-menu'>
+            <a href='/id/<%= session.ClientId %>' class='wf-profile-menu-entry'>Profile</a>
+            <div data-menu-command='password' class='wf-profile-menu-entry'>Change Password</div>
+            <div onclick='newRCONWindow()' class='wf-profile-menu-entry'>Remote Console</div>
+            <a href='/audit' class='wf-profile-menu-entry'>Audit log</a>
+            <div data-menu-command='logout' class='wf-profile-menu-entry'>Logout</div>
+        </div>
+    <% }%>
+    <div class='wf-header-right'>
+        <a href='/' class='wf-header-title'>NODE SERVER MANAGER</a>
+        <a href='/' class='wf-header-link'>Home</a>
+        <a href='/chat' class='wf-header-link'>Chat</a>
+        <a href='/stats' class='wf-header-link'>Stats</a>
+        <% if (!session.ClientId) {%>
+            <a id='login-btn' class='wf-header-link'>Login</a>
+        <% } else { %>
+            <a class='wf-header-link' id='profile-menu-btn'><%= Client.Name %> <i id='profile-menu-btn' class="fas fa-caret-down"></i></a>
+        <% }%>
+    </div>
+    <div class='wf-header-right'>
+        <div class='wf-header-search-wrap'>
+            <div class='wf-header-search' id='client-search' data-placeholder='Search player...' contenteditable="true"></div>
+        </div>
+    </div>
+</div>

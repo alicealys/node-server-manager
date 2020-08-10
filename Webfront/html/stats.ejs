@@ -1,0 +1,45 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=0.7">
+        <title>Server Overview | Node Server Manager</title>
+        <meta property="og:title" content="Server Overview | Node Server Manager">
+        <meta property="og:type" content="website">
+        <meta property="og:description" content="Node Server Manager is an administration tool for Plutonium IW5">
+        <meta name="description" content="Node Server Manager is an administration tool for Plutonium IW5">
+        <meta name="keywords" content="IW4MAdmin, IW5, Plutonium, T6, NodeJs, server, administration, IW4x, MW2, Modern Warfare 3">
+        <script type='text/javascript' src='/js/main.js'></script>
+        <script type='text/javascript' src='/js/stats.js'></script>
+        <script type='text/javascript' src='/js/notifications.js'></script>
+        <script type='text/javascript' src='/js/font-awesome.js'></script>
+        <link rel='stylesheet' type='text/css' href='css/global.css'></link>
+    </head>
+    <body class='nice-scrollbar'>
+        <%- header %>
+        <div class='wf-client-search'>
+            <div class='wf-client-search-desc'>Global Server Stats</div>
+            <div class='wf-profile wf-default'>
+            <div class='wf-client-search-list' id='stat-list'>
+                <div class='wf-client-search-client wf-client-search-label'>
+                    <div class='wf-search-date'>Name</div>
+                    <a href='?sort=Kills' class='wf-table-column'>Kills</a>
+                    <a href='?sort=Deaths' class='wf-table-column'>Deaths</a>
+                    <a href='?sort=KDR' class='wf-table-column'>KDR</a>
+                    <a href='?sort=Performance' class='wf-table-column'>Performance</a>
+                    <a href='?sort=PlayedTime' class='wf-search-name'>Time Played</a>
+                </div>
+                <% Stats.forEach(Stat => { %>
+                    <div class='wf-client-search-client'>
+                        <a class='wf-search-name' href='/id/<%= Stat.Client.ClientId %>'><%= Stat.Client.Name %></a>
+                        <div class='wf-search-level' data-value='<%=Stat.Kills %>'><%= Stat.Kills %></div>
+                        <div class='wf-search-level' data-value='<%=Stat.Deaths %>'><%= Stat.Deaths %></div>
+                        <div class='wf-search-level' data-value='<%= Stat.KDR %>'><%= Stat.KDR %></div>
+                        <div class='wf-search-level' data-value='<%=Stat.Performance %>'><%= Stat.Performance %></div>
+                        <div class='wf-search-level' data-value='<%=Stat.PlayedTime %>'><%= Stat.PlayedTimeString %></div>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+        </div>
+    </body>
+</html>

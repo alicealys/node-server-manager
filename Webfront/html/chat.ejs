@@ -1,0 +1,49 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=0.7">
+        <title>Server Overview | Node Server Manager</title>
+        <meta property="og:title" content="Server Overview | Node Server Manager">
+        <meta property="og:type" content="website">
+        <meta property="og:description" content="Node Server Manager is a administration tool for Plutonium IW5">
+        <meta name="description" content="Node Server Manager is a administration tool for Plutonium IW5">
+        <meta name="keywords" content="IW4MAdmin, IW5, Plutonium, T6, NodeJs, server, administration, IW4x, MW2, Modern Warfare 3">
+        <script type='text/javascript' src='/js/main.js'></script>
+        <script src="/js/moment-with-locales.js" type="text/javascript"></script>
+        <script src="/js/moment-timezone-with-data-10-year-range.js" type="text/javascript"></script>
+        <script type='text/javascript' src='/js/font-awesome.js'></script>
+        <link rel='stylesheet' type='text/css' href='/css/global.css'></link>
+    </head>
+    <body>
+        <%- header %>
+        <div class='wf-profile wf-default'>
+            <div class='wf-client-search-desc'>
+                Global Server Chat
+            </div>
+            <div class='wf-chatbox' id='message-log'>
+                    <% 
+                        var previousDate = new Date()
+                        var i = 0; Messages.forEach(Message => { %>
+                        <% if (i < Messages.length - 5) { %>
+                            <% if ( ( previousDate - new Date(Message.Date) ) / 1000 / 60 / 30 >= 0.5) { 
+                                    previousDate = new Date(Message.Date) %>
+                                <div class='wf-chat-separator-wrap'>
+                                    <div class='wf-chat-separator'>
+                                        <span><%= moment(Message.Date).calendar() %></span>
+                                    </div>
+                                </div>
+                    <% } } %>
+                    <div class='wf-message'>
+                        <div class='wf-message-sender'>
+                            <a class='wf-link wf-message-sender' href='/id/<%= Message.Client.ClientId %>'><%= Message.Client.Name %></a>:</div>
+                        <div class='wf-message-message'><%= Message.Message %></div>
+                        <div class='wf-default wf-message-date'><%= moment(Message.Date).calendar() %></div>
+                    </div>
+                <% 
+                    i++
+                %>
+                <% }) %>%>
+            </div>
+        </div>
+    </body>
+</html>
