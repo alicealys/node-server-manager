@@ -1,0 +1,51 @@
+{
+    "Servers" : [
+        {
+            "IP" : "127.0.0.1",
+            "PORT" : 27016,
+            "PASSWORD" : "",
+            "LOGFILE" : "/pluto/storage/iw5/games_mp.log"
+        },
+        {
+            "IP" : "",
+            "PORT" : 27017,
+            "PASSWORD" : "",
+            "LOGSERVER": {
+                "IP": "",
+                "PORT": "9001",
+                "KEY": ""
+            }
+        }
+    ],
+    "Permissions" : {
+        "Levels" : {
+            "ROLE_BANNED" : -1,
+            "ROLE_USER" : 0,
+            "ROLE_FLAGGED" : 1,
+            "ROLE_TRUSTED" : 2,
+            "ROLE_MODERATOR" : 3,
+            "ROLE_ADMIN" : 4,
+            "ROLE_OWNER" : 5
+        },
+        "Commands" : {
+            "COMMAND_KICK" : "ROLE_MODERATOR",
+            "COMMAND_USER_CMDS" : "ROLE_USER",
+            "COMMANDS_KICK" : "ROLE_MODERATOR",
+            "COMMAND_FIND" : "ROLE_MODERATOR",
+            "COMMAND_SETROLE" : "ROLE_ADMIN",
+            "COMMAND_TP" : "ROLE_ADMIN",
+            "COMMAND_RCON" : "ROLE_OWNER",
+            "COMMAND_TOKEN" : "ROLE_MODERATOR",
+            "COMMAND_BAN" : "ROLE_MODERATOR"
+        },
+        "Roles" : {
+            "ROLE_BANNED" : "Banned",
+            "ROLE_USER" : "User",
+            "ROLE_FLAGGED" : "Flagged",
+            "ROLE_TRUSTED" : "Dope",
+            "ROLE_MODERATOR" : "Moderator",
+            "ROLE_ADMIN" : "Admin",
+            "ROLE_OWNER" : "Owner"
+        }
+    }
+}

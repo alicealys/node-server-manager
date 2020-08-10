@@ -38,7 +38,7 @@ class NSM {
     // Connect to the server's rcon
     this.RconConnection = new RconConnection(this.IP, this.PORT, this.PASSWORD)
     this.Server = new Server(this.IP, this.PORT, this.RconConnection, new _Database())
-    var _EventLogWatcher = this.LOGFILE ? new EventLogWatcher(this.LOGFILE, this.Server) : new ServerLogWatcher(this.LOGSERVER, this.Server)
+    this._EventLogWatcher = this.LOGFILE ? new EventLogWatcher(this.LOGFILE, this.Server) : new ServerLogWatcher(this.LOGSERVER, this.Server)
 
     // Load plugins before initializing Server.Clients
     this.LoadPlugins()
@@ -53,7 +53,7 @@ class NSM {
     //this.Server.Broadcast('^3NSM^7 is now ^2ONLINE')
 
     // Start watching log
-    _EventLogWatcher.init()
+    this._EventLogWatcher.init()
   }
   LoadPlugins() {
     const directoryPath = path.join(__dirname, '../Plugins');
@@ -62,11 +62,10 @@ class NSM {
           return console.log('Unable to scan directory: ' + err);
       } 
       files.forEach( (file) => {
-          console.log(`Loading plugin \x1b[33m${file}\x1b[0m`)
+          console.log(`Loading plugin \x1b[33m${file}\x1b[0m for server ${this.Server.IP}:${this.Server.PORT}`)
           try {
-            var plugin = require(path.join(__dirname, `../Plugins/${file}`))
-            this.loadedPlugins[file] = plugin
-            plugin.onLoad(this.Server, this)
+            let plugin = require(path.join(__dirname, `../Plugins/${file}`))
+            new plugin(this.Server, this)
           }
           catch (e) {
             console.log(`Error evaluating plugin \x1b[33m${file}\x1b[0m: \x1b[31m${e.toString()}\x1b[0m`)

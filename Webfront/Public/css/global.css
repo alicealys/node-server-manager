@@ -3061,7 +3061,7 @@ body {
   margin:auto;
 }
 .wf-serverlist-server {
-
+  margin-bottom:20px;
 }
 .wf-serverlist-server-info div {
   flex-basis: 1px;

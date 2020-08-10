@@ -14,21 +14,18 @@ class EventLogWatcher extends EventParser {
         this.Server = Server
     }
     init () {
-        var socket = new ws(`wss://${this.logServer.IP}:${this.logServer.PORT}/?key=${this.logServer.KEY}`)
-        fs.watch(this.logfile, async (event, filename) => {
-            if (filename) {
-              var lastLine = await readLastLines.read(this.logfile, 1)
-              var event = this.parseEvent(lastLine)
-              var currentMD5 = md5(await readLastLines.read(this.logfile, 4))
-          
-              if (!event || this.previousMD5 == currentMD5) return;
-          
-              this.previousMD5 = currentMD5;
+        try {
+            var socket = new ws(`ws://${this.logServer.IP}:${this.logServer.PORT}/?key=${this.logServer.KEY}`)
+            socket.onmessage = (msg) => {
+                var event = this.parseEvent(msg.data)
+                var EventDispatcher = new _EventDispatcher(this.Server)
+                EventDispatcher.dispatchCallback(event)
+            }
+        }
+        catch (e) {
+            console.log(`Remote log server generated an error: ${e.toString()}`)
+        }
 
-              var EventDispatcher = new _EventDispatcher(this.Server)
-              EventDispatcher.dispatchCallback(event)
-            } 
-        });
     }
 }
 module.exports = EventLogWatcher

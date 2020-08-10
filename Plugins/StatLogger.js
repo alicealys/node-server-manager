@@ -1,51 +1,52 @@
 const path = require('path');
 
-var plugin = {
-    Server: null,
-    playerConnected: async (Player) => {
-      Player.on("kill", async (Victim, Attack) => {
-        
-        plugin.Server.DB.getMostUsedWeapon(Player.ClientId)
+class Plugin {
+  constructor(Server, Manager) {
+    this.Server = Server
+    this.Manager = Manager
+    this.init()
+  }
+  async playerConnected (Player) {
+    Player.on("kill", async (Victim, Attack) => {
+      
+      this.Server.DB.getMostUsedWeapon(Player.ClientId)
 
-        await plugin.Server.DB.logKill(Player.ClientId, Victim.ClientId, Attack)
+      await this.Server.DB.logKill(Player.ClientId, Victim.ClientId, Attack)
 
-        plugin.Server.DB.incrementStat(Player.ClientId, 1, 'Kills')
+      this.Server.DB.incrementStat(Player.ClientId, 1, 'Kills')
 
-        var PlayerStats = await plugin.Server.DB.getPlayerStatsTotal(Player.ClientId)
-        plugin.Server.DB.editStat(Player.ClientId, plugin.calculatePerformance(PlayerStats.Kills, PlayerStats.Deaths, PlayerStats.PlayedTime), 'Performance')
+      var PlayerStats = await this.Server.DB.getPlayerStatsTotal(Player.ClientId)
+      this.Server.DB.editStat(Player.ClientId, this.calculatePerformance(PlayerStats.Kills, PlayerStats.Deaths, PlayerStats.PlayedTime), 'Performance')
+    })
+    Player.on('death', async (Attacker, Attack) => {
+
+      this.Server.DB.incrementStat(Player.ClientId, 1, 'Deaths')
+
+      var PlayerStats = await this.Server.DB.getPlayerStatsTotal(Player.ClientId)
+      this.Server.DB.editStat(Player.ClientId, this.calculatePerformance(PlayerStats.Kills, PlayerStats.Deaths, PlayerStats.PlayedTime), 'Performance')
+    })
+    Player.on('message', async (Message) => {
+      await this.Server.DB.logMessage(Player.ClientId, Message)
+    })
+    this.Server.DB.getClientLevel(Player.ClientId) ==  -1 && Player.Kick(`You are banned from this server`, 1)
+  }
+  calculatePerformance (k, d, t) {
+    //  (kdr / playedtime) * 100
+    return ( ( Math.max(k, 1) / Math.max(d, 1) ) / ( Math.max(t, 1) / 10 ) ) * 100
+  }
+  init () {
+      this.Server.on('connect', this.playerConnected.bind(this))
+      this.playedTimeLogger()
+  }
+  playedTimeLogger() {
+    setInterval(async () => {
+      var status = await this.Server.Rcon.getStatus()
+      status.data.clients.forEach(async client => {
+        var ClientId = await this.Server.DB.getClientId(client.guid)
+        this.Server.DB.incrementStat(ClientId, 1, 'PlayedTime')
       })
-      Player.on('death', async (Attacker, Attack) => {
-
-        plugin.Server.DB.incrementStat(Player.ClientId, 1, 'Deaths')
-
-        var PlayerStats = await plugin.Server.DB.getPlayerStatsTotal(Player.ClientId)
-        plugin.Server.DB.editStat(Player.ClientId, plugin.calculatePerformance(PlayerStats.Kills, PlayerStats.Deaths, PlayerStats.PlayedTime), 'Performance')
-      })
-      Player.on('message', async (Message) => {
-        await plugin.Server.DB.logMessage(Player.ClientId, Message)
-      })
-      plugin.Server.DB.getClientLevel(Player.ClientId) ==  -1 && Player.Kick(`You are banned from this server`, 1)
-    },
-    calculatePerformance(k, d, t) {
-      //  (kdr / playedtime) * 100
-      return ( ( Math.max(k, 1) / Math.max(d, 1) ) / ( Math.max(t, 1) / 10 ) ) * 100
-    },
-    init: function() {
-        this.Server.on('connect', this.playerConnected)
-        this.playedTimeLogger()
-    },
-    playedTimeLogger() {
-      setInterval(async () => {
-        var status = await plugin.Server.Rcon.getStatus()
-        status.data.clients.forEach(async client => {
-          var ClientId = await plugin.Server.DB.getClientId(client.guid)
-          plugin.Server.DB.incrementStat(ClientId, 1, 'PlayedTime')
-        })
-      }, 60000)
-    },
-    onLoad: function(Server) {
-      this.Server = Server
-      this.init()
-    }
+    }, 60000)
+  }
 }
-module.exports = plugin
+
+module.exports = Plugin

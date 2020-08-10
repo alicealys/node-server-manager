@@ -1,0 +1,9 @@
+{
+    "Servers" : [
+        {
+            "bindPort" : 9000,
+            "logFile" : "/pluto/storage/iw5/games_mp.log",
+            "key": "1337"
+        }
+    ]
+}
