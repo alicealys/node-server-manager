@@ -1,6 +1,9 @@
+const path          = require('path')
 const configuration = require(path.join(__dirname, `../Configuration/NLSConfiguration.json`).toString())
 const ws            = require('ws')
+const md5           = require('md5')
 const fs            = require('fs')
+const readLastLines = require('read-last-lines')
 const https         = require('https')
 const http          = require('http')
 
@@ -15,19 +18,21 @@ class NodeLogServer {
             }
         } catch (e) {
             this.ssl = null
-            console.log('Unable to load SSL certificate from configuration, starting server without SSL is not recommended provide a valid certificate if possible') 
+            console.warn('Unable to load SSL certificate from configuration, starting server without SSL is not recommended, provide a valid certificate if possible') 
         }
 
         this.key = config.key
+
+        this.init()
     }
     init() {
         try {
             const server = this.ssl ? https.createServer(this.ssl) : http.createServer()
             const socket = new ws.Server({ server })
 
-            server.listen(this.bindPort)
-
-            console.log(`Server listening on port ${this.bindPort}`)
+            server.listen(this.bindPort, () => {
+                console.log(`Server listening on port ${this.bindPort}`)
+            })
 
             var getParams = (url) => {
                 var queryDict = {}
@@ -38,8 +43,8 @@ class NodeLogServer {
             fs.watch(this.logFile, async (event, filename) => {
                 if (!filename) return
 
-                var lastLine = await readLastLines.read(this.logfile, 1)
-                var currentMD5 = md5(await readLastLines.read(this.logfile, 4))
+                var lastLine = await readLastLines.read(this.logFile, 1)
+                var currentMD5 = md5(await readLastLines.read(this.logFile, 4))
               
                 if (!event || this.previousMD5 == currentMD5) return;
               
@@ -58,9 +63,11 @@ class NodeLogServer {
                 var params = getParams(req.url.substr(1))
 
                 if (params.key != this.key) {
-                    conn.close(403)
+                    console.log(`Rejecting connection from ${req.socket.remoteAddress}`)
+                    conn.close()
                     return
                 }
+                console.log(`Accepting connection from ${req.socket.remoteAddress}`)
                 socket.authorizedClients.push(conn)
             })
         }
@@ -69,3 +76,7 @@ class NodeLogServer {
         }
     }
 }
+
+configuration.Servers.forEach(config => {
+    new NodeLogServer(config)
+})
