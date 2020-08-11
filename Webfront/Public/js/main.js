@@ -1,4 +1,5 @@
-window.addEventListener('load', () => {
+var servers
+window.addEventListener('load', async () => {
     var socket = new WebSocket(`wss://${window.location.hostname}`)
     socket.onopen = () => {
         setInterval(() => {
@@ -17,6 +18,7 @@ window.addEventListener('load', () => {
             }
         }
     })
+    servers = JSON.parse(await makeRequest('GET', '/api/servers', null))
     document.getElementById('client-search').addEventListener('input', (e) => {
         (e.target.textContent.length > 0) && e.target.parentNode.classList.add('wf-shadow-default')
     })
@@ -33,12 +35,12 @@ window.addEventListener('load', () => {
 
     document.getElementById('login-btn') && document.getElementById('login-btn').addEventListener('click', () => {
         messageBox(
-            '', 
+            'Hello!\nYou can find your credentials by typing .token in game!', 
         [
             {type: 'text', name: 'ClientId', placeholder: 'ClientId'},
             {type: 'password', name: 'Token', placeholder: 'Token / Password'}
         ], 'Cancel', 'Login', async (params, messageBox) => {
-            messageBox.querySelector('*[data-text-label]').innerHTML = ''
+            messageBox.querySelector('*[data-text-label]').innerHTML = 'Logging in... <i class="fas fa-slash fa-spin"></i>'
             var loginStatus = JSON.parse(await makeFormRequest('POST', '/auth/login', `ClientId=${params.ClientId}&Token=${params.Token}`))
             loginStatus.success ? window.location.href = window.location.href : messageBox.querySelector('*[data-text-label]').innerHTML = loginStatus.error
         })
@@ -117,6 +119,30 @@ function findParentBySelector(elm, selector) {
         return true;
     }
     catch (e) { return false; }
+}
+
+function makeRequest (method, url, data) {
+    return new Promise(function (resolve, reject) {
+      var xhr = new XMLHttpRequest()
+      xhr.open(method, url, true)
+      xhr.onload = function () {
+        if (this.status >= 200 && this.status < 300) {
+          resolve(xhr.response)
+        } else {
+          reject({
+            status: this.status,
+            statusText: xhr.statusText
+          });
+        }
+      };
+      xhr.onerror = function () {
+        reject({
+          status: this.status,
+          statusText: xhr.statusText
+        });
+      };
+      xhr.send(data)
+    });
 }
 
 function makeFormRequest (method, url, data) {
@@ -239,6 +265,28 @@ function parseCODColorCodes(text, white = '#FFFFFF') {
     }
     return text;
 }
+
+function COD2HTML(text, white = '#FFFFFF') {
+    text = `^7${text}`
+    var colorCodes = {
+        '^1' : `style='color: #FF3131'`,
+        '^2' : `style='color: #86C000'`,
+        '^3' : `style='color: #FFAD22'`,
+        '^4' : `style='color: #0082BA'`,
+        '^5' : `style='color: #25BDF1'`,
+        '^6' : `style='color: #9750DD'`,
+        '^7' : `style='color: ${white}'`,
+        '^8' : `style='color: #000000'`,
+        '^9' : `style='color: #99A3B0'`,
+        '^0' : `style='color: #000000'`,
+        '^:' : `data-rainbow-text`
+    }
+    var formattedText = text.replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), (a) => {
+        return `</span><span ${colorCodes[a]}>`
+    })
+    return formattedText.substr(7) + '</span>'
+}
+
 var rainbowColorIndex = 0;
 setInterval(() => {
     rainbowColorIndex > 360 ? rainbowColorIndex = 0 : ++rainbowColorIndex;
@@ -281,14 +329,23 @@ function createElementFromHTML(htmlString) {
     return div.firstChild; 
 }
 
-function newRCONWindow() {
+async function newRCONWindow() {
+    var serversSelect = createElementFromHTML(`<select class='wf-select' data-nodrag></select>`)
+    servers.forEach(server => {
+        serversSelect.appendChild(createElementFromHTML(`
+            <option class='wf-option' data-nodrag value=${server.ServerId}>${parseCODColorCodes(server.Dvars.Hostname, 'var(--color-text)').outerHTML}</option>
+        `))
+    })
     var Window = createElementFromHTML(`
-        <div class='wf-rcon-window'>
+        <div class='wf-rcon-window' style='height:auto;width:auto;'>
             <div class='wf-rcon-header' data-drag-el>
-                <div>Remote Console</div>
-                <div class='wf-profile-header-button' data-close-btn><i class="fas fa-times"></i></div>
+                <div class='wf-header-buttons'>
+                    <div class='wf-profile-header-button'><i data-clear-btn class="far fa-trash"></i></div>
+                    <div class='wf-profile-header-button'><i data-maximized='false' data-maximize-btn class="far fa-expand"></i></div>
+                    <div class='wf-profile-header-button' data-close-btn><i class="fas fa-times"></i></div>
+                </div>
             </div>
-            <div class='wf-rcon-log'></div>
+            <div class='wf-rcon-log nice-scrollbar'></div>
             <div class='wf-rcon-textbox-cont'>
                 <div class='wf-rcon-textbox-wrap'>
                     <div class='wf-rcon-textbox' data-placeholder='Type a command' contenteditable='true'></div>
@@ -296,8 +353,50 @@ function newRCONWindow() {
             </div>
         </div>
     `)
+    serversSelect.addEventListener('change', () => {
+        Window.querySelector('.wf-rcon-log').innerHTML = null
+    })
+    console.log(Window.style.height)
+    Window.querySelector('*[data-clear-btn]').addEventListener('click', (e) => {
+        Window.querySelector('.wf-rcon-log').innerHTML = null
+        Window.writeLine('Last login: ' + moment().format('ddd MMM DD hh:mm:ss yy'))
+    })
+    Window.querySelector('*[data-maximize-btn]').addEventListener('click', (e) => {
+        e.target.setAttribute('data-maximized', !(e.target.getAttribute('data-maximized') == 'true'))
+        e.target.className = e.target.getAttribute('data-maximized') == 'true' ? 'far fa-compress' : 'far fa-expand'
+        Window.style.left = Window.style.top = e.target.getAttribute('data-maximized') == 'true' ? '0px' : '50px'
+        Window.style.height = Window.style.width = e.target.getAttribute('data-maximized') == 'true' ? '100%' : 'auto'
+    })
+    Window.querySelector('.wf-rcon-textbox').addEventListener('keydown', async (e) => {
+        if (e.keyCode == 13) {
+            e.preventDefault()
+            var command = e.target.textContent
+            Window.writeLine(`^2${Client.Name}@node^7:^5~^7$ ${command}`)
+            e.target.innerHTML = null
+            var result = JSON.parse(await makeRequest('GET', `/api/rcon?command=${command}&ServerId=${serversSelect.value}`, null))
+            if (!result.success) return
+            result.result.forEach(line => {
+                Window.writeLine(line)
+            })
+        }
+    })
+    Window.addEventListener('click', (e) => {
+        if (e.target.hasAttribute('data-nodrag')) return
+        Window.querySelector('.wf-rcon-textbox').focus()
+    })
+    Window.querySelector('.wf-rcon-header').prepend(serversSelect)
+    Window.writeLine = (line) => {
+        Window.querySelector('.wf-rcon-log').appendChild(createElementFromHTML(`
+            <div class='wf-rcon-line'>
+                ${COD2HTML(line)}
+            </div>
+        `))
+        Window.querySelector('.wf-rcon-log').scrollTop = Window.querySelector('.wf-rcon-log').scrollHeight
+    }
+    Window.writeLine('Last login: ' + moment().format('ddd MMM DD hh:mm:ss yy'))
     Window.querySelector('*[data-close-btn]').addEventListener('click', () => Window.remove())
     document.body.appendChild(Window)
+    Window.querySelector('.wf-rcon-textbox').focus()
     dragElement(Window)
 }
 
@@ -325,6 +424,7 @@ function dragElement(elmnt) {
     elmnt.querySelector('*[data-drag-el]').onmousedown = dragMouseDown
 
     function dragMouseDown(e) {
+        if (e.target.hasAttribute('data-nodrag')) return
         e = e || window.event;
         e.preventDefault();
         pos3 = e.clientX;
@@ -334,6 +434,7 @@ function dragElement(elmnt) {
     }
 
     function elementDrag(e) {
+        if (e.target.hasAttribute('data-nodrag')) return
         e = e || window.event;
         e.preventDefault();
         pos1 = pos3 - e.clientX;
@@ -344,7 +445,7 @@ function dragElement(elmnt) {
         var topOffset = elmnt.offsetTop - pos2
 
 
-        elmnt.style.top = Math.min(Math.max(topOffset, 0), getHeight() - (elmnt.offsetHeight - 300 )) + "px"
+        elmnt.style.top = Math.min(Math.max(topOffset, 0), getHeight() - (elmnt.offsetHeight )) + "px"
         elmnt.style.left = Math.min(Math.max(leftOffset, 0), getWidth() - elmnt.offsetWidth) + "px"
     }
 

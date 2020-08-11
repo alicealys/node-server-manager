@@ -5,6 +5,7 @@ class EventDispatcher {
         this.Server = Server
     }
     async dispatchCallback(event) {
+        if (!event) return
         this.Server.emit('event', event)
         switch (event.type) {
             case 'InitGame':

@@ -1,5 +1,11 @@
 <div id='wf-header'>
     <% if (session.ClientId) { %>
+        <script>
+            var Client = {
+                Name: '<%= Client.Name %>',
+                ClientId: '<%= Client.ClientId %>'
+            }
+        </script>
         <div class='wf-profile-menu' id='profile-menu'>
             <a href='/id/<%= session.ClientId %>' class='wf-profile-menu-entry'>Profile</a>
             <div data-menu-command='password' class='wf-profile-menu-entry'>Change Password</div>

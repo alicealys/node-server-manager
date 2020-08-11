@@ -5,10 +5,11 @@ window.addEventListener('load', () => {
         console.log('%c[ NSMSocket ]%c Connected', 'color:cyan, color: white')
     })
 
-    socket.addEventListener('message', (e) => {
+    socket.onmessage = (e) => {
         var msg = JSON.parse(e.data)
+        console.log(msg)
         logMessage(msg, true)
-    })
+    }
     renderServerList()
 })
 
@@ -22,7 +23,7 @@ function logMessage(msg, refresh) {
             <div class='wf-message'>
                 <div class='wf-message-sender'>
                     <a class='wf-link wf-message-sender' href='/id/${msg.data.Client.ClientId}'>${msg.data.Client.Name}</a>:</div>
-                <div class='wf-message-message'>${parseCODColorCodes(msg.data.Message, 'var(--color-text)').outerHTML}</div>
+                <div class='wf-message-message'>${COD2HTML(msg.data.Message, 'var(--color-text)')}</div>
             </div>
             `))
         break;
@@ -38,7 +39,7 @@ function logMessage(msg, refresh) {
                 `
             ))
         case 'event_server_reload':
-            refreshClientList(msg.data.ServerId)
+            refresh && refreshClientList(msg.data.ServerId)
         break;
         case 'event_client_disconnect':
             refresh && refreshClientList(msg.data.ServerId)
@@ -105,12 +106,14 @@ async function renderServerList() {
     var servers = JSON.parse(await makeRequest('GET', '/api/servers', null))
     console.log(servers)
     servers.forEach(async server => {
-        var status = JSON.parse(await makeRequest('GET', `/api/players?ServerId=${server.ServerId}`, null))
-        var serverCard = parseHTML(`<div data-serverid='${server.ServerId}' class='wf-serverlist-server'>
+        var status = server
+        var serverCard = parseHTML(`
+            <div data-serverid='${server.ServerId}' class='wf-serverlist-server'>
                 <div class='wf-serverlist-server-info'>
                     <div class='wf-serverlist-hostname'>${parseCODColorCodes(status.Dvars.Hostname).innerHTML}</div>
                     <div class='wf-serverlist-players'>${status.Dvars.Map}</div>
                     <div class='wf-serverlist-players' data-playercount>${status.Clients.length} / ${status.Dvars.MaxClients} Players</div>
+                    <div class='wf-serverlist-button' ><i class='fas fa-sort-up an' onclick='prependServer(${server.ServerId})'></i></div>
                     <div class='wf-serverlist-button' ><i class='fas fa-plus an' style='transform:rotate(45deg)' data-more-button  data-shown='true'></i></div>
                 </div>
                 <div class='wf-serverlist-server-more'>
@@ -152,6 +155,10 @@ async function renderServerList() {
 
         document.querySelectorAll('.wf-serverlist-server-more').forEach(s => s.style.display = 'block')
     })
+}
+
+function prependServer(ServerId) {
+    document.querySelector(`*[data-serverid='${ServerId}']`).parentNode.prepend(document.querySelector(`*[data-serverid='${ServerId}']`))
 }
 
 function renderChart(id, playerHistory, animation, MaxClients) {

@@ -117,7 +117,7 @@ class Plugin {
         },
         'token': {
           ArgumentLength: 0,
-          Permission: Permissions.Commands.COMMAND_TOKEN,
+          Permission: Permissions.Commands.COMMAND_USER_CMDS,
           callback: async (Player) => {
             var rawToken = crypto.randomBytes(3).toString('hex').toLocaleUpperCase();
             rawToken = rawToken.split('')

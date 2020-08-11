@@ -5,6 +5,7 @@ class Rcon {
       this.port = port;
       this.password = password;
       this.isRunning = true
+      this.previousClients = []
       this.client = dgram.createSocket('udp4')
     }
     async executeCommandAsync(command) {
@@ -18,14 +19,13 @@ class Rcon {
             resolve(msg.toString())
             resolved = true
         }
+        client.on('message', onMessage);
         setTimeout(() => {
           if (!resolved) {
             client.removeAllListeners()
-            this.isRunning = false
             resolve(false)
           }
-        }, 500)
-        client.on('message', onMessage);
+        }, 5000)
       });
     }
     async getDvar(dvar) {
@@ -60,6 +60,7 @@ class Rcon {
     }
     async getClients() {
       var status = await this.executeCommandAsync('status');
+      if (!status) return this.previousClients
       status = status.trim().split('\n').slice(4).map(x => x.trim().split(/\s+/));
       var clients = new Array(18).fill(null)
       for (var i = 0; i < status.length; i++) {
@@ -71,6 +72,7 @@ class Rcon {
         }
         clients[client.Clientslot] = client
       }
+      this.previousClients = clients
       return clients;
     }
     async getClientByName(name) {

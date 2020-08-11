@@ -436,6 +436,30 @@ class Webfront {
             res.end(JSON.stringify(connectedClients))
         })
 
+        this.app.get('/api/rcon', async (req, res, next) => {
+            switch (true) {
+                case (!req.session.ClientId):
+                    res.status(403)
+                    res.end()
+                return;
+                case ((await db.getClient(req.session.ClientId)).PermissionLevel < Permissions.Levels[Permissions.Commands.COMMAND_RCON]):
+                    res.status(403)
+                    res.end()
+                return
+                case (!this.Managers[req.query.ServerId]):
+                    res.end(JSON.stringify({
+                        success: false,
+                        error: 'Server not found'
+                    }))
+                return
+            }
+            var result = (await this.Managers[req.query.ServerId].Server.Rcon.executeCommandAsync(req.query.command)).trim().split('\n')
+            result.length == 1 ? result[0] = 'Command executed successfully' : result = result.splice(1)
+            res.end(JSON.stringify({
+                success: true,
+                result: result
+            }))
+        })
         this.app.set('view engine', 'jshtml')
         this.app.get('/search', async (req, res, next) => {
             res.setHeader('Content-type', 'text/html')

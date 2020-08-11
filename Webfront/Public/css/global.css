@@ -3666,11 +3666,13 @@ body {
   color: #FFAD22
 }
 .wf-rcon-window {
-  width: 400px;
+  min-width: 400px;
   top: 50px;
   left: 50px;
-  resize: both;
+  resize: both!important;
   position: fixed;
+  display:flex;
+  flex-flow:column;
   border-radius: 5px;
   -webkit-box-shadow: 0px 0px 8px 2px rgba(0,0,0,0.75);
   -moz-box-shadow: 0px 0px 8px 2px rgba(0,0,0,0.75);
@@ -3679,14 +3681,20 @@ body {
   color:var(--color-text)
 }
 .wf-rcon-log {
-  background-color: var(--color-3);
+  background-color: rgba(10,10,10,0.75);
   height: 400px;
-  opacity: 0.7;
   backdrop-filter: blur(10px);
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+  flex-grow: 1;
   overflow-y: scroll;
+}
+.wf-rcon-line {
+  font-size:14px;
+  user-select: text;
+  opacity: 1!important;
+  color: var(--color-text-hover)
 }
 .wf-rcon-textbox-wrap {
   overflow:hidden;
@@ -3724,4 +3732,26 @@ body {
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
   background-color: var(--color-2);
+}
+.wf-rcon-line {
+  padding:5px;
+}
+select option:hover {
+  background: var(--color-3)!important;
+}
+.wf-select {
+  padding:5px;
+  border: none;
+  background-color: var(--color-1);
+  margin:0px;
+}
+.wf-select.selector {
+  border-radius: 5px;
+  border: none;
+  outline: none;
+  margin:5px;
+}
+.wf-header-buttons {
+  display:flex;
+  flex-flow: row;
 }
