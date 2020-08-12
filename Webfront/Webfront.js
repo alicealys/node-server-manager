@@ -130,7 +130,7 @@ class Webfront {
             if (req.session.ClientId) {
                 Client = await db.getClient(req.session.ClientId)
             }
-            ejs.renderFile(path.join(__dirname, '/html/header.ejs'), {session: req.session, Client: Client}, (err, str) => {
+            ejs.renderFile(path.join(__dirname, '/html/header.ejs'), {session: req.session, Permissions: Permissions, Client: Client}, (err, str) => {
                 header = str
             });
             next()
@@ -286,7 +286,6 @@ class Webfront {
             var Stats = await db.getStats(0, 50, sort)
             Stats.forEach(Stat => {
                 Stat.PlayedTimeString = (Stat.PlayedTime / 60).toFixed(1) + ' hrs'
-
                 Stat.Performance = Stat.Performance.toFixed(1)
                 Stat.KDR = (Stat.Kills / Math.max(1, Stat.Deaths) ).toFixed(2)
             })

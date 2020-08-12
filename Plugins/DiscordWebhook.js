@@ -19,12 +19,41 @@ class Plugin {
         Player.on('message', async (Message) => {
             this.sendHook(`:envelope_with_arrow: ${Player.Name}`, Message, `${config.webfrontHostname}/id/${Player.ClientId}`)
         })
+        /*Player.on('penalty', (PenaltyType, Reason, OriginId, Duration) => {
+            switch (PenaltyType) {
+                case 'PENALTY_KICK':
+                    this.sendHook(`:outbox_tray: ${Player.Name}`, ``, `${config.webfrontHostname}/id/${Player.ClientId}`, 'Kick', Reason, 'N/A')
+                break
+                case 'PENALTY_TEMP_BAN':
+                    this.sendHook(`:hammer: ${Player.Name}`, ``, `${config.webfrontHostname}/id/${Player.ClientId}`, 'Temp Ban', Reason, Duration + 's')
+                break
+                case 'PENALTY_PERMA_BAN':
+                    this.sendHook(`:hammer: ${Player.Name}`, ``, `${config.webfrontHostname}/id/${Player.ClientId}`, 'Ban', Reason, 'Permanent')
+                break
+            }
+        })*/
     }
     async onPlayerDisconnect (Player) {
         this.sendHook(`:outbox_tray: ${Player.Name}`, ' ' ,`${config.webfrontHostname}/id/${Player.ClientId}`)
     }
     async getFlag (IPAddress) {
         return (await (await fetch(`https://extreme-ip-lookup.com/json/${IPAddress.split(':')[0]}`)).json()).countryCode.toLocaleLowerCase()
+    }
+    async sendHookPenalty(Title, Description, Url, Type, Reason, Duration) {
+        var messageEmbed = new MessageBuilder()
+        .setTitle(Title)
+        .setDescription(Description)
+        .setURL(Url)
+        .setColor('#00b0f4')
+        .addField('Type', Type, true)
+        .addField('Reason', stripColorCodes(Reason), true)
+        .addField('Duration', Duration, true)
+        .setFooter('Node Server Manager')
+        .setTimestamp();
+        hook.send(messageEmbed)
+    }
+    stripColorCodes(string) {
+        return string.replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), '')
     }
     async sendHook(Title, Description, Url) {
         try {
@@ -42,7 +71,7 @@ class Plugin {
             .addField('Players', `\`${clientCount} / ${maxClients}\``, true)
             .setFooter('Node Server Manager')
             .setTimestamp();
-            //hook.send(messageEmbed)
+            hook.send(messageEmbed)
         }
         catch (e) {}
     }

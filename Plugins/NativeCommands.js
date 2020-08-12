@@ -139,7 +139,7 @@ class Plugin {
         },
         'rcon': {
           ArgumentLength: 1,
-          Permission: Permissions.Commands.COMMAND_TP,
+          Permission: Permissions.Commands.COMMAND_RCON,
           callback: async (Player, args) => {
             var result = (await this.Server.Rcon.executeCommandAsync(args.slice(1).join(' '))).split('\n')
             result[0] = lookup.COMMAND_EXECUTE_SUCCESS

@@ -9,16 +9,21 @@
         <div class='wf-profile-menu' id='profile-menu'>
             <a href='/id/<%= session.ClientId %>' class='wf-profile-menu-entry'>Profile</a>
             <div data-menu-command='password' class='wf-profile-menu-entry'>Change Password</div>
+            <% if (Client.PermissionLevel >= Permissions.Levels[Permissions.Commands.COMMAND_RCON]) {%>
             <div onclick='newRCONWindow()' class='wf-profile-menu-entry'>Remote Console</div>
+            <% }%>
+            <% if (Client.PermissionLevel >= Permissions.Levels['ROLE_ADMIN']) {%>
             <a href='/audit' class='wf-profile-menu-entry'>Audit log</a>
+            <% }%>
             <div data-menu-command='logout' class='wf-profile-menu-entry'>Logout</div>
         </div>
     <% }%>
     <div class='wf-header-right'>
         <a href='/' class='wf-header-title'>NODE SERVER MANAGER</a>
-        <a href='/' class='wf-header-link'>Home</a>
-        <a href='/chat' class='wf-header-link'>Chat</a>
-        <a href='/stats' class='wf-header-link'>Stats</a>
+        <a href='/' class='wf-header-link'><i class="fas fa-home"></i></a>
+        <a href='/chat' class='wf-header-link'><i class="fas fa-comments"></i></a>
+        <a href='/stats' class='wf-header-link'><i class="fas fa-chart-bar"></i></a>
+        <a href='https://github.com/fedddddd/node-server-manager' class='wf-header-link'><i class="fas fa-code-branch"></i></a>
         <% if (!session.ClientId) {%>
             <a id='login-btn' class='wf-header-link'>Login</a>
         <% } else { %>
