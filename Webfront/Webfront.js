@@ -147,6 +147,10 @@ class Webfront {
             });
         })
 
+        this.app.get('/api/discord/callback', async (req, res, next) => {
+            
+        })
+
         this.app.post('/auth/logout', async (req, res, next) => {
             req.session.destroy()
             res.end()
@@ -278,15 +282,13 @@ class Webfront {
         }
 
         this.app.get('/stats', async (req, res, next) => {
-            var Stats = await db.getStats(0, 50)
+            var sort = req.query.sort ? req.query.sort : 'Kills'
+            var Stats = await db.getStats(0, 50, sort)
             Stats.forEach(Stat => {
-                Stat.PlayedTimeString = timeConvert(Stat.PlayedTime)
+                Stat.PlayedTimeString = (Stat.PlayedTime / 60).toFixed(1) + ' hrs'
+
                 Stat.Performance = Stat.Performance.toFixed(1)
                 Stat.KDR = (Stat.Kills / Math.max(1, Stat.Deaths) ).toFixed(2)
-            })
-            Stats.sort((a, b) => {
-                var sort = req.query.sort ? req.query.sort : 'Kills'
-                return b[sort] - a[sort]
             })
             res.setHeader('Content-type', 'text/html')
             ejs.renderFile(path.join(__dirname, '/html/stats.ejs'), {header: header, Stats: Stats, moment: moment}, (err, str) => {
@@ -295,17 +297,14 @@ class Webfront {
         })
 
         this.app.get('/api/stats', async (req, res, next) => {
-            var Stats = await db.getStats(req.query.page, req.query.limit)
+            var sort = req.query.sort ? req.query.sort : 'Kills'
+            var Stats = await db.getStats(req.query.page, req.query.limit, sort)
             Stats.forEach(Stat => {
-                Stat.PlayedTimeString = timeConvert(Stat.PlayedTime)
+                Stat.PlayedTimeString = (Stat.PlayedTime / 60).toFixed(1) + ' hrs'
                 Stat.Performance = Stat.Performance.toFixed(1)
                 Stat.KDR = (Stat.Kills / Math.max(1, Stat.Deaths) ).toFixed(2)
                 Stat.Name = Stat.Client.Name
                 delete Stat.Client
-            })
-            Stats.sort((a, b) => {
-                var sort = req.query.sort ? req.query.sort : 'Kills'
-                return b[sort] - a[sort]
             })
             res.end(JSON.stringify(Stats))
         })

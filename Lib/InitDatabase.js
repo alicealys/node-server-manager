@@ -175,11 +175,25 @@ class Database {
         )
     }
 
-    async getStats(pageNumber, limit) {
-        var Stats = await Models.NSMPlayerStats.findAll({
-            limit: limit,
-            offset: limit * pageNumber
-        })
+    async getStats(pageNumber, limit, sort) {
+        try {
+            var Stats = await Models.NSMPlayerStats.findAll({
+                limit: limit,
+                order: [
+                    [sort, 'desc']
+                ],
+                offset: limit * pageNumber
+            })
+        }
+        catch (e) {
+            var Stats = await Models.NSMPlayerStats.findAll({
+                limit: limit,
+                order: [
+                    ['Kills', 'desc']
+                ],
+                offset: limit * pageNumber
+            })
+        }
 
         for (var i = 0;  i < Stats.length; i++) {
             Stats[i] = Stats[i].dataValues

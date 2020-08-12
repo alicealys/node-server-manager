@@ -53,7 +53,7 @@ var appendStats = (Stats) => {
             <div class='wf-search-level' data-value='${Stat.Deaths}'>${Stat.Deaths}</div>
             <div class='wf-search-level' data-value='${Stat.KDR}'>${Stat.KDR}</div>
             <div class='wf-search-level' data-value='${Stat.Performance}'>${Stat.Performance}</div>
-            <div class='wf-search-level' data-value='${Stat.PlayedTime}'>${Stat.PlayedTime}</div>
+            <div class='wf-search-level' data-value='${Stat.PlayedTime}'>${Stat.PlayedTimeString}</div>
         </div>
         `)))
     })

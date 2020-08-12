@@ -84,7 +84,7 @@ window.addEventListener('load', async () => {
                                 messageBox.querySelector('*[data-text-label]').innerHTML = 'Password is too long'
                                 return
                         }
-                        var result = await makeFormRequest('POST', '/auth/changepassword', `previous=${params.previous}&password=${params.password}`)
+                        var result = JSON.parse(await makeFormRequest('POST', '/auth/changepassword', `previous=${params.previous}&password=${params.password}`))
                         result.success ? window.location.href = window.location.href : messageBox.querySelector('*[data-text-label]').innerHTML = result.error
                     })
                     break;
