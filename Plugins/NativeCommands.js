@@ -53,6 +53,7 @@ class Plugin {
         'COMMAND_ARGUMENT_ERROR' : 'Not enough arguments supplied',
         'COMMAND_CLIENT_NOT_FOUND' : 'Player not found',
         'ROLE_HIERARCHY_ERROR' : 'You can\'t set that role',
+        'CLIENT_HIERARCHY_ERROR': 'You cannot execute this on that client',
         'COMMAND_EXECUTE_SUCCESS' : 'Command executed successfully',
         'ROLE_SELF_ERROR' : 'You can\'t set your own role',
         'COMMAND_STATS_FORMAT' : '[ ^5%NAME% ^7] => ^5%KILLS%^7 Kills | ^5%DEATHS% ^7Deaths | ^5%KDR% ^7KDR | ^5%PERFORMANCE%^7 Performance | ^7Play time ^5%PLAYEDTIME%',
@@ -69,7 +70,8 @@ class Plugin {
         'COMMAND_KICK': 'Kick a player, usage: kick <ClientId>',
         'COMMAND_FIND': 'Find a players\'s ID',
         'COMMAND_INFO': 'Get NSM info',
-        'COMMAND_TOKEN_FORMAT': 'Your login token is %TOKEN%, valid for 2 minutes, your ClientID is ^2%CLIENTID%^7 { ^5numbers^7, ^3letters^7 }'
+        'COMMAND_TOKEN_FORMAT': 'Your login token is %TOKEN%, valid for 2 minutes, your ClientID is ^2%CLIENTID%^7 { ^5numbers^7, ^3letters^7 }',
+        'COMMAND_PARSE_TIME_ERROR': 'Could not parse time, format: 1d (day), 2h (hours), 3m (mins), 10s (secs)'
       }
       var commands = {
         'help': {
@@ -234,15 +236,132 @@ class Plugin {
           Alias: 'k',
           Permission: Permissions.Commands.COMMAND_KICK,
           callback: async (Player, args) => {
-              var Name = (await this.Server.DB.getClient(args[1])).Name
+            var Client = await this.Server.DB.getClient(args[1])
 
+            switch (true) {
+              case (Client.Permission >= Player.PermissionLevel):
+                Player.Tell(lookup.CLIENT_HIERARCHY_ERROR)
+              return
+            }
               for (var i = 0; i < this.Server.Clients.length; i++) {
-                if (this.Server.Clients[i] && this.Server.Clients[i].Name == Name) {
-                  this.Server.Clients[i].Kick(`You have been kicked: ^5${args.slice(2).join(' ')}`, Player)
+                if (this.Server.Clients[i] && this.Server.Clients[i].Guid == Client.Guid) {
+                  this.Server.Clients[i].Kick(`You have been kicked: ^5${args.slice(2).join(' ')}`, Player.ClientId)
                   return;
                 }
               }
               Player.Tell(lookup.COMMAND_CLIENT_NOT_FOUND)
+          }
+        },
+        'unban': {
+          ArgumentLength: 2,
+          Alias: 'ub',
+          Permission: Permissions.Commands.COMMAND_KICK,
+          callback: async (Player, args) => {
+            var Client = await this.Server.DB.getClient(args[1])
+            var Reason = args.slice(2).join(' ')
+
+            switch (true) {
+              case (Client.Permission >= Player.PermissionLevel):
+                Player.Tell(lookup.CLIENT_HIERARCHY_ERROR)
+              return
+            }
+
+            var count = await this.Server.DB.unbanClient(Client.ClientId, Reason, Player.ClientId)
+
+            count > 0 ? Player.Tell(`Unbanned ^5${Client.Name}^7 for ^5${Reason}^7`) : Player.Tell(`^5${Client.Name}^7 is not banned`)
+          }
+        },
+        'tempban': {
+          ArgumentLength: 3,
+          Alias: 'tb',
+          Permission: Permissions.Commands.COMMAND_BAN,
+          callback: async (Player, args) => {
+
+            var timeVars = {
+              'd': 86400,
+              'h': 3600,
+              'm': 60,
+              's': 1,
+            }
+
+            var Client = await this.Server.DB.getClient(args[1])
+
+            var parts = Array.from(args[2].match(/([0-9]+)([A-Za-z]+)/)).slice(1)
+
+            switch (true) {
+              case (Client.Permission >= Player.PermissionLevel):
+                Player.Tell(lookup.CLIENT_HIERARCHY_ERROR)
+              return
+              case (!parts || parts.length < 2 || !timeVars[parts[1]] || !Number.isInteger(parseInt(parts[0]))):
+                Player.Tell(lookup.COMMAND_PARSE_TIME_ERROR)
+              return
+            }
+
+            var Reason = args.slice(3).join(' ')
+            var Duration = parseInt(parts[0] * timeVars[parts[1]])
+
+            for (var i = 0; i < this.Server.Clients.length; i++) {
+              if (this.Server.Clients[i] && this.Server.Clients[i].Guid == Client.Guid) {
+                this.Server.Clients[i].Tempban(Reason, Player.ClientId, Duration)
+                Player.Tell(`Banned ^5${Client.Name}^7 for ^5${Duration}^7 seconds for ^5${Reason}^7`)
+                return;
+              }
+            }
+
+            switch (true) {
+              case (!Client):
+                Player.Tell(lookup.COMMAND_CLIENT_NOT_FOUND)
+                return
+            }
+
+            this.Server.DB.addPenalty({
+              TargetId: args[1],
+              OriginId: Player.ClientId,
+              PenaltyType: 'PENALTY_TEMP_BAN',
+              Duration: Duration,
+              Reason: Reason
+            })
+            Player.Tell(`Banned ^5${Client.Name}^7 for ^5${Duration}^7 seconds for ^5${Reason}^7`)
+          }
+        },
+        'ban': {
+          ArgumentLength: 2,
+          Alias: 'b',
+          Permission: Permissions.Commands.COMMAND_BAN,
+          callback: async (Player, args) => {
+            var Client = await this.Server.DB.getClient(args[1])
+
+            switch (true) {
+              case (Client.Permission >= Player.PermissionLevel):
+                Player.Tell(lookup.CLIENT_HIERARCHY_ERROR)
+              return
+            }
+
+            var Reason = args.slice(2).join(' ')
+
+            for (var i = 0; i < this.Server.Clients.length; i++) {
+              if (this.Server.Clients[i] && this.Server.Clients[i].Guid == Client.Guid) {
+                this.Server.Clients[i].Ban(Reason, Player.ClientId)
+                Player.Tell(`Banned ${Client.Name} permanently for ${Reason}`)
+                return;
+              }
+            }
+
+            switch (true) {
+              case (!Client):
+                Player.Tell(lookup.COMMAND_CLIENT_NOT_FOUND)
+                return
+            }
+
+            this.Server.DB.addPenalty({
+              TargetId: args[1],
+              OriginId: Player.ClientId,
+              PenaltyType: 'PENALTY_PERMA_BAN',
+              Duration: 0,
+              Reason: Reason
+            })
+
+            Player.Tell(`Banned ${Client.Name} permanently for ${Reason}`)
           }
         },
         'find': {

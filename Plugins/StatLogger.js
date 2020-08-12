@@ -28,7 +28,6 @@ class Plugin {
     Player.on('message', async (Message) => {
       await this.Server.DB.logMessage(Player.ClientId, Message)
     })
-    this.Server.DB.getClientLevel(Player.ClientId) ==  -1 && Player.Kick(`You are banned from this server`, 1)
   }
   calculatePerformance (k, d, t) {
     //  (kdr / playedtime) * 100

@@ -32,6 +32,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: DataTypes.literal('CURRENT_TIMESTAMP')
         },
+        Active:  {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: true
+        },
         Duration: {
             type: DataTypes.INTEGER,
             allowNull: false

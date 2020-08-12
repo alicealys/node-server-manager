@@ -143,6 +143,26 @@ class Database {
 
         return Level[0].dataValues.PermissionLevel
     }
+
+    async unbanClient(TargetId, OriginId, Reason) {
+        var Penalties = await Models.NSMPenalties.update(
+            { Active: false },
+            { where: { TargetId: TargetId, Active: true } }
+        )
+
+        console.log(Penalties)
+
+        Penalties.length > 0 && await Models.NSMPenalties.build({
+            TargetId,
+            OriginId,
+            PenaltyType: 'PENALTY_UNBAN',
+            Duration: 0,
+            Reason: Reason
+        })
+
+        return Penalties[0]
+    }
+
     async getClient(ClientId) {
         var Client = await Models.NSMClients.findAll({
             where: {
@@ -168,11 +188,32 @@ class Database {
 
         return Client
     }
+
+    async addPenalty(PenaltyMeta) {
+        var Penalty = await Models.NSMPenalties.build(PenaltyMeta).save()
+        return Penalty.dataValues
+    }
+
     async setLevel(Player, Level) {
         Models.NSMClients.update(
             { PermissionLevel: Level },
             { where: { ClientId: Player.ClientId } }
         )
+    }
+
+    async getAllPenalties(ClientId = null) {
+        var where = ClientId ? {
+            where: {
+                TargetId: ClientId,
+            }
+        } : null
+        var Penalties = await Models.NSMPenalties.findAll(where)
+
+        for (var i = 0; i < Penalties.length; i++) {
+            Penalties[i] = Penalties[i].dataValues
+        }
+
+        return Penalties
     }
 
     async getStats(pageNumber, limit, sort) {

@@ -42,7 +42,7 @@ class Plugin {
             .addField('Players', `\`${clientCount} / ${maxClients}\``, true)
             .setFooter('Node Server Manager')
             .setTimestamp();
-            hook.send(messageEmbed)
+            //hook.send(messageEmbed)
         }
         catch (e) {}
     }
