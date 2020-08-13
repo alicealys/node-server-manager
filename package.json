@@ -1,0 +1,19 @@
+{
+  "name": "node-server-manager",
+  "version": "0.2.1",
+  "description": "Server Manager for Plutonium IW5 Servers",
+  "main": "Lib/NodeServerManager.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fedddddd/node-server-manager.git"
+  },
+  "author": "fed",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fedddddd/node-server-manager/issues"
+  },
+  "homepage": "https://github.com/fedddddd/node-server-manager#readme"
+}
