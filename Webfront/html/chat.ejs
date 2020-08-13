@@ -33,15 +33,26 @@
                                     </div>
                                 </div>
                     <% } } %>
-                    <div class='wf-message'>
-                        <div class='wf-message-sender'>
-                            <a class='wf-link wf-message-sender' href='/id/<%= Message.Client.ClientId %>'><%= Message.Client.Name %></a>:</div>
-                        <div class='wf-message-message'><%= Message.Message %></div>
-                        <div class='wf-default wf-message-date'><%= moment(Message.Date).calendar() %></div>
-                    </div>
-                <% 
-                    i++
-                %>
+                    <% if (Message.Type == 'Message') {%>
+                            <div class='wf-message'>
+                                <div class='wf-message-sender'>
+                                    <a class='wf-link wf-message-sender' href='/id/<%= Message.Client.ClientId %>'><%= Message.Client.Name %></a>:</div>
+                                <div class='wf-message-message'><%= Message.Message %></div>
+                                <div class='wf-default wf-message-date'><%= moment(Message.Date).calendar() %></div>
+                            </div>
+                            <% } else {%>
+                                <% var penalties = {
+                                    'PENALTY_TEMP_BAN' : 'Temp banned',
+                                    'PENALTY_PERMA_BAN' : 'Perma banned',
+                                    'PENALTY_KICK' : 'Kicked',
+                                    'PENALTY_UNBAN' : 'Unbanned'
+                                } %>
+                                <div class='wf-message'>
+                                    <div class='wf-message-message'><a class='iw-yellow wf-link' href='/id/<%= Message.Origin.ClientId %>'><%= Message.Origin.Name %></a> <span class='iw-red'><%= penalties[Message.PenaltyType] %></span> <a class='iw-yellow wf-link' href='/id/<%= Message.Target.ClientId %>'><%= Message.Target.Name %></a> for <span class='iw-cyan'><%= Message.Reason.replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), '') %></div>
+                                    <div class='wf-default wf-message-date'><%= moment(Message.Date).calendar() %></div>
+                                </div>
+                            <% }%>
+                <% i++ %>
                 <% }) %>%>
             </div>
         </div>

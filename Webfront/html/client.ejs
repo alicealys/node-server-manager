@@ -2,11 +2,11 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=0.7">
-        <title>Server Overview | Node Server Manager</title>
+        <title><%= Client.Name %> | Profile Overview</title>
         <meta property="og:title" content="Server Overview | Node Server Manager">
         <meta property="og:type" content="website">
         <meta property="og:description" content="Node Server Manager is a administration tool for Plutonium IW5">
-        <meta name="description" content="Node Server Manager is a administration tool for Plutonium IW5">
+        <meta name="description" content="<%= Client.Name %> | Profile Overview">
         <meta name="keywords" content="IW4MAdmin, IW5, Plutonium, T6, NodeJs, server, administration, IW4x, MW2, Modern Warfare 3">
         <script type='text/javascript' src='/js/main.js'></script>
         <script type='text/javascript' src='/js/profile.js'></script>
@@ -48,7 +48,11 @@
                     </div>
                 </div>
                 <div class='wf-profile-role'>
+                    <% if (!Client.Ban.Banned) {%>
                     <div><%= Client.Role %></div>
+                    <% } else {%>
+                        <div class='iw-red'>Banned - <%= Client.Ban.Reason %></div>
+                    <% }%>
                 </div>
                 <div class='wf-profile-description-wrap'>
                     <div class='wf-profile-description-line'>
@@ -117,10 +121,26 @@
                 <div class='wf-profile-info nice-scrollbar' id='message-log'>
                     <% Client.Messages.forEach(Message => { %>
                         <div class='wf-message'>
-                            <div class='wf-message-sender'>
-                                <a class='wf-link wf-message-sender' href='/id/<%= Client.ClientId %>'><%= Client.Name %></a>:</div>
-                            <div class='wf-message-message'><%= Message.Message %></div>
-                            <div class='wf-default wf-message-date'><%= moment(Message.Date).calendar() %></div>
+                            <% if (Message.Type == 'Message') {%>
+                                <div class='wf-message-sender'>
+                                    <a class='wf-link wf-message-sender' href='/id/<%= Client.ClientId %>'><%= Client.Name %></a>:</div>
+                                <div class='wf-message-message'><%= Message.Message %></div>
+                                <div class='wf-default wf-message-date'><%= moment(Message.Date).calendar() %></div>
+                            <% } else {%>
+                                <% var penalties = {
+                                    'PENALTY_TEMP_BAN' : 'Temp banned',
+                                    'PENALTY_PERMA_BAN' : 'Perma banned',
+                                    'PENALTY_KICK' : 'Kicked',
+                                    'PENALTY_UNBAN' : 'Unbanned'
+                                } %>
+                                <% if (Message.Target.ClientId == Client.ClientId) {%>
+                                    <div class='wf-message-message'><span class='iw-red'><%= penalties[Message.PenaltyType] %></span> by <a class='iw-yellow wf-link' href='/id/<%= Message.Origin.ClientId %>'><%= Message.Origin.Name %></a> for <span class='iw-cyan'><%= Message.Reason.replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), '') %></span></div>
+                                    <div class='wf-default wf-message-date'><%= moment(Message.Date).calendar() %></div>
+                                <% } else {%>
+                                    <div class='wf-message-message'><span class='iw-red'><%= penalties[Message.PenaltyType] %></span> <a class='iw-yellow wf-link' href='/id/<%= Message.Target.ClientId %>'><%= Message.Target.Name %></a> for <span class='iw-cyan'><%= Message.Reason.replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), '') %></div>
+                                    <div class='wf-default wf-message-date'><%= moment(Message.Date).calendar() %></div>
+                                <% } %>
+                            <% }%>
                         </div>
                     <% }) %>%>
                 </div>

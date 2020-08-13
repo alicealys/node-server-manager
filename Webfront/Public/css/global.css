@@ -1025,6 +1025,10 @@
   .notification-user {
     display:flex;
     flex-direction: column;
+    max-width: 350px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 1em;
     flex-grow: 4;
     font-family: codefb;
     color: var(--color-text);
@@ -3191,11 +3195,11 @@ body {
   font-family:codef;
   caret-color: var(--color-text);
   font-size:13px;
-  min-width: 300px;
+  min-width: 150px;
   width: max-content;
 }
 .wf-header-search-wrap {
-  width:300px;
+  width:150px;
   overflow:hidden;
   padding:10px;
   border-radius:5px;
@@ -3233,6 +3237,16 @@ body {
   width:calc(100% + 20px);
   margin-bottom:10px;
   background-color: var(--color-3);
+}
+@media only screen and (max-width: 600px) {
+  .wf-header-title {
+    text-decoration: none;
+    font-size:30px;
+    padding:10px;
+    color:var(--color-text-hover);
+    font-family:codef;
+    display:none;
+  }
 }
 .wf-header-title {
   text-decoration: none;

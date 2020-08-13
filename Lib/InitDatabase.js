@@ -164,6 +164,15 @@ class Database {
     }
 
     async getClient(ClientId) {
+    
+        if (ClientId == 1) {
+            return {
+                Name: 'Node Server Manager',
+                ClientId: 1,
+                Guid: 'node'
+            }
+        }
+
         var Client = await Models.NSMClients.findAll({
             where: {
                 ClientId: ClientId
@@ -370,12 +379,51 @@ class Database {
         return Messages
     }
 
+    async isBanned(ClientId) {
+        var playerPenalties = await this.getAllPenalties(ClientId)
+        for (var i = 0; i < playerPenalties.length; i++) {
+            if (!playerPenalties[i].Active) continue
+            switch (playerPenalties[i].PenaltyType) {
+                case 'PENALTY_PERMA_BAN':
+                    return {
+                        Banned: true,
+                        Type: playerPenalties[i].PenaltyType,
+                        Duration: playerPenalties[i].Duration,
+                        Reason: playerPenalties[i].Reason
+                    }
+                return
+                case 'PENALTY_TEMP_BAN':
+                    var dateDiff = (new Date(playerPenalties[i].Date) - new Date()) / 1000
+                    if (dateDiff + playerPenalties[i].Duration > 0) {
+                        return {
+                            Banned: true,
+                            Type: playerPenalties[i].PenaltyType,
+                            Duration: playerPenalties[i].Duration,
+                            Reason: playerPenalties[i].Reason
+                        }
+                    }
+                break
+            }
+        }
+        return {
+            Banned: false
+        }
+    }
+
     async getMessages(From, pageNumber, limit) {
         if (From) {
             var Messages = await Models.NSMMessages.findAll({
                 where: {
                     OriginId: From
                 },
+                order: [
+                    ['Date', 'desc']
+                ],
+                limit: limit,
+                offset: pageNumber * limit,
+            })
+            var Penalties = await Models.NSMPenalties.findAll({
+                where: Sequelize.or({ TargetId: From}, {OriginId: From}),
                 order: [
                     ['Date', 'desc']
                 ],
@@ -390,10 +438,33 @@ class Database {
                 limit: limit,
                 offset: pageNumber * limit,
             })
+            var Penalties = await Models.NSMPenalties.findAll({
+                order: [
+                    ['Date', 'desc']
+                ],
+                limit: limit,
+                offset: pageNumber * limit,
+            })
         }
+        
+        for (var i = 0; i < Penalties.length; i++) {
+            Penalties[i] = Penalties[i].dataValues
+            Penalties[i].Type = 'Penalty'
+            Penalties[i].Origin = await this.getClient(Penalties[i].OriginId)
+            Penalties[i].Target = await this.getClient(Penalties[i].TargetId)
+        }
+
         for (var i = 0; i < Messages.length; i++) {
             Messages[i] = Messages[i].dataValues
+            Messages[i].Type = 'Message'
         }
+
+        Messages = Messages.concat(Penalties)
+
+        Messages.sort((a,b) => {
+            return (new Date(b.Date) - new Date(a.Date))
+        })
+
         return Messages
     }
 

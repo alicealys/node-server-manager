@@ -373,6 +373,7 @@ class Webfront {
                 Client.WebStatus = getClientWebStatus(Client.ClientId)
                 Client.Messages = await db.getMessages(Client.ClientId, 0, 50)
                 Client.messageCount = (await db.getAllMessages(Client.ClientId)).length
+                Client.Ban = await db.isBanned(Client.ClientId)
             }
             Client.Status = {}
             console.log(Client.WebStatus)
