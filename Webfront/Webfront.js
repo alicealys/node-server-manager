@@ -58,17 +58,19 @@ function getRoleFrom (Value, Type) {
 }
 
 class Webfront {
-    constructor(Managers) {
+    constructor(Managers, Config) {
         this.Managers = Managers
         this.pollRate = 300000
+        this.Config = Config
         this.socketClients = []
         this.Start()
     }
     async getClientStatus(Guid) {
-        var Status = {}
+        var Status = { Online: false}
         for (var o = 0; o < this.Managers.length; o++) {
             var Manager = this.Managers[o]
             var status = await Manager.Server.Rcon.getStatus()
+            if (!status) status = Manager.Server.previousStatus
             for (var i = 0; i < status.data.clients.length; i++) {
                 var client = status.data.clients[i]
                 if (client.guid == Guid) {
@@ -83,10 +85,15 @@ class Webfront {
     Start() {
         this.app = express()
 
-        const server = https.createServer(ssl, this.app)
+        const server = this.Config.SSL ? https.createServer({
+            key: fs.readFileSync(this.Config.Key),
+            cert: fs.readFileSync(this.Config.Cert),
+        }, this.app) : http.createServer(this.app)
         const socket = new ws.Server({ server: server });
 
-        server.listen(8001)
+        server.listen(this.Config.Port, () => {
+            console.log(`Webfront bound to port ${this.Config.Port}, SSL ${this.Config.SSL}`)
+        })
         
         this.Socket(socket)
 
@@ -487,6 +494,17 @@ class Webfront {
 
         this.app.get('/api/messages', async (req, res, next) => {
             var Messages = await db.getMessages(req.query.id, req.query.page, req.query.limit)
+            for (var i = 0; i < Messages.length; i++) {
+                if (Messages[i].Type == 'Message') continue
+                Messages[i].Target = {
+                    ClientId: Messages[i].Target.ClientId,
+                    Name: Messages[i].Target.Name,
+                }
+                Messages[i].Origin = {
+                    ClientId: Messages[i].Origin.ClientId,
+                    Name: Messages[i].Origin.Name,
+                }
+            }
             res.end(JSON.stringify(Messages))
         })
 

@@ -20,7 +20,6 @@ window.addEventListener('load', () => {
                 message.Client = {}
                 message.Client.ClientId = message.OriginId
                 message.Client.Name = Client.Name
-                console.log(message.Date)
                 logMessage(message, true, message.Date)
             })
             pageLoaded = true
@@ -191,15 +190,48 @@ function makeRequest (method, url, data, contentType = null) {
 }
 
 var logMessage = (msg, append, date = new Date()) => {
-    document.getElementById('message-log').prepend
-    var msg = (parseHTML(`
-    <div class='wf-message'>
-        <div class='wf-message-sender'>
-            <a class='wf-link wf-message-sender' href='/id/${msg.Client.ClientId}'>${msg.Client.Name}</a>:</div>
+  var penalties = {
+    'PENALTY_TEMP_BAN' : 'Temp banned',
+    'PENALTY_PERMA_BAN' : 'Perma banned',
+    'PENALTY_KICK' : 'Kicked',
+    'PENALTY_UNBAN' : 'Unbanned'
+  } 
+    switch (msg.Type) {
+      case 'Message':
+        var msg = (parseHTML(`
+        <div class='wf-message'>
+            <div class='wf-message-sender'>
+                <a class='wf-link wf-message-sender' href='/id/${msg.Client.ClientId}'>${msg.Client.Name}</a>:</div>
+                <div class='wf-default wf-message-date'>${moment(date).calendar()}</div>
+            <div class='wf-message-message'>${msg.Message}</div>
+        </div>
+        `))
+      break
+      case 'Penalty':
+        var msg = msg.Target.ClientId == Client.ClientId ? (parseHTML(`
+        <div class='wf-message'>
             <div class='wf-default wf-message-date'>${moment(date).calendar()}</div>
-        <div class='wf-message-message'>${msg.Message}</div>
-    </div>
-    `))
+            <div class='wf-message-message'><span class='iw-red'>${penalties[msg.PenaltyType]}</span> <span class='iw-yellow'>${msg.Target.ClientId}</span> for <span class='iw-cyan'>${msg.Reason}</span></div>
+        </div>
+        `)) : (parseHTML(`
+        <div class='wf-message'>
+            <div class='wf-default wf-message-date'>${moment(date).calendar()}</div>
+            <div class='wf-message-message'><span class='iw-red'>${penalties[msg.PenaltyType]}</span> by <span class='iw-yellow'>${msg.Origin.ClientId}</span> for <span class='iw-cyan'>${msg.Reason}</span></div>
+        </div>
+        `))
+      break
+      default:
+        var msg = (parseHTML(`
+        <div class='wf-message'>
+            <div class='wf-message-sender'>
+                <a class='wf-link wf-message-sender' href='/id/${msg.Client.ClientId}'>${msg.Client.Name}</a>:</div>
+                <div class='wf-default wf-message-date'>${moment(date).calendar()}</div>
+            <div class='wf-message-message'>${msg.Message}</div>
+        </div>
+        `))
+      break
+    }
+
     append ? document.getElementById('message-log').appendChild(msg) : document.getElementById('message-log').prepend(msg)
 }
 

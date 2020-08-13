@@ -5,8 +5,8 @@ const Server = require(path.join(__dirname, '../Lib/Entity/Server.js'))
 const _Database = require(path.join(__dirname, '../Lib/InitDatabase.js'))
 const EventLogWatcher = require('./EventLogWatcher.js')
 const ServerLogWatcher = require('./ServerLogWatcher.js')
-const configuration = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`).toString())
-const Webfront = require(path.join(__dirname, `../Webfront/Webfront.js`))
+const ConfigMaker = require('./ConfigMaker.js');
+const { config } = require('process');
 
 var Info = {
   Author: 'fed',
@@ -14,11 +14,6 @@ var Info = {
 }
 
 var Managers = []
-
-console.log("============================================================")
-console.log(`                 Node Server Manager v${Info.Version}`)
-console.log(`                         By ${Info.Author}`)
-console.log("============================================================")
 
 class NSM {
   constructor (configuration) {
@@ -76,8 +71,31 @@ class NSM {
   }
 }
 
-configuration.Servers.forEach(config => {
-  Managers.push(new NSM(config))
-})
+if (fs.existsSync(path.join(__dirname, `../Configuration/NSMConfiguration.json`))) {
 
-var web = new Webfront(Managers)
+  const configuration = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`).toString())
+
+  console.log("============================================================")
+  console.log(`                 Node Server Manager v${Info.Version}`)
+  console.log(`                         By ${Info.Author}`)
+  console.log("============================================================")
+
+
+  configuration.Servers.forEach(config => {
+    Managers.push(new NSM(config))
+  })
+
+  const Webfront = require(path.join(__dirname, `../Webfront/Webfront.js`))
+
+  configuration.Webfront && (new Webfront(Managers, { 
+    SSL: configuration.WebfrontSSL, 
+    Key: configuration['WebfrontSSL-Key'], 
+    Cert: configuration['WebfrontSSL-Cert'], 
+    Port: configuration.WebfrontPort, 
+    Hostname: configuration.WebfrontHostname 
+  }))
+} else {
+  var configMake = new ConfigMaker()
+  configMake.init()
+}
+
