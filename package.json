@@ -1,19 +1,52 @@
 {
-  "name": "node-server-manager",
-  "version": "0.2.1",
-  "description": "Server Manager for Plutonium IW5 Servers",
-  "main": "Lib/NodeServerManager.js",
+  "name": "node",
+  "version": "1.0.0",
+  "main": "fileTool.js",
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "body-parser": "^1.19.0",
+    "connect-redis": "^5.0.0",
+    "cookie-parser": "^1.4.5",
+    "crypto": "^1.0.1",
+    "delay": "^4.4.0",
+    "discord-webhook-node": "^1.1.8",
+    "discord.js": "^12.2.0",
+    "dotenv": "^8.2.0",
+    "ejs": "^3.1.3",
+    "express": "^4.17.1",
+    "express-rate-limit": "^5.1.3",
+    "express-session": "^1.17.1",
+    "fs": "^0.0.1-security",
+    "jshtml": "^0.3.0",
+    "limiting-middleware": "^1.3.2",
+    "log-timestamp": "^0.3.0",
+    "md5": "^2.2.1",
+    "moment": "^2.27.0",
+    "node-fetch": "^2.6.0",
+    "read-last-lines": "^1.7.2",
+    "readline": "^1.3.0",
+    "request": "^2.88.2",
+    "sequelize": "^6.3.3",
+    "sqlite3": "^5.0.0",
+    "stream": "^0.0.2",
+    "websocket": "^1.0.31",
+    "ws": "^7.3.1",
+    "xmlhttprequest": "^1.8.0"
+  },
+  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [],
+  "author": "fed",
+  "license": "ISC",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/fedddddd/node-server-manager.git"
   },
-  "author": "fed",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/fedddddd/node-server-manager/issues"
   },
-  "homepage": "https://github.com/fedddddd/node-server-manager#readme"
+  "homepage": "https://github.com/fedddddd/node-server-manager#readme",
+  "description": "Server Manager for Plutonium IW5 Servers"
 }
