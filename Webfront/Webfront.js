@@ -9,7 +9,6 @@ const bodyParser= require('body-parser')
 const bcrypt    = require('bcrypt')
 const ws        = require('ws')
 const Permissions = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
-const Utils     = require(path.join(__dirname, '../Utils/Utils.js'))
 const https     = require('https')
 const { Server } = require('http')
 const rateLimit = require("express-rate-limit")
