@@ -390,7 +390,6 @@ class Plugin {
           Player.Tell(lookup.COMMAND_ARGUMENT_ERROR)
           return;
       }
-
       commands[args[0]].callback(Player, args)
   }
   timeConvert (n) {

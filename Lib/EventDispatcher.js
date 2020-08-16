@@ -32,7 +32,7 @@ class EventDispatcher {
             case 'kill':
               var Target = this.Server.Clients[event.data.Target.Clientslot];
               // If player suicided Attacker = Victim
-              var Attacker = event.data.Origin.Clientslot >= 0 ? this.Server.Clients[event.data.Origin.Clientslot] : Target;
+              var Attacker = (event.data.Origin.Clientslot && event.data.Origin.Clientslot >= 0) ? this.Server.Clients[event.data.Origin.Clientslot] : Target;
               
               Attacker.Clientslot != Target.Clientslot ? Attacker.emit('kill', Target, event.data.Attack) : Attacker.emit('death', Attacker, event.data.Attack)
       

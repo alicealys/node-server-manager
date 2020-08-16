@@ -1,7 +1,7 @@
 const path              = require('path')
 const config            = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`))
 const { Webhook, MessageBuilder }       = require('discord-webhook-node')
-var hook                = new Webhook(config.discordHookUrl)
+var hook                = new Webhook({ url: config.discordHookUrl, throwErrors: false, retryOnLimit: false,})
 const discord           = require('discord.js')
 const fetch             = require('node-fetch')
 
@@ -19,19 +19,6 @@ class Plugin {
         Player.on('message', async (Message) => {
             this.sendHook(`:envelope_with_arrow: ${Player.Name}`, Message, `${config.webfrontHostname}/id/${Player.ClientId}`)
         })
-        /*Player.on('penalty', (PenaltyType, Reason, OriginId, Duration) => {
-            switch (PenaltyType) {
-                case 'PENALTY_KICK':
-                    this.sendHook(`:outbox_tray: ${Player.Name}`, ``, `${config.webfrontHostname}/id/${Player.ClientId}`, 'Kick', Reason, 'N/A')
-                break
-                case 'PENALTY_TEMP_BAN':
-                    this.sendHook(`:hammer: ${Player.Name}`, ``, `${config.webfrontHostname}/id/${Player.ClientId}`, 'Temp Ban', Reason, Duration + 's')
-                break
-                case 'PENALTY_PERMA_BAN':
-                    this.sendHook(`:hammer: ${Player.Name}`, ``, `${config.webfrontHostname}/id/${Player.ClientId}`, 'Ban', Reason, 'Permanent')
-                break
-            }
-        })*/
     }
     async onPlayerDisconnect (Player) {
         this.sendHook(`:outbox_tray: ${Player.Name}`, ' ' ,`${config.webfrontHostname}/id/${Player.ClientId}`)

@@ -45,9 +45,10 @@ class Rcon {
       }
       var map = status[0].split(/\s+/g)[1]
       var rawClients = status.slice(3)
-      var indexes = status[1].split(/\s+/)
-      var columns = status[2].split(' ').map(x => x.length)
       var clients = []
+      /*var indexes = status[1].split(/\s+/)
+      var columns = status[2].split(' ').map(x => x.length)
+
       rawClients.forEach(client => {
         var clientVars = []
         client = client.split('')
@@ -55,6 +56,24 @@ class Rcon {
           clientVars.push(client.splice(0, column + 1).join('').trim())
         })
         clients.push(clientVars.reduce((a, key, index) => Object.assign(a, { [indexes[index]] : key }), {}));
+      })*/
+      rawClients.forEach(client => {
+        var end = client.match(/\b([0-9])\s+((?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:(?<!\.)\b|\.)){4}/g)[0]
+
+        // split line until the end of the client name
+        client = client.substr(0, client.indexOf(end)).trim()
+        var meta = client.split(/\s+/g, 5) // num, bot, guid ... 
+        var name = client.split(/\s+/g).slice(meta.length).join(' ').replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), ``) // client name
+        clients.push({
+          name: name,
+          guid: meta[4],
+          num: meta[0],
+          ping: meta[3],
+          bot: meta[2],
+          score: meta[1],
+          lastmsg: end.split(/\s+/g)[0],
+          address: end.split(/\s+/g)[1]
+        })
       })
       return {success: true, data : { map, clients }}
     }
