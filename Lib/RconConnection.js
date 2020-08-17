@@ -1,4 +1,8 @@
 const dgram = require('dgram');
+const path = require('path')
+const _utils = require(path.join(__dirname, '../Utils/Utils.js'))
+const Utils = new _utils();
+
 class Rcon {
     constructor (ip, port, password) {
       this.ip = ip;
@@ -57,23 +61,25 @@ class Rcon {
         })
         clients.push(clientVars.reduce((a, key, index) => Object.assign(a, { [indexes[index]] : key }), {}));
       })*/
+      var gamename = await this.getDvar('gamename')
       rawClients.forEach(client => {
-        var end = client.match(/\b([0-9])\s+((?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:(?<!\.)\b|\.)){4}/g)[0]
+        var end = client.match(/\b([0-9])\s+(unknown|((?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:(?<!\.)\b|\.)){4})/g)[0]
 
         // split line until the end of the client name
         client = client.substr(0, client.indexOf(end)).trim()
         var meta = client.split(/\s+/g, 5) // num, bot, guid ... 
         var name = client.split(/\s+/g).slice(meta.length).join(' ').replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), ``) // client name
-        clients.push({
+        var parsedClient = {
           name: name,
-          guid: meta[4],
+          guid: Utils.convertGuid(meta[4], gamename),
           num: meta[0],
           ping: meta[3],
           bot: meta[2],
           score: meta[1],
           lastmsg: end.split(/\s+/g)[0],
           address: end.split(/\s+/g)[1]
-        })
+        }
+        clients.push(parsedClient)
       })
       return {success: true, data : { map, clients }}
     }

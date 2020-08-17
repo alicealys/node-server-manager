@@ -314,6 +314,37 @@ class Webfront {
             res.end(JSON.stringify(Stats))
         })
 
+        this.app.get('/api/admin', async (req, res, next) => {
+            switch (true) {
+                case (!req.session.ClientId):
+                    res.status(401)
+                    res.end()
+                break
+            }
+            var Client = await db.getClient(req.session.ClientId)
+            switch (true) {
+                case (!Permissions.Commands[req.query.command.toLocaleUpperCase()]):
+                case (Client.PermissionLevel < Permissions.Levels[Permissions.Commands[req.query.command.toLocaleUpperCase()]]):
+                    res.status(401)
+                    res.end()
+                break
+            }
+
+            switch (req.query.command.toLocaleUpperCase()) {
+                case 'COMMAND_BAN':
+                    
+                break
+                case 'COMMAND_SETROLE':
+
+                break
+                case 'COMMAND_KICK':
+
+                break
+            }
+
+
+        })
+
         var escapeHtml = (text) => {
             var map = {
               '&': '&amp;',
