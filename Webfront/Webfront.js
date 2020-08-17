@@ -503,7 +503,9 @@ class Webfront {
                 }))
                 return
             }
-            var status = (await this.getServers())[req.query.ServerId]
+
+            var servers = await this.getServers()
+            var status = servers.find(x => x.ServerId == req.query.ServerId)
 
             res.end(JSON.stringify(status))
         })
