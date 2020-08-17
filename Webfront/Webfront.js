@@ -320,6 +320,12 @@ class Webfront {
                     res.status(401)
                     res.end()
                 break
+                case (!req.session.target || !req.session.command):
+                    res.end(JSON.stringify({
+                        success: false,
+                        error: 'Parameters missing'
+                    }))
+                break
             }
             var Client = await db.getClient(req.session.ClientId)
             switch (true) {
@@ -330,15 +336,57 @@ class Webfront {
                 break
             }
 
+            var findClient = (ClientId) => {
+                var found = false;
+                this.Managers.forEach(Manager => {
+                    Manager.Server.Clients.forEach(Client => {
+                        if (Client.ClientId == ClientId) {
+                            found = Client;
+                        }
+                    })
+                })
+                return found;
+            }
+            var inGame = findClient(req.query.target)
             switch (req.query.command.toLocaleUpperCase()) {
                 case 'COMMAND_BAN':
-                    
+                    switch (true) {
+                        case (!req.query.reason):
+                            res.end(JSON.stringify({
+                                success: false,
+                                error: 'Parameters missing'
+                            }))
+                        break
+                        case (Client.PermissionLevel < inGame.PermissionLevel):
+                            res.status(401)
+                            res.end()
+                        break
+                    }
+                    inGame ? inGame.Ban(req.query.reason, req.session.ClientId) : this.Server.DB.addPenalty({
+                        TargetId: req.query.target,
+                        OriginId: req.session.ClientId,
+                        PenaltyType: 'PENALTY_PERMA_BAN',
+                        Duration: 0,
+                        Reason: req.query.reason
+                      })
                 break
                 case 'COMMAND_SETROLE':
 
                 break
                 case 'COMMAND_KICK':
-
+                    switch (true) {
+                        case (!req.query.reason):
+                            res.end(JSON.stringify({
+                                success: false,
+                                error: 'Parameters missing'
+                            }))
+                        break
+                        case (Client.PermissionLevel < inGame.PermissionLevel):
+                            res.status(401)
+                            res.end()
+                        break
+                    }
+                    inGame && inGame.Kick(req.query.reason, req.session.ClientId)
                 break
             }
 
@@ -570,27 +618,31 @@ class Webfront {
                 }, 0);
                 conn.session = req.session
                 var params = getParams(req.url.substr(1))
-                switch (params.action) {
-                    case 'socket_listen_servers':
-                        var index = this.socketClients.push({ action:'socket_listen_servers', conn: conn }) - 1
-                        conn.resourceID = index
-                    break
-                    case 'socket_listen_messages':
-                        var index = this.socketClients.push({ action:'socket_listen_messages', conn: conn }) - 1
-                        conn.resourceID = index
-                    break
-                    default:
-                        var index = this.socketClients.push({ action: null, conn: conn }) - 1
-                        conn.resourceID = index
-                    break
-                }
-                conn.on('message', (msg) => {
-                    msg = JSON.parse(msg)
-                    switch (msg.action) {
-                        case 'heartbeat':
-                            this.socketClients[conn.resourceID].conn.heartbeat = new Date()
+                if (params.action) {
+                    switch (params.action) {
+                        case 'socket_listen_servers':
+                            var index = this.socketClients.push({ action:'socket_listen_servers', conn: conn }) - 1
+                            conn.resourceID = index
+                        break
+                        case 'socket_listen_messages':
+                            var index = this.socketClients.push({ action:'socket_listen_messages', conn: conn }) - 1
+                            conn.resourceID = index
+                        break
+                        default:
+                            var index = this.socketClients.push({ action: null, conn: conn }) - 1
+                            conn.resourceID = index
                         break
                     }
+                }
+                conn.on('message', (msg) => {
+                    try {
+                        msg = JSON.parse(msg)
+                        switch (msg.action) {
+                            case 'heartbeat':
+                                this.socketClients[conn.resourceID].conn.heartbeat = new Date()
+                            break
+                        }
+                    } catch (e) {}
                 })
             })
         })
@@ -700,9 +752,14 @@ class Webfront {
                 })
             })
 
+            var comMaxClients = await Manager.Server.Rcon.getDvar('com_maxclients');
+            var MaxClients = await Manager.Server.Rcon.getDvar('sv_maxclients')
+
+            MaxClients = comMaxClients.length > 0 ? comMaxClients : MaxClients
+
             var Dvars = {
                 Map: Map,
-                MaxClients: await Manager.Server.Rcon.getDvar('sv_maxclients'),
+                MaxClients: MaxClients,
                 Hostname: await Manager.Server.Rcon.getDvar('sv_hostname'),
             }
             var Status = {
@@ -717,7 +774,9 @@ class Webfront {
             Manager.Server.previousStatus = Status
             Servers.push(Status)
         }
-
+        Servers.sort((a, b) => {
+            return b.Clients.length - a.Clients.length;
+        })
         return Servers
 
     }

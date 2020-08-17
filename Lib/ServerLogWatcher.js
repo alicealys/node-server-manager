@@ -18,7 +18,6 @@ class EventLogWatcher extends EventParser {
             var socket = new ws(`ws://${this.logServer.IP}:${this.logServer.PORT}/?key=${this.logServer.KEY}`)
             socket.onmessage = (msg) => {
                 var event = this.parseEvent(msg.data)
-                console.log(msg)
                 var EventDispatcher = new _EventDispatcher(this.Server)
                 EventDispatcher.dispatchCallback(event)
             }

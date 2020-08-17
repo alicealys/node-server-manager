@@ -5,6 +5,12 @@ window.addEventListener('load', () => {
         console.log('%c[ NSMSocket ]%c Connected', 'color:cyan, color: white')
     })
 
+    socket.onopen = (e) => {
+        setInterval(() => {
+            socket.send('heartbeat')
+        }, 1000)
+    }
+
     socket.onmessage = (e) => {
         var msg = JSON.parse(e.data)
         console.log(msg)
@@ -110,7 +116,7 @@ async function renderServerList() {
         var serverCard = parseHTML(`
             <div data-serverid='${server.ServerId}' class='wf-serverlist-server'>
                 <div class='wf-serverlist-server-info'>
-                    <div class='wf-serverlist-hostname'>${parseCODColorCodes(status.Dvars.Hostname).innerHTML}</div>
+                    <div class='wf-serverlist-hostname'>${COD2HTML(status.Dvars.Hostname, 'var(--color-text)')}</div>
                     <div class='wf-serverlist-players'>${status.Dvars.Map}</div>
                     <div class='wf-serverlist-players' data-playercount>${status.Clients.length} / ${status.Dvars.MaxClients} Players</div>
                     <div class='wf-serverlist-button' ><i class='fas fa-sort-up an' onclick='prependServer(${server.ServerId})'></i></div>
