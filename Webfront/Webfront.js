@@ -68,14 +68,15 @@ class Webfront {
         var Status = { Online: false}
         for (var o = 0; o < this.Managers.length; o++) {
             var Manager = this.Managers[o]
-            if (!Manager.Server.Rcon.isRunning) continue
+            /*if (!Manager.Server.Rcon.isRunning) continue
             var status = await Manager.Server.Rcon.getStatus()
-            if (!status) status = Manager.Server.previousStatus
-            for (var i = 0; i < status.data.clients.length; i++) {
-                var client = status.data.clients[i]
-                if (client.guid == Guid) {
+            if (!status) status = Manager.Server.previousStatus*/
+            for (var i = 0; i < Manager.Server.Clients.length; i++) {
+                var client = Manager.Server.Clients[i]
+                if (!client) continue
+                if (client.Guid == Guid) {
                     Status.Online = true
-                    Status.Hostname = await Manager.Server.Rcon.getDvar('sv_hostname')
+                    Status.Hostname = Manager.Server.HostnameRaw
                     break
                 }
             }
@@ -756,6 +757,7 @@ class Webfront {
                     status = {
                         ServerId: i,
                         Online: false,
+                        Uptime: Manager.Server.uptime,
                         clientActivity: [],
                         clientHistory: [],
                         IP: Manager.Server.IP,
@@ -783,6 +785,7 @@ class Webfront {
             var Status = {
                 ServerId: i,
                 Online: true,
+                Uptime: Manager.Server.uptime,
                 clientActivity: Manager.Server.clientActivity,
                 clientHistory: Manager.Server.clientHistory,
                 IP: Manager.Server.IP,

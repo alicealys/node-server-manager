@@ -11,6 +11,8 @@ class _Server extends EventEmitter {
       this.clientHistory = []
       this.clientActivity = []
       this.DB = DATABASE
+      this.uptime = 0
+      this.previousUptime = 0
       this.previousStatus = null
       this.setMaxListeners(18)
       this.Heartbeat();

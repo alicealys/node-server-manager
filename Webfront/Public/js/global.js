@@ -65,8 +65,10 @@ function logMessage(msg, refresh) {
 
 async function refreshClientList(serverId) {
     var clientCount = document.querySelector(`*[data-serverid='${serverId}']`).querySelector('*[data-playercount]')
+    var uptime = document.querySelector(`*[data-serverid='${serverId}']`).querySelector('*[data-uptime]')
     var clientList = document.querySelector(`*[data-serverid='${serverId}']`).querySelector('.wf-more-player-list')
     var Status = JSON.parse(await makeRequest('GET', `/api/players?ServerId=${serverId}`, null))
+    uptime.innerHTML = (Status.uptime / 3600).toFixed(1)
     clientList.querySelectorAll('*[data-clientslot]').forEach(c => c.style.display = 'none')
     clientCount.innerHTML = `${Status.Clients.length} / ${Status.Dvars.MaxClients} Players`
     Status.Clients.forEach(Client => {
@@ -118,6 +120,7 @@ async function renderServerList() {
                 <div class='wf-serverlist-server-info'>
                     <div class='wf-serverlist-hostname'>${COD2HTML(status.Dvars.Hostname, 'var(--color-text)')}</div>
                     <div class='wf-serverlist-players'>${status.Dvars.Map}</div>
+                    <div class='wf-serverlist-button' data-uptime>${(status.Uptime / 3600).toFixed(1)}h</div>
                     <div class='wf-serverlist-players' data-playercount>${status.Clients.length} / ${status.Dvars.MaxClients} Players</div>
                     <div class='wf-serverlist-button' ><i class='fas fa-sort-up an' onclick='prependServer(${server.ServerId})'></i></div>
                     <div class='wf-serverlist-button' ><i class='fas fa-plus an' style='transform:rotate(45deg)' data-more-button  data-shown='true'></i></div>
