@@ -13,6 +13,7 @@ class _Server extends EventEmitter {
       this.DB = DATABASE
       this.previousStatus = null
       this.setMaxListeners(18)
+      this.Heartbeat();
       setInterval(this.Heartbeat.bind(this), 15000)
     }
     COD2BashColor(string) {
@@ -22,8 +23,14 @@ class _Server extends EventEmitter {
       try {
         // Set hostname
         this.Hostname = this.COD2BashColor(await this.Rcon.getDvar('sv_hostname'))
+
+        this.HostnameRaw = await this.Rcon.getDvar('sv_hostname')
         // Set mapname
         this.Mapname = await this.Rcon.getDvar("mapname")
+
+        this.MaxClients = await this.Rcon.getDvar("sv_maxclients")
+
+        this.comMaxClients = await this.Rcon.getDvar("com_maxclients")
       }
       catch (e) {}
     }
@@ -42,6 +49,7 @@ class _Server extends EventEmitter {
             this.emit('reload')
           }, 10000)
         }
+        this.setDvarsAsync();
       }
       catch (e) {}
     }

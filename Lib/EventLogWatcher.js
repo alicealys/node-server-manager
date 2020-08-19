@@ -22,7 +22,7 @@ class EventLogWatcher extends EventParser {
               if (!event || this.previousMD5 == currentMD5) return;
           
               this.previousMD5 = currentMD5;
-
+              
               var EventDispatcher = new _EventDispatcher(this.Server)
               EventDispatcher.dispatchCallback(event)
             } 

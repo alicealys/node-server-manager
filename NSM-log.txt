@@ -1,0 +1,838 @@
+============================================================
+                 Node Server Manager v0.2
+                         By fed
+============================================================
+Webfront bound to port 8001, SSL true
+Loading plugin [33mDiscordWebhook.js[0m for server 127.0.0.1:27016
+Loading plugin [33mNativeCommands.js[0m for server 127.0.0.1:27016
+Loading plugin [33mPenalties.js[0m for server 127.0.0.1:27016
+Loading plugin [33mStatLogger.js[0m for server 127.0.0.1:27016
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:27016
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:27016
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:27016
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:27016
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:27017
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:27017
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:27017
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:27017
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4977
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4977
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4977
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4977
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4976
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4976
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4976
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4976
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4978
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4978
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4978
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4978
+Now watching [33m[31mG[33mU[3:mN[32mG[35mA[34mM[36mE  [37m| [35mEU[0m at [35m127.0.0.1:27016[0m
+Now watching [33m[31mG[33mU[3:mN[32mG[35mA[34mM[36mE  [37m| [31mUS[0m at [35m207.244.253.10:27016[0m
+Now watching [33m[35mfed [37m| [36mInfected [37m| [31mUS[0m at [35m207.244.253.10:27017[0m
+Now watching [33mfed | DIE RISE | US[0m at [35m207.244.253.10:4977[0m
+Now watching [33mfed | MODDED GUNGAME | US[0m at [35m207.244.253.10:4976[0m
+Now watching [33mfed | BURIED | US[0m at [35m207.244.253.10:4978[0m
+207.244.253.10:4976 is not responding
+207.244.253.10:4976 is responding again, reloading clients...
+Could not communicate with 207.244.253.10:27016
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+Could not communicate with 207.244.253.10:27016
+127.0.0.1:27016 is not responding
+127.0.0.1:27016 is responding again, reloading clients...
+[Tue Aug 18 2020 22:40:09 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4978]
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+[Tue Aug 18 2020 23:11:20 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4978]
+[Tue Aug 18 2020 23:17:07 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4977]
+[Tue Aug 18 2020 23:19:30 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4977]
+[Tue Aug 18 2020 23:19:39 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4977]
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+Could not communicate with 207.244.253.10:4976
+Could not communicate with 207.244.253.10:27017
+127.0.0.1:27016 is not responding
+Could not communicate with 127.0.0.1:27016
+127.0.0.1:27016 is responding again, reloading clients...
+Could not communicate with 127.0.0.1:27016
+[Wed Aug 19 2020 00:09:14 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4977]
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+[Wed Aug 19 2020 00:41:21 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4978]
+[Wed Aug 19 2020 00:56:20 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4978]
+[Wed Aug 19 2020 01:21:26 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4978]
+Could not communicate with 207.244.253.10:27017
+[Wed Aug 19 2020 01:35:07 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4977]
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+[Wed Aug 19 2020 02:00:29 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+207.244.253.10:4976 is not responding
+[Wed Aug 19 2020 02:03:09 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+207.244.253.10:4976 is responding again, reloading clients...
+[Wed Aug 19 2020 02:06:28 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 02:09:23 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is responding again, reloading clients...
+[Wed Aug 19 2020 02:14:44 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 02:16:30 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 02:25:53 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+[Wed Aug 19 2020 02:36:39 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 02:36:44 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 03:12:18 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+============================================================
+                 Node Server Manager v0.2
+                         By fed
+============================================================
+Webfront bound to port 8001, SSL true
+Loading plugin [33mDiscordWebhook.js[0m for server 127.0.0.1:27016
+Loading plugin [33mNativeCommands.js[0m for server 127.0.0.1:27016
+Loading plugin [33mPenalties.js[0m for server 127.0.0.1:27016
+Loading plugin [33mStatLogger.js[0m for server 127.0.0.1:27016
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:27016
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:27016
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:27016
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:27016
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:27017
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:27017
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:27017
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:27017
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4976
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4976
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4976
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4976
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4977
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4977
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4977
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4977
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4978
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4978
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4978
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4978
+Now watching [33m[31mG[33mU[3:mN[32mG[35mA[34mM[36mE  [37m| [35mEU[0m at [35m127.0.0.1:27016[0m
+Now watching [33mfed | MODDED GUNGAME | US[0m at [35m207.244.253.10:4976[0m
+Now watching [33m[35mfed [37m| [36mInfected [37m| [31mUS[0m at [35m207.244.253.10:27017[0m
+Now watching [33m[31mG[33mU[3:mN[32mG[35mA[34mM[36mE  [37m| [31mUS[0m at [35m207.244.253.10:27016[0m
+Now watching [33mfed | DIE RISE | US[0m at [35m207.244.253.10:4977[0m
+Now watching [33mfed | BURIED | US[0m at [35m207.244.253.10:4978[0m
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+207.244.253.10:4978 is not responding
+207.244.253.10:4978 is responding again, reloading clients...
+207.244.253.10:27016 is not responding
+207.244.253.10:27016 is responding again, reloading clients...
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+207.244.253.10:4978 is not responding
+207.244.253.10:4978 is responding again, reloading clients...
+207.244.253.10:27016 is not responding
+207.244.253.10:27016 is responding again, reloading clients...
+207.244.253.10:4976 is not responding
+207.244.253.10:4976 is responding again, reloading clients...
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is responding again, reloading clients...
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+207.244.253.10:4978 is not responding
+207.244.253.10:4978 is responding again, reloading clients...
+207.244.253.10:27016 is not responding
+207.244.253.10:27016 is responding again, reloading clients...
+Could not communicate with 207.244.253.10:4978
+207.244.253.10:4976 is not responding
+207.244.253.10:4976 is responding again, reloading clients...
+207.244.253.10:4978 is not responding
+207.244.253.10:4978 is responding again, reloading clients...
+[Wed Aug 19 2020 17:11:20 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 17:25:30 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 17:32:22 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+207.244.253.10:4976 is not responding
+207.244.253.10:4976 is responding again, reloading clients...
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+207.244.253.10:4976 is not responding
+207.244.253.10:4976 is responding again, reloading clients...
+207.244.253.10:4976 is not responding
+207.244.253.10:4976 is responding again, reloading clients...
+207.244.253.10:4976 is not responding
+207.244.253.10:4976 is not responding
+207.244.253.10:4976 is responding again, reloading clients...
+207.244.253.10:4976 is not responding
+207.244.253.10:4976 is not responding
+207.244.253.10:4976 is not responding
+207.244.253.10:4976 is responding again, reloading clients...
+Could not communicate with 207.244.253.10:4976
+207.244.253.10:4976 is not responding
+Could not communicate with 207.244.253.10:4976
+Could not communicate with 207.244.253.10:4976
+207.244.253.10:4976 is not responding
+207.244.253.10:4976 is not responding
+207.244.253.10:4976 is responding again, reloading clients...
+207.244.253.10:4976 is not responding
+Could not communicate with 207.244.253.10:4976
+207.244.253.10:4976 is not responding
+207.244.253.10:4976 is not responding
+207.244.253.10:4976 is not responding
+207.244.253.10:4976 is responding again, reloading clients...
+207.244.253.10:4976 is not responding
+207.244.253.10:4976 is responding again, reloading clients...
+[Wed Aug 19 2020 18:48:44 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 18:59:53 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4978]
+207.244.253.10:4976 is not responding
+207.244.253.10:4976 is responding again, reloading clients...
+207.244.253.10:4976 is not responding
+207.244.253.10:4976 is responding again, reloading clients...
+207.244.253.10:4976 is not responding
+207.244.253.10:4976 is responding again, reloading clients...
+Could not communicate with 207.244.253.10:4976
+[Wed Aug 19 2020 19:23:50 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4978]
+[ { Client: '2', Heartbeat: 2020-08-19T17:38:07.788Z } ]
+false
+{
+  ClientId: 2,
+  Description: 'HELLO I OWN THIS  \n' +
+    '\n' +
+    '[b][url=https://github.com/fedddddd/node-server-manager/]Node Server Manager[/url][/b]',
+  Guid: '01100001000017aa',
+  PermissionLevel: 5,
+  FirstConnection: 2020-07-22T21:40:21.000Z,
+  LastConnection: 2020-07-22T21:40:21.000Z,
+  Id: 10863,
+  Name: 'fed',
+  IPAddress: null,
+  Date: 2020-08-18T13:40:04.000Z
+}
+============================================================
+                 Node Server Manager v0.2
+                         By fed
+============================================================
+Webfront bound to port 8001, SSL true
+Loading plugin [33mDiscordWebhook.js[0m for server 127.0.0.1:27016
+Loading plugin [33mNativeCommands.js[0m for server 127.0.0.1:27016
+Loading plugin [33mPenalties.js[0m for server 127.0.0.1:27016
+Loading plugin [33mStatLogger.js[0m for server 127.0.0.1:27016
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:27017
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:27017
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:27017
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:27017
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:27016
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:27016
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:27016
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:27016
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4976
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4976
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4976
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4976
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4977
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4977
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4977
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4977
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4978
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4978
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4978
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4978
+Now watching [33m[31mG[33mU[3:mN[32mG[35mA[34mM[36mE  [37m| [35mEU[0m at [35m127.0.0.1:27016[0m
+Now watching [33mfed | MODDED GUNGAME | US[0m at [35m207.244.253.10:4976[0m
+Now watching [33mfed | DIE RISE | US[0m at [35m207.244.253.10:4977[0m
+Now watching [33m[35mfed [37m| [36mInfected [37m| [31mUS[0m at [35m207.244.253.10:27017[0m
+Now watching [33m[31mG[33mU[3:mN[32mG[35mA[34mM[36mE  [37m| [31mUS[0m at [35m207.244.253.10:27016[0m
+Now watching [33mfed | BURIED | US[0m at [35m207.244.253.10:4978[0m
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+false
+{
+  ClientId: 2,
+  Description: 'HELLO I OWN THIS  \n' +
+    '\n' +
+    '[b][url=https://github.com/fedddddd/node-server-manager/]Node Server Manager[/url][/b]',
+  Guid: '01100001000017aa',
+  PermissionLevel: 5,
+  FirstConnection: 2020-07-22T21:40:21.000Z,
+  LastConnection: 2020-07-22T21:40:21.000Z,
+  Id: 10863,
+  Name: 'fed',
+  IPAddress: null,
+  Date: 2020-08-18T13:40:04.000Z
+}
+207.244.253.10:4976 is not responding
+207.244.253.10:4976 is responding again, reloading clients...
+[Wed Aug 19 2020 20:34:04 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+false
+{
+  ClientId: 2,
+  Description: 'HELLO I OWN THIS  \n' +
+    '\n' +
+    '[b][url=https://github.com/fedddddd/node-server-manager/]Node Server Manager[/url][/b]',
+  Guid: '01100001000017aa',
+  PermissionLevel: 5,
+  FirstConnection: 2020-07-22T21:40:21.000Z,
+  LastConnection: 2020-07-22T21:40:21.000Z,
+  Id: 10863,
+  Name: 'fed',
+  IPAddress: null,
+  Date: 2020-08-18T13:40:04.000Z
+}
+[Wed Aug 19 2020 20:44:58 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:45:06 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:45:36 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:46:03 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:46:42 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:46:48 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:46:49 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:46:55 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:47:04 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+207.244.253.10:27016 is not responding
+[Wed Aug 19 2020 20:47:22 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+207.244.253.10:27016 is responding again, reloading clients...
+[Wed Aug 19 2020 20:47:35 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:47:51 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:48:08 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:48:34 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:48:43 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:48:52 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:49:39 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:50:03 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:50:16 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:50:25 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:50:41 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:50:54 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:51:01 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:51:04 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:51:12 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:51:28 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:51:57 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:52:11 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:52:21 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:52:26 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:52:36 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:52:50 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:53:02 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:53:10 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:53:21 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:53:47 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 20:57:13 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 21:04:30 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 21:04:41 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 21:06:30 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+============================================================
+                 Node Server Manager v0.2
+                         By fed
+============================================================
+Webfront bound to port 8001, SSL true
+Loading plugin [33mDiscordWebhook.js[0m for server 127.0.0.1:27016
+Loading plugin [33mNativeCommands.js[0m for server 127.0.0.1:27016
+Loading plugin [33mPenalties.js[0m for server 127.0.0.1:27016
+Loading plugin [33mStatLogger.js[0m for server 127.0.0.1:27016
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:27016
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:27016
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:27016
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:27016
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:27017
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:27017
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:27017
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:27017
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4976
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4976
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4976
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4976
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4977
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4977
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4977
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4977
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4978
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4978
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4978
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4978
+Now watching [33m[31mG[33mU[3:mN[32mG[35mA[34mM[36mE  [37m| [35mEU[0m at [35m127.0.0.1:27016[0m
+Now watching [33m[31mG[33mU[3:mN[32mG[35mA[34mM[36mE  [37m| [31mUS[0m at [35m207.244.253.10:27016[0m
+Now watching [33mfed | BURIED | US[0m at [35m207.244.253.10:4978[0m
+Now watching [33m[35mfed [37m| [36mInfected [37m| [31mUS[0m at [35m207.244.253.10:27017[0m
+Now watching [33mfed | MODDED GUNGAME | US[0m at [35m207.244.253.10:4976[0m
+Now watching [33mfed | DIE RISE | US[0m at [35m207.244.253.10:4977[0m
+[Wed Aug 19 2020 21:07:47 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 21:10:30 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 21:12:34 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+207.244.253.10:4976 is not responding
+207.244.253.10:4976 is responding again, reloading clients...
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+207.244.253.10:4976 is not responding
+207.244.253.10:4976 is responding again, reloading clients...
+Could not communicate with 207.244.253.10:4978
+[Wed Aug 19 2020 21:21:19 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 21:22:22 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 21:23:14 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+Could not communicate with 207.244.253.10:4978
+[Wed Aug 19 2020 21:31:23 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 21:31:31 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 21:45:46 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 21:47:57 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 21:48:07 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+[Wed Aug 19 2020 21:48:28 GMT+0200 (Central European Summer Time)] Error occurred while dispatching event [207.244.253.10:4976]
+207.244.253.10:4976 is not responding
+207.244.253.10:4976 is responding again, reloading clients...
+207.244.253.10:4976 is not responding
+207.244.253.10:4976 is responding again, reloading clients...
+Could not communicate with 207.244.253.10:4976
+false
+null
+false
+null
+false
+null
+false
+null
+false
+null
+207.244.253.10:27016 is not responding
+207.244.253.10:27016 is responding again, reloading clients...
+Could not communicate with 207.244.253.10:4976
+207.244.253.10:27017 is not responding
+Could not communicate with 207.244.253.10:27017
+207.244.253.10:27017 is responding again, reloading clients...
+Could not communicate with 207.244.253.10:27017
+Could not communicate with 207.244.253.10:27017
+Could not communicate with 207.244.253.10:27017
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+207.244.253.10:27016 is not responding
+207.244.253.10:27016 is responding again, reloading clients...
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+Could not communicate with 207.244.253.10:27017
+207.244.253.10:27017 is not responding
+Could not communicate with 207.244.253.10:27017
+207.244.253.10:27017 is responding again, reloading clients...
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is responding again, reloading clients...
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+207.244.253.10:27017 is not responding
+207.244.253.10:27017 is responding again, reloading clients...
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4978 is not responding
+207.244.253.10:4978 is responding again, reloading clients...
+207.244.253.10:4977 is not responding
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:4977 is not responding
+Could not communicate with 207.244.253.10:4977
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:4977 is not responding
+Could not communicate with 207.244.253.10:4977
+Could not communicate with 207.244.253.10:4977
+Could not communicate with 207.244.253.10:4977
+Could not communicate with 207.244.253.10:4977
+Could not communicate with 207.244.253.10:4977
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:4977 is not responding
+Could not communicate with 207.244.253.10:4977
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+Could not communicate with 207.244.253.10:4977
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:4977 is not responding
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:4977 is not responding
+Could not communicate with 207.244.253.10:4977
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:4977 is not responding
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:4977 is not responding
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:4977 is not responding
+Could not communicate with 207.244.253.10:4977
+Could not communicate with 207.244.253.10:4977
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:4977 is not responding
+Could not communicate with 207.244.253.10:4977
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:4977 is not responding
+Could not communicate with 207.244.253.10:4977
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:4977 is not responding
+Could not communicate with 207.244.253.10:4977
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:4977 is not responding
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:4977 is not responding
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+============================================================
+                 Node Server Manager v0.2
+                         By fed
+============================================================
+Webfront bound to port 8001, SSL true
+Loading plugin [33mDiscordWebhook.js[0m for server 127.0.0.1:27016
+Loading plugin [33mNativeCommands.js[0m for server 127.0.0.1:27016
+Loading plugin [33mPenalties.js[0m for server 127.0.0.1:27016
+Loading plugin [33mStatLogger.js[0m for server 127.0.0.1:27016
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:27016
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:27016
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:27016
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:27016
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:27017
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:27017
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:27017
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:27017
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4976
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4976
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4976
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4976
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4977
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4977
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4977
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4977
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4978
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4978
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4978
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4978
+Now watching [33m[31mG[33mU[3:mN[32mG[35mA[34mM[36mE  [37m| [35mEU[0m at [35m127.0.0.1:27016[0m
+Now watching [33m[31mG[33mU[3:mN[32mG[35mA[34mM[36mE  [37m| [31mUS[0m at [35m207.244.253.10:27016[0m
+Now watching [33mfed | MODDED GUNGAME | US[0m at [35m207.244.253.10:4976[0m
+Now watching [33mfed | BURIED | US[0m at [35m207.244.253.10:4978[0m
+Now watching [33m[35mfed [37m| [36mInfected [37m| [31mUS[0m at [35m207.244.253.10:27017[0m
+Now watching [33mundefined[0m at [35m207.244.253.10:4977[0m
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:4977 is not responding
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4978 is not responding
+============================================================
+                 Node Server Manager v0.2
+                         By fed
+============================================================
+Webfront bound to port 8001, SSL true
+Loading plugin [33mDiscordWebhook.js[0m for server 127.0.0.1:27016
+Loading plugin [33mNativeCommands.js[0m for server 127.0.0.1:27016
+Loading plugin [33mPenalties.js[0m for server 127.0.0.1:27016
+Loading plugin [33mStatLogger.js[0m for server 127.0.0.1:27016
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:27016
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:27016
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:27016
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:27016
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:27017
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:27017
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:27017
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:27017
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4976
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4976
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4976
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4976
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4977
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4977
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4977
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4977
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4978
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4978
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4978
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4978
+Now watching [33m[31mG[33mU[3:mN[32mG[35mA[34mM[36mE  [37m| [35mEU[0m at [35m127.0.0.1:27016[0m
+Now watching [33m[31mG[33mU[3:mN[32mG[35mA[34mM[36mE  [37m| [31mUS[0m at [35m207.244.253.10:27016[0m
+Now watching [33m[35mfed [37m| [36mInfected [37m| [31mUS[0m at [35m207.244.253.10:27017[0m
+Now watching [33mfed | MODDED GUNGAME | US[0m at [35m207.244.253.10:4976[0m
+Now watching [33mfed | BURIED | US[0m at [35m207.244.253.10:4978[0m
+Now watching [33mundefined[0m at [35m207.244.253.10:4977[0m
+Could not communicate with 207.244.253.10:4977
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+Could not communicate with 207.244.253.10:4977
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:4977 is not responding
+Could not communicate with 207.244.253.10:4977
+Could not communicate with 207.244.253.10:4977
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:4977 is not responding
+Could not communicate with 207.244.253.10:4977
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:27017 is not responding
+207.244.253.10:4977 is not responding
+Could not communicate with 207.244.253.10:27017
+Could not communicate with 207.244.253.10:4977
+207.244.253.10:27017 is responding again, reloading clients...
+============================================================
+                 Node Server Manager v0.2
+                         By fed
+============================================================
+Webfront bound to port 8001, SSL true
+Loading plugin [33mDiscordWebhook.js[0m for server 127.0.0.1:27016
+Loading plugin [33mNativeCommands.js[0m for server 127.0.0.1:27016
+Loading plugin [33mPenalties.js[0m for server 127.0.0.1:27016
+Loading plugin [33mStatLogger.js[0m for server 127.0.0.1:27016
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:27016
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:27016
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:27016
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:27016
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:27017
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:27017
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:27017
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:27017
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4976
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4976
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4976
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4976
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4977
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4977
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4977
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4977
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4978
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4978
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4978
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4978
+Now watching [33m[31mG[33mU[3:mN[32mG[35mA[34mM[36mE  [37m| [35mEU[0m at [35m127.0.0.1:27016[0m
+Now watching [33m[31mG[33mU[3:mN[32mG[35mA[34mM[36mE  [37m| [31mUS[0m at [35m207.244.253.10:27016[0m
+Now watching [33m[35mfed [37m| [36mInfected [37m| [31mUS[0m at [35m207.244.253.10:27017[0m
+Now watching [33mfed | BURIED | US[0m at [35m207.244.253.10:4978[0m
+Now watching [33mfed | MODDED GUNGAME | US[0m at [35m207.244.253.10:4976[0m
+Now watching [33mundefined[0m at [35m207.244.253.10:4977[0m
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4978 is not responding
+207.244.253.10:4978 is responding again, reloading clients...
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+============================================================
+                 Node Server Manager v0.2
+                         By fed
+============================================================
+============================================================
+                 Node Server Manager v0.2
+                         By fed
+============================================================
+Webfront bound to port 8001, SSL true
+Loading plugin [33mDiscordWebhook.js[0m for server 127.0.0.1:27016
+Loading plugin [33mNativeCommands.js[0m for server 127.0.0.1:27016
+Loading plugin [33mPenalties.js[0m for server 127.0.0.1:27016
+Loading plugin [33mStatLogger.js[0m for server 127.0.0.1:27016
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:27016
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:27016
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:27016
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:27016
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:27017
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:27017
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:27017
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:27017
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4976
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4976
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4976
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4976
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4977
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4977
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4977
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4977
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4978
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4978
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4978
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4978
+Now watching [33m[31mG[33mU[3:mN[32mG[35mA[34mM[36mE  [37m| [35mEU[0m at [35m127.0.0.1:27016[0m
+Now watching [33m[35mfed [37m| [36mInfected [37m| [31mUS[0m at [35m207.244.253.10:27017[0m
+Now watching [33m[31mG[33mU[3:mN[32mG[35mA[34mM[36mE  [37m| [31mUS[0m at [35m207.244.253.10:27016[0m
+Now watching [33mfed | BURIED | US[0m at [35m207.244.253.10:4978[0m
+Now watching [33mfed | MODDED GUNGAME | US[0m at [35m207.244.253.10:4976[0m
+Now watching [33mundefined[0m at [35m207.244.253.10:4977[0m
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+============================================================
+                 Node Server Manager v0.2
+                         By fed
+============================================================
+Webfront bound to port 8001, SSL true
+Loading plugin [33mDiscordWebhook.js[0m for server 127.0.0.1:27016
+Loading plugin [33mNativeCommands.js[0m for server 127.0.0.1:27016
+Loading plugin [33mPenalties.js[0m for server 127.0.0.1:27016
+Loading plugin [33mStatLogger.js[0m for server 127.0.0.1:27016
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:27016
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:27016
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:27016
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:27016
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:27017
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:27017
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:27017
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:27017
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4976
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4976
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4976
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4976
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4977
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4977
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4977
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4977
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4978
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4978
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4978
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4978
+Now watching [33m[31mG[33mU[3:mN[32mG[35mA[34mM[36mE  [37m| [35mEU[0m at [35m127.0.0.1:27016[0m
+Now watching [33m[35mfed [37m| [36mInfected [37m| [31mUS[0m at [35m207.244.253.10:27017[0m
+Now watching [33mfed | MODDED GUNGAME | US[0m at [35m207.244.253.10:4976[0m
+Now watching [33m[31mG[33mU[3:mN[32mG[35mA[34mM[36mE  [37m| [31mUS[0m at [35m207.244.253.10:27016[0m
+Now watching [33mfed | BURIED | US[0m at [35m207.244.253.10:4978[0m
+207.244.253.10:4977 is not responding
+Now watching [33mundefined[0m at [35m207.244.253.10:4977[0m
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is not responding
+207.244.253.10:4977 is responding again, reloading clients...
+============================================================
+                 Node Server Manager v0.2
+                         By fed
+============================================================
+Webfront bound to port 8001, SSL true
+Loading plugin [33mDiscordWebhook.js[0m for server 127.0.0.1:27016
+Loading plugin [33mNativeCommands.js[0m for server 127.0.0.1:27016
+Loading plugin [33mPenalties.js[0m for server 127.0.0.1:27016
+Loading plugin [33mStatLogger.js[0m for server 127.0.0.1:27016
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:27016
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:27016
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:27016
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:27016
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:27017
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:27017
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:27017
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:27017
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4976
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4976
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4976
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4976
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4977
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4977
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4977
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4977
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4978
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4978
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4978
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4978
+Now watching [33m[31mG[33mU[3:mN[32mG[35mA[34mM[36mE  [37m| [35mEU[0m at [35m127.0.0.1:27016[0m
+Now watching [33mfed | MODDED GUNGAME | US[0m at [35m207.244.253.10:4976[0m
+Now watching [33m[35mfed [37m| [36mInfected [37m| [31mUS[0m at [35m207.244.253.10:27017[0m
+Now watching [33m[31mG[33mU[3:mN[32mG[35mA[34mM[36mE  [37m| [31mUS[0m at [35m207.244.253.10:27016[0m
+Now watching [33mfed | DIE RISE | US[0m at [35m207.244.253.10:4977[0m
+Now watching [33mfed | BURIED | US[0m at [35m207.244.253.10:4978[0m
+============================================================
+                 Node Server Manager v0.2
+                         By fed
+============================================================
+Webfront bound to port 8001, SSL true
+Loading plugin [33mDiscordWebhook.js[0m for server 127.0.0.1:27016
+Loading plugin [33mNativeCommands.js[0m for server 127.0.0.1:27016
+Loading plugin [33mPenalties.js[0m for server 127.0.0.1:27016
+Loading plugin [33mStatLogger.js[0m for server 127.0.0.1:27016
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:27016
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:27016
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:27016
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:27016
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:27017
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:27017
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:27017
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:27017
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4976
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4976
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4976
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4976
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4977
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4977
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4977
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4977
+Loading plugin [33mDiscordWebhook.js[0m for server 207.244.253.10:4978
+Loading plugin [33mNativeCommands.js[0m for server 207.244.253.10:4978
+Loading plugin [33mPenalties.js[0m for server 207.244.253.10:4978
+Loading plugin [33mStatLogger.js[0m for server 207.244.253.10:4978
+Now watching [33m[31mG[33mU[3:mN[32mG[35mA[34mM[36mE  [37m| [35mEU[0m at [35m127.0.0.1:27016[0m
+Now watching [33m[31mG[33mU[3:mN[32mG[35mA[34mM[36mE  [37m| [31mUS[0m at [35m207.244.253.10:27016[0m
+Now watching [33mfed | MODDED GUNGAME | US[0m at [35m207.244.253.10:4976[0m
+Now watching [33m[35mfed [37m| [36mInfected [37m| [31mUS[0m at [35m207.244.253.10:27017[0m
+Now watching [33mfed | BURIED | US[0m at [35m207.244.253.10:4978[0m
+Now watching [33mfed | DIE RISE | US[0m at [35m207.244.253.10:4977[0m

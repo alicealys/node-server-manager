@@ -6,13 +6,15 @@ class EventDispatcher {
     }
     async dispatchCallback(event) {
         if (!event) return
+        try {
         this.Server.emit('event', event)
-        switch (event.type) {
+          switch (event.type) {
             case 'InitGame':
               this.Server.emit('init');
               this.Server.Mapname = await this.Server.Rcon.getDvar('mapname')
             break;
             case 'say':
+              if (!event.data.Origin.Clientslot || this.Server.Clients[event.data.Origin.Clientslot]) return
               var Player = this.Server.Clients[event.data.Origin.Clientslot];
               Player.emit('message', event.data.Message);
               this.Server.emit('message', Player, event.data.Message)
@@ -25,6 +27,7 @@ class EventDispatcher {
               this.Server.emit('connect', Player);
             break;
             case 'quit':
+              if (!event.data.Origin.Clientslot || !this.Server.Clients[event.data.Origin.Clientslot]) return
               this.Server.emit('disconnect', this.Server.Clients[event.data.Origin.Clientslot])
               this.Server.Clients[event.data.Origin.Clientslot].removeAllListeners()
               this.Server.Clients[event.data.Origin.Clientslot] = null;
@@ -41,6 +44,10 @@ class EventDispatcher {
               this.Server.emit('death', Target, Attacker, event.data.Attack)
             break;
           }
+        }
+        catch (e) {
+          console.log(`[${new Date()}] Error occurred while dispatching event [${this.Server.IP}:${this.Server.PORT}]`)
+        }
     }
 }
 module.exports = EventDispatcher

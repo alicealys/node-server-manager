@@ -157,7 +157,7 @@ async function renderServerList() {
 
         server.clientHistory.map(x => x.x = new Date(x.x))
 
-        renderChart(`${server.ServerId}_chart`, server.clientHistory, true, server.Dvars.MaxClients)
+        server.Online ? renderChart(`${server.ServerId}_chart`, server.clientHistory, true, server.Dvars.MaxClients, "#CBC5BB") : renderChart(`${server.ServerId}_chart`, server.clientHistory, true, server.Dvars.MaxClients, "#FF3131")
 
         document.querySelectorAll('.wf-serverlist-server-more').forEach(s => s.style.display = 'block')
     })
@@ -167,7 +167,7 @@ function prependServer(ServerId) {
     document.querySelector(`*[data-serverid='${ServerId}']`).parentNode.prepend(document.querySelector(`*[data-serverid='${ServerId}']`))
 }
 
-function renderChart(id, playerHistory, animation, MaxClients) {
+function renderChart(id, playerHistory, animation, MaxClients, color) {
     var chart = new CanvasJS.Chart(id, {
         theme: "dark1", // "light1", "light2", "dark1", "dark2"
         defaultFontFamily: "codef",
@@ -203,11 +203,11 @@ function renderChart(id, playerHistory, animation, MaxClients) {
             valueFormatString: " ",
             labelMaxWidth: 0
         },
-        fontColor: "#CBC5BB",
+        fontColor: color,
         data: [{
             showInLegend: false,
             type: "splineArea",
-            color: "#CBC5BB",
+            color: color,
             markerSize: 0,
             dataPoints: playerHistory
         }]

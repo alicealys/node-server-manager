@@ -39,7 +39,9 @@ class Plugin {
   }
   playedTimeLogger() {
     setInterval(async () => {
+      if (!this.Server.Rcon.isRunning) return
       var status = await this.Server.Rcon.getStatus()
+      if (!status) return
       status.data.clients.forEach(async client => {
         var ClientId = await this.Server.DB.getClientId(client.guid)
         this.Server.DB.incrementStat(ClientId, 1, 'PlayedTime')

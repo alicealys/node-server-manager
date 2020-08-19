@@ -45,9 +45,6 @@ window.addEventListener('load', async () => {
             loginStatus.success ? window.location.href = window.location.href : messageBox.querySelector('*[data-text-label]').innerHTML = loginStatus.error
         })
     })
-    document.getElementById('profile-menu-btn') && document.getElementById('profile-menu-btn').addEventListener('click', () => {
-
-    })
     document.getElementById('profile-menu-btn') && document.getElementById('profile-menu').querySelectorAll('div').forEach(entry => {
         entry.addEventListener('click', async (e) => {
             switch (e.target.getAttribute('data-menu-command')) {

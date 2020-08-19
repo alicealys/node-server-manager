@@ -68,6 +68,7 @@ class Webfront {
         var Status = { Online: false}
         for (var o = 0; o < this.Managers.length; o++) {
             var Manager = this.Managers[o]
+            if (!Manager.Server.Rcon.isRunning) continue
             var status = await Manager.Server.Rcon.getStatus()
             if (!status) status = Manager.Server.previousStatus
             for (var i = 0; i < status.data.clients.length; i++) {
@@ -600,7 +601,10 @@ class Webfront {
     }
     UpdateClientHistory() {
         this.Managers.forEach(async Manager => {
-            Manager.Server.clientHistory.push({x: new Date(), y: (await Manager.Server.Rcon.getStatus()).data.clients.length})
+            if (!Manager.Server.Rcon.isRunning) return
+            var status = await Manager.Server.Rcon.getStatus()
+            if (!status) return
+            Manager.Server.clientHistory.push({x: new Date(), y: status.data.clients.length})
             if (Manager.Server.clientHistory.length > 300) Manager.Server.clientHistory.shift()
         })
     }
@@ -735,14 +739,6 @@ class Webfront {
         for (var i = 0; i < this.Managers.length; i++) {
             var Manager = this.Managers[i]
             var ePlayers = Manager.Server.Clients
-            var Map = await Manager.Server.Rcon.getDvar('mapname')
-
-            if (!Map) {
-                console.log(`Could not communicate with ${Manager.Server.IP}:${Manager.Server.PORT}`)
-                Servers.push(Manager.Server.previousStatus)
-                continue
-            }
-
             var Clients = []
 
             ePlayers.forEach(ePlayer => {
@@ -754,18 +750,39 @@ class Webfront {
                 })
             })
 
-            var comMaxClients = await Manager.Server.Rcon.getDvar('com_maxclients');
-            var MaxClients = await Manager.Server.Rcon.getDvar('sv_maxclients')
+            if (!Manager.Server.Rcon.isRunning) {
+                var status = Manager.Server.previousStatus
+                if (!status) {
+                    status = {
+                        ServerId: i,
+                        Online: false,
+                        clientActivity: [],
+                        clientHistory: [],
+                        IP: Manager.Server.IP,
+                        PORT: Manager.Server.PORT,
+                        Dvars: {
+                            Map: 'Offline',
+                            MaxClients: 18,
+                            Hostname: `[${Manager.Server.IP}:${Manager.Server.PORT}]`
+                        },
+                        Clients: Clients
+                    }
+                }
+                Manager.Server.previousStatus = status
+                Servers.push(status)
+                continue
+            }
 
-            MaxClients = comMaxClients.length > 0 ? comMaxClients : MaxClients
+            var MaxClients = Manager.Server.comMaxClients.length > 0 ? Manager.Server.comMaxClients : Manager.Server.MaxClients
 
             var Dvars = {
-                Map: Map,
+                Map: Manager.Server.Mapname,
                 MaxClients: MaxClients,
-                Hostname: await Manager.Server.Rcon.getDvar('sv_hostname'),
+                Hostname: Manager.Server.HostnameRaw,
             }
             var Status = {
                 ServerId: i,
+                Online: true,
                 clientActivity: Manager.Server.clientActivity,
                 clientHistory: Manager.Server.clientHistory,
                 IP: Manager.Server.IP,
