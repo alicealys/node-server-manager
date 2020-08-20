@@ -1,25 +1,25 @@
 window.addEventListener('load', () => {
-    if (!Client.ClientId) return
+    if (!Profile.ClientId) return
     var socket = new WebSocket(`wss://${window.location.hostname}/?action=socket_listen_messages`)
 
     socket.addEventListener('message', (e) => {
         var msg = JSON.parse(e.data)
         if (msg.event == 'event_client_message') {
           notifyMe(msg.ServerId, msg.Client, msg.Message)
-          if (msg.Client.ClientId != Client.ClientId) return
+          if (msg.Client.ClientId != Profile.ClientId) return
           document.getElementById('message-count').innerHTML = parseInt(document.getElementById('message-count').innerHTML) + 1
           logMessage(msg, false)
         }
     })
 
-    document.getElementById('message-log').addEventListener('scroll', async (e) => {
+    document.getElementById('message-log') && document.getElementById('message-log').addEventListener('scroll', async (e) => {
         if (parseInt(document.getElementById('message-log').offsetHeight + document.getElementById('message-log').scrollTop) >= document.body.offsetHeight && pageLoaded && !maxPage) {
             pageLoaded = false
-            var nextMessages = JSON.parse(await makeRequest('GET', `/api/messages?id=${Client.ClientId}&page=${nextPage}&limit=50`))
+            var nextMessages = JSON.parse(await makeRequest('GET', `/api/messages?id=${Profile.ClientId}&page=${nextPage}&limit=50`))
             nextMessages.forEach(message => {
                 message.Client = {}
                 message.Client.ClientId = message.OriginId
-                message.Client.Name = Client.Name
+                message.Client.Name = Profile.Name
                 logMessage(message, true, message.Date)
             })
             pageLoaded = true
@@ -137,7 +137,7 @@ function escapeHtml(text) {
 async function getClientWebfrontStatus(ClientId) {
   var socketClients = JSON.parse(await makeRequest('GET', '/api/socketclients', null))
   for (var i = 0; i < socketClients.length; i++) {
-    if (socketClients[i].Client == Client.ClientId) {
+    if (socketClients[i].Client == Target.ClientId) {
       return true
     }
   }
@@ -145,7 +145,19 @@ async function getClientWebfrontStatus(ClientId) {
 }
 
 function kickClient() {
-
+  messageBox(`Kick ${Profile.Name}`, 
+  [
+    {type: 'text', name: 'Reason', placeholder: 'Reason'}
+  ], 'Cancel', 'Kick', async (params, messageBox, close) => {
+    switch (true) {
+      case (params.Reason.length <= 0):
+        messageBox.querySelector('*[data-text-label]').innerHTML = 'Please provide a reason'
+      return
+    }
+    await makeRequest('GET', `/api/mod?command=COMMAND_KICK&target=${Profile.ClientId}&reason=${params.Reason}`)
+    close()
+  } 
+  )
 }
 
 function banClient() {

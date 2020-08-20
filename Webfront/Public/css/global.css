@@ -2415,15 +2415,14 @@
     flex-flow:column;
   }
   .server-info-dvar {
-    padding:10px;
-    width:90%;
+    padding:5px;
+    width:100%;
     max-height:50px;
     margin:auto;
     display:flex;
     flex-flow:row;
     align-items: center;
     justify-content: center;
-    border-radius:10px;
     background-color: transparent;
   }
   .server-info-chat-button-settings {
@@ -2436,6 +2435,7 @@
     font-family:codef;
     margin:auto;
     width:100%;
+    border-radius:5px;
     text-align: center;
     padding:10px;
     font-size:20px;
@@ -2448,7 +2448,7 @@
     height:20px;
     text-overflow: ellipsis;
     flex: 1 1 0px;
-    padding:10px;
+    padding:5px;
     background-color: var(--color-4);
   }
   .server-info-player-name {
@@ -2506,12 +2506,12 @@
     cursor:pointer;
   }
   .server-info-dvar *:first-child { 
-    border-top-left-radius: 10px; 
-    border-bottom-left-radius: 10px; 
+    border-top-left-radius: 5px; 
+    border-bottom-left-radius: 5px; 
   }
   .server-info-dvar *:last-child { 
-    border-bottom-right-radius: 10px;
-    border-top-right-radius: 10px;
+    border-bottom-right-radius: 5px;
+    border-top-right-radius: 5px;
   }
   .server-info-ip {
     color: var(--color-text);
@@ -2521,16 +2521,12 @@
     font-family:codef;
     color:var(--color-text);
     text-align: center;
-    overflow:hidden;
-    height:20px;
-    text-overflow: ellipsis;
     flex: 1 1 0px;
-    padding:10px;
   }
-  .server-info-column:nth-child(even) {
+  .server-info-dvar div:nth-child(even) {
     background-color: var(--color-2);
   }
-  .server-info-column:nth-child(odd) {
+  .server-info-dvar div:nth-child(odd) {
     background-color: var(--color-4);
   }
   .server-info-chart {
@@ -3081,17 +3077,25 @@ body {
 }
 .wf-serverlist-map {
   flex-grow: 2;
+  flex-basis: 1px;
   padding:0px!important;
 }
 .wf-serverlist-hostname {
+  flex-basis: 1px;
   flex-grow: 2;
   text-align: left!important;
 }
 .wf-serverlist-players {
   flex-grow: 1;
+  flex-basis: 1px;
 }
 .wf-serverlist-button {
+  flex-basis: 1px;
   width: 20px;
+}
+.wf-serverlist-uptime {
+  flex-basis: 1px;
+  flex-grow: 0.8;
 }
 .wf-serverlist-button i {
   cursor:pointer;
@@ -3238,7 +3242,7 @@ body {
   margin-bottom:10px;
   background-color: var(--color-3);
 }
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 900px) {
   .wf-header-title {
     text-decoration: none;
     font-size:30px;
@@ -3247,6 +3251,23 @@ body {
     font-family:codef;
     display:none;
   }
+}
+@media only screen and (max-width: 500px) {
+  .wf-header-search-wrap {
+    display:none;
+  }
+}
+
+@media only screen and (max-width: 700px) {
+  .hide-mobile {
+    display: none;
+  }
+  .wf-serverlist-server-more-top-mobile {
+    display: flex!important;
+  }
+}
+.wf-serverlist-server-more-top-mobile {
+  display:none;
 }
 .wf-header-title {
   text-decoration: none;
@@ -3701,6 +3722,7 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+  user-select:text;
   flex-grow: 1;
   overflow-y: scroll;
 }

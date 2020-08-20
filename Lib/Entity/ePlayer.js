@@ -65,7 +65,7 @@ class ePlayer extends EventEmitter {
           Duration: 0,
           Reason: Message
         })
-        this.Server.Rcon.executeCommandAsync(`clientkick ${this.Clientslot} "${Message}"`)
+        this.Server.Rcon.executeCommandAsync(`clientkick ${this.Clientslot} "You were kicked: ^5${Message}"`)
   } 
 }
 module.exports = ePlayer

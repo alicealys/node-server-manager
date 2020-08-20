@@ -15,15 +15,35 @@ class Rcon {
     async executeCommandAsync(command) {
       return new Promise(async (resolve, reject) => {
         var client =  dgram.createSocket('udp4')
-        var message = new Buffer.from(`\xff\xff\xff\xffrcon ${this.password} ${command}`, 'binary');
-        client.send(message, 0, message.length, this.port, this.ip);
+        var message = new Buffer.from(`\xff\xff\xff\xffrcon ${this.password} ${command}`, 'binary')
+
+        try {
+          client.on('listening', () => {
+            client.send(message, 0, message.length, this.port, this.ip, (err) => {
+              if (err) {
+                client.close()
+                resolved = true
+                resolve(false)
+              }
+            })
+          })
+        }
+        catch (e) {
+          console.log(`Error sending udp packet: ${e.toString()}`)
+          resolve(false)
+        }
+
+        client.bind()
+
         var resolved = false;
         var onMessage = (msg) => {
             client.removeAllListeners()
             resolve(msg.toString())
+            client.close()
             resolved = true
         }
         client.on('message', onMessage);
+
         setTimeout(() => {
           if (!resolved) {
             client.removeAllListeners()
@@ -63,7 +83,7 @@ class Rcon {
       })*/
       var gamename = await this.getDvar('gamename')
       rawClients.forEach(client => {
-        var end = client.match(/\b([0-9])\s+(unknown|((?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:(?<!\.)\b|\.)){4})/g)[0]
+        var end = client.match(/\b([0-9])\s+(unknown|bot|((?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:(?<!\.)\b|\.)){4})/g)[0]
 
         // split line until the end of the client name
         client = client.substr(0, client.indexOf(end)).trim()

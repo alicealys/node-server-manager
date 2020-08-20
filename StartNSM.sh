@@ -1,2 +1,3 @@
 mkdir -p Database
-node ./Lib/NodeServerManager.js >> NSM-log.txt
+node ./Lib/NodeServerManager.js
+read -p 'press any key to continue'

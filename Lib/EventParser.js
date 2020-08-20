@@ -43,7 +43,7 @@ class EventParser {
                     Origin: {
                         Guid: eventData.vars[2],
                         Clientslot: eventData.vars[3],
-                        Name: eventData.vars[4]
+                        Name: eventData.vars[4].replace(/\[.*\]/g, '')
                     },
                 }
             break;

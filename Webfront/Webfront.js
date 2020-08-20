@@ -204,7 +204,6 @@ class Webfront {
                 bcrypt.compare(req.body.previous, tokenHash.Token, function(err, result) {
                     if (!result) {
                         bcrypt.compare(req.body.previous, passwordHash, (err, same) => {
-                            console.log('password auth failed')
                             if (!same) {
                                 res.end(JSON.stringify({
                                     success: false,
@@ -316,32 +315,46 @@ class Webfront {
             res.end(JSON.stringify(Stats))
         })
 
-        this.app.get('/api/admin', async (req, res, next) => {
+        this.app.get('/api/mod', async (req, res, next) => {
+
             switch (true) {
                 case (!req.session.ClientId):
                     res.status(401)
-                    res.end()
-                break
-                case (!req.session.target || !req.session.command):
+                    res.end(JSON.stringify({
+                        success: false,
+                        error: 'Unauthorized'
+                    }))
+                return
+                case (!req.query.target || !req.query.command):
                     res.end(JSON.stringify({
                         success: false,
                         error: 'Parameters missing'
                     }))
-                break
+                return
             }
+
             var Client = await db.getClient(req.session.ClientId)
+
             switch (true) {
                 case (!Permissions.Commands[req.query.command.toLocaleUpperCase()]):
+                    res.end(JSON.stringify({
+                        success: false,
+                        error: 'Command not found'
+                    }))
+                return
                 case (Client.PermissionLevel < Permissions.Levels[Permissions.Commands[req.query.command.toLocaleUpperCase()]]):
-                    res.status(401)
-                    res.end()
-                break
+                    res.end(JSON.stringify({
+                        success: false,
+                        error: 'Forbidden'
+                    }))
+                return
             }
 
             var findClient = (ClientId) => {
                 var found = false;
                 this.Managers.forEach(Manager => {
                     Manager.Server.Clients.forEach(Client => {
+                        if (!Client) return
                         if (Client.ClientId == ClientId) {
                             found = Client;
                         }
@@ -358,11 +371,13 @@ class Webfront {
                                 success: false,
                                 error: 'Parameters missing'
                             }))
-                        break
+                        return
                         case (Client.PermissionLevel < inGame.PermissionLevel):
-                            res.status(401)
-                            res.end()
-                        break
+                            res.end(JSON.stringify({
+                                success: false,
+                                error: 'Forbidden'
+                            }))
+                        return
                     }
                     inGame ? inGame.Ban(req.query.reason, req.session.ClientId) : this.Server.DB.addPenalty({
                         TargetId: req.query.target,
@@ -382,14 +397,26 @@ class Webfront {
                                 success: false,
                                 error: 'Parameters missing'
                             }))
-                        break
+                        return
                         case (Client.PermissionLevel < inGame.PermissionLevel):
-                            res.status(401)
-                            res.end()
-                        break
+                            res.end(JSON.stringify({
+                                success: false,
+                                error: 'Forbidden'
+                            }))
+                        return
+                        case (!inGame):
+                            res.end(JSON.stringify({
+                                success: false,
+                                error: 'Client not found'
+                            }))
+                        return
                     }
                     inGame && inGame.Kick(req.query.reason, req.session.ClientId)
-                break
+                    res.end(JSON.stringify({
+                        success: true,
+                        error: ''
+                    }))
+                return
             }
 
 
@@ -436,14 +463,13 @@ class Webfront {
         var getClientWebStatus = (ClientId) => {
             var connectedClients = []
             this.socketClients.forEach( socketClient => {
-                if (new Date() - new Date(socketClient.conn.heartbeat) < 3000) {
+                if (new Date() - new Date(socketClient.conn.heartbeat) < 5000) {
                     socketClient.conn.session.ClientId 
                     ? connectedClients.push({Client: socketClient.conn.session.ClientId, Heartbeat: socketClient.conn.heartbeat}) 
                     : connectedClients.push({Client: 'unknown', heartbeat: socketClient.conn.heartbeat})
                 }
             })
             for (var i = 0; i < connectedClients.length; i++) {
-                console.log(connectedClients)
                 if (connectedClients[i].Client == ClientId) return true
             }
             return false
@@ -463,7 +489,6 @@ class Webfront {
                 Client.Ban = await db.isBanned(Client.ClientId)
             }
             Client.Status = {}
-            console.log(Client.WebStatus)
             switch (true) {
                 case (!Client.InGame.Online && !Client.WebStatus):
                     Client.Status.String = 'OFFLINE'
@@ -479,7 +504,6 @@ class Webfront {
                 break
             }
             var self = req.session.ClientId ? await db.getClient(req.session.ClientId) : null
-            console.log(self)
             ejs.renderFile(path.join(__dirname, '/html/client.ejs'), {self: self, Permissions: Permissions ,header: header, Client: Client, moment: moment}, (err, str) => {
                 res.end(str)
             });
@@ -640,16 +664,15 @@ class Webfront {
                             conn.resourceID = index
                         break
                     }
+                } else {
+                    var index = this.socketClients.push({ action: null, conn: conn }) - 1
+                    conn.resourceID = index
                 }
                 conn.on('message', (msg) => {
                     try {
-                        msg = JSON.parse(msg)
-                        switch (msg.action) {
-                            case 'heartbeat':
-                                this.socketClients[conn.resourceID].conn.heartbeat = new Date()
-                            break
-                        }
-                    } catch (e) {}
+                        this.socketClients[conn.resourceID].conn.heartbeat = new Date()
+                    }
+                    catch (e){}
                 })
             })
         })

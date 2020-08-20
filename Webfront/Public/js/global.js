@@ -68,9 +68,9 @@ async function refreshClientList(serverId) {
     var uptime = document.querySelector(`*[data-serverid='${serverId}']`).querySelector('*[data-uptime]')
     var clientList = document.querySelector(`*[data-serverid='${serverId}']`).querySelector('.wf-more-player-list')
     var Status = JSON.parse(await makeRequest('GET', `/api/players?ServerId=${serverId}`, null))
-    uptime.innerHTML = (Status.uptime / 3600).toFixed(1)
+    uptime.innerHTML = `<i class="fas fa-history"></i> ${time2str(Status.Uptime)}`
     clientList.querySelectorAll('*[data-clientslot]').forEach(c => c.style.display = 'none')
-    clientCount.innerHTML = `${Status.Clients.length} / ${Status.Dvars.MaxClients} Players`
+    clientCount.innerHTML = `<i class="fas fa-users"></i> ${Status.Clients.length} / ${Status.Dvars.MaxClients}`
     Status.Clients.forEach(Client => {
         var slot = clientList.querySelector(`*[data-clientslot='${Client.Clientslot}']`)
         slot.style.display = ''
@@ -110,22 +110,57 @@ function parseHTML(html) {
     return t.content.cloneNode(true);
 }
 
+function time2str(secs) {
+    unit = 's'
+    switch (true) {
+        case (secs < 3600):
+            secs /= 60
+            unit = 'min'
+        break
+        case (secs >= 3600 && secs < 86400):
+            secs /= 3600
+            unit = 'h'
+        break
+        case (secs >= 86400):
+            secs /= 86400
+            unit = 'd'
+        break
+    }
+    return `${secs.toFixed(1)}${unit}`
+}
+
 async function renderServerList() {
     var servers = JSON.parse(await makeRequest('GET', '/api/servers', null))
-    console.log(servers)
     servers.forEach(async server => {
         var status = server
         var serverCard = parseHTML(`
             <div data-serverid='${server.ServerId}' class='wf-serverlist-server'>
                 <div class='wf-serverlist-server-info'>
                     <div class='wf-serverlist-hostname'>${COD2HTML(status.Dvars.Hostname, 'var(--color-text)')}</div>
-                    <div class='wf-serverlist-players'>${status.Dvars.Map}</div>
-                    <div class='wf-serverlist-button' data-uptime>${(status.Uptime / 3600).toFixed(1)}h</div>
-                    <div class='wf-serverlist-players' data-playercount>${status.Clients.length} / ${status.Dvars.MaxClients} Players</div>
-                    <div class='wf-serverlist-button' ><i class='fas fa-sort-up an' onclick='prependServer(${server.ServerId})'></i></div>
+                    <div class='wf-serverlist-players hide-mobile'>${status.Dvars.Map}</div>
+                    <div class='wf-serverlist-uptime hide-mobile' data-uptime><i class="fas fa-history"></i> ${time2str(status.Uptime)}</div>
+                    <div class='wf-serverlist-players hide-mobile' data-playercount><i class="fas fa-users"></i> ${status.Clients.length} / ${status.Dvars.MaxClients} </div>
+                    <div class='wf-serverlist-button hide-mobile' ><i class='fas fa-sort-up an' onclick='prependServer(${server.ServerId})'></i></div>
                     <div class='wf-serverlist-button' ><i class='fas fa-plus an' style='transform:rotate(45deg)' data-more-button  data-shown='true'></i></div>
                 </div>
+
                 <div class='wf-serverlist-server-more'>
+                    <div class='wf-serverlist-server-more-top-mobile'>
+                        <div class='server-info-column'>
+                            <div class='server-info-dvar'>
+                                <div class='wf-default server-info-dvar-name'>Uptime</div>
+                                <div class='wf-default server-info-dvar-name'>${time2str(status.Uptime)}</div>
+                            </div>
+                            <div class='server-info-dvar'>
+                                <div class='wf-default server-info-dvar-name'>Map</div>
+                                <div class='wf-default server-info-dvar-name'>${status.Dvars.Map}</div>
+                            </div>
+                            <div class='server-info-dvar'>
+                                <div class='wf-default server-info-dvar-name'>Players</div>
+                                <div class='wf-default server-info-dvar-name'>${status.Clients.length} / ${status.Dvars.MaxClients}</div>
+                            </div>
+                        </div>
+                    </div>
                     <div class='wf-serverlist-server-more-top'>
                         <div class='wf-more-player-list nice-scrollbar'></div>
                         <div class='wf-more-feed nice-scrollbar'></div>

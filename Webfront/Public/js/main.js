@@ -209,7 +209,7 @@ var messageBox = (text, params, deny, accept, callback) => {
         messageBox.querySelector('*[data-form-cont]').querySelectorAll('input').forEach(form => {
             params[form.getAttribute('data-param')] = form.value
         })
-        callback(params, messageBox)
+        callback(params, messageBox, closeMessagebox)
     }
     var windowEnter = (e) => {
         if (e.keyCode == 13) {
@@ -342,7 +342,7 @@ async function newRCONWindow() {
                     <div class='wf-profile-header-button' data-close-btn><i class="fas fa-times"></i></div>
                 </div>
             </div>
-            <div class='wf-rcon-log nice-scrollbar'></div>
+            <div class='wf-rcon-log nice-scrollbar'  data-nodrag></div>
             <div class='wf-rcon-textbox-cont'>
                 <div class='wf-rcon-textbox-wrap'>
                     <div class='wf-rcon-textbox' data-placeholder='Type a command' contenteditable='true'></div>
@@ -378,13 +378,13 @@ async function newRCONWindow() {
         }
     })
     Window.addEventListener('click', (e) => {
-        if (e.target.hasAttribute('data-nodrag')) return
+        if (findParentBySelector(e.target, 'data-nodrag')) return
         Window.querySelector('.wf-rcon-textbox').focus()
     })
     Window.querySelector('.wf-rcon-header').prepend(serversSelect)
     Window.writeLine = (line) => {
         Window.querySelector('.wf-rcon-log').appendChild(createElementFromHTML(`
-            <div class='wf-rcon-line'>
+            <div data-nodrag class='wf-rcon-line'>
                 ${COD2HTML(line)}
             </div>
         `))

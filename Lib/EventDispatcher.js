@@ -9,22 +9,34 @@ class EventDispatcher {
         try {
           this.Server.emit('event', event)
           this.Server.uptime = event.data.TimeOffset
+          // Server must have crashed so we have to reload the clients
+          if (this.Server.previousUptime > this.Server.uptime) {
+              this.Server.previousUptime = this.Server.uptime
+              this.Server.loadClientsAsync()
+              return
+          }
           switch (event.type) {
               case 'InitGame':
-                // Server must have crashed so we have to reload the clients
-                this.Server.uptime < this.Server.previousUptime && this.Server.loadClientsAsync()
-
                 this.Server.emit('init');
                 this.Server.Mapname = await this.Server.Rcon.getDvar('mapname')
               break;
               case 'say':
-                if (!event.data.Origin.Clientslot || this.Server.Clients[event.data.Origin.Clientslot]) return
+                if (!event.data.Origin.Clientslot || !this.Server.Clients[event.data.Origin.Clientslot]) return
                 var Player = this.Server.Clients[event.data.Origin.Clientslot];
                 Player.emit('message', event.data.Message);
                 this.Server.emit('message', Player, event.data.Message)
               break;
               case 'join':
                 if (this.Server.Clients[event.data.Origin.Clientslot] != null && this.Server.Clients[event.data.Origin.Clientslot].Guid == event.data.Origin.Guid) return
+
+                for (var i = 0; i < this.Server.Clients.length; i++) {
+                  if (!this.Server.Clients[i]) continue
+                  if (this.Server.Clients[i].Guid == event.data.Origin.Guid && this.Server.Clients[i].Clientslot != event.data.Origin.Clientslot) {
+                    this.Server.Clients[i].removeAllListeners()
+                    this.Server.Clients[i] = null
+                  }
+                }
+
                 try { var IPAddress = await this.Server.Rcon.getClientByName(event.data.Origin.Name).IPAddress } catch (e) {}
                 var Player = new ePlayer(event.data.Origin.Guid, event.data.Origin.Name, event.data.Origin.Clientslot, IPAddress, this.Server);
                 await Player.build()
@@ -32,6 +44,15 @@ class EventDispatcher {
               break;
               case 'quit':
                 if (!event.data.Origin.Clientslot || !this.Server.Clients[event.data.Origin.Clientslot]) return
+
+                for (var i = 0; i < this.Server.Clients.length; i++) {
+                  if (!this.Server.Clients[i]) continue
+                  if (this.Server.Clients[i].Guid == event.data.Origin.Guid && this.Server.Clients[i].Clientslot != event.data.Origin.Clientslot) {
+                    this.Server.Clients[i].removeAllListeners()
+                    this.Server.Clients[i] = null
+                  }
+                }
+
                 this.Server.emit('disconnect', this.Server.Clients[event.data.Origin.Clientslot])
                 this.Server.Clients[event.data.Origin.Clientslot].removeAllListeners()
                 this.Server.Clients[event.data.Origin.Clientslot] = null;
