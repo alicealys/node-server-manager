@@ -385,7 +385,11 @@ class Webfront {
                         PenaltyType: 'PENALTY_PERMA_BAN',
                         Duration: 0,
                         Reason: req.query.reason
-                      })
+                    })
+                    res.end(JSON.stringify({
+                        success: true,
+                        error: ''
+                    }))
                 break
                 case 'COMMAND_SETROLE':
 
