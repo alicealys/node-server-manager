@@ -86,15 +86,15 @@ class Plugin {
         ArgumentLength: 1,
         Permission: Permissions.Commands.COMMAND_USER_CMDS,
         callback: async (Player, args) => {
-
-            var totalMoney = parseInt(await Player.Server.Rcon.getDvar(`${Player.Clientslot}_money`))
-            var depositMoney = args[1] == 'all' ? parseInt(totalMoney) : parseInt(args[1])
+            var totalMoney = (await this.getZMStats(Player.ClientId)).Money
+            var gameMoney = parseInt(await Player.Server.Rcon.getDvar(`${Player.Clientslot}_money`))
+            var depositMoney = args[1] == 'all' ? parseInt(gameMoney) : parseInt(args[1])
             switch (true) {
                 case (!Number.isInteger(depositMoney)):
                     Player.Tell(`Could not parse value`)
                 return
                 case (depositMoney <= 0):
-                case (totalMoney < depositMoney):
+                case (gameMoney < depositMoney):
                     Player.Tell(`Insufficient funds`);
                 return
             }
