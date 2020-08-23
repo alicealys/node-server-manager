@@ -70,6 +70,9 @@ class Plugin {
             var totalMoney = (await this.getZMStats(Player.ClientId)).Money
             var withdrawMoney = args[1] == 'all' ? parseInt(totalMoney) : parseInt(args[1])
             switch (true) {
+                case (!this.Server.Mapname.startsWith('zm_')):
+                    Player.Tell(`This command is not available in this gamemode`)
+                return
                 case (!Number.isInteger(withdrawMoney) || withdrawMoney < 0):
                     Player.Tell(`Could not parse value`)
                 return
@@ -90,12 +93,15 @@ class Plugin {
             var gameMoney = parseInt(await Player.Server.Rcon.getDvar(`${Player.Clientslot}_money`))
             var depositMoney = args[1] == 'all' ? parseInt(gameMoney) : parseInt(args[1])
             switch (true) {
+                case (!this.Server.Mapname.startsWith('zm_')):
+                    Player.Tell(`This command is not available in this gamemode`)
+                return
                 case (!Number.isInteger(depositMoney)):
                     Player.Tell(`Could not parse value`)
                 return
                 case (depositMoney <= 0):
                 case (gameMoney < depositMoney):
-                    Player.Tell(`Insufficient funds`);
+                    Player.Tell(`Insufficient funds`)
                 return
             }
             Player.Tell(`Successfully deposited ^2$${depositMoney}^7 into your bank account!`)
