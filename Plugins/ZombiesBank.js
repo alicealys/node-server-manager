@@ -70,7 +70,7 @@ class Plugin {
             var totalMoney = (await this.getZMStats(Player.ClientId)).Money
             var withdrawMoney = args[1] == 'all' ? parseInt(totalMoney) : parseInt(args[1])
             switch (true) {
-                case (!Number.isInteger(withdrawMoney)):
+                case (!Number.isInteger(withdrawMoney) || withdrawMoney < 0):
                     Player.Tell(`Could not parse value`)
                 return
                 case (totalMoney < withdrawMoney):
