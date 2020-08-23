@@ -77,7 +77,7 @@ class Plugin {
                     Player.Tell(`Insufficient funds`);
                 return
             }
-            this.setPlayerMoney(Player.ClientId, parseInt(totalMoney - withdrawMoney))
+            this.setPlayerMoney(Player.ClientId, parseInt(totalMoney) - parseInt(withdrawMoney))
             Player.Tell(`Successfully withdrew ^2$${withdrawMoney}^7 from your bank account!`)
             await Player.Server.Rcon.executeCommandAsync(`set bank_withdraw ${Player.Clientslot};${withdrawMoney}`)
         }
@@ -86,8 +86,8 @@ class Plugin {
         ArgumentLength: 1,
         Permission: Permissions.Commands.COMMAND_USER_CMDS,
         callback: async (Player, args) => {
-            
-            var totalMoney = await Player.Server.Rcon.getDvar(`${Player.Clientslot}_money`)
+
+            var totalMoney = parseInt(await Player.Server.Rcon.getDvar(`${Player.Clientslot}_money`))
             var depositMoney = args[1] == 'all' ? parseInt(totalMoney) : parseInt(args[1])
             switch (true) {
                 case (!Number.isInteger(depositMoney)):
@@ -99,7 +99,7 @@ class Plugin {
                 return
             }
             Player.Tell(`Successfully deposited ^2$${depositMoney}^7 into your bank account!`)
-            this.setPlayerMoney(Player.ClientId, parseInt(totalMoney + depositMoney))
+            this.setPlayerMoney(Player.ClientId, parseInt(totalMoney) + parseInt(depositMoney))
             await Player.Server.Rcon.executeCommandAsync(`set bank_deposit ${Player.Clientslot};${depositMoney}`)
         }
     }
