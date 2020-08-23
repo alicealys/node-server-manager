@@ -75,7 +75,7 @@ class Plugin {
         ArgumentLength: 0,
         Permission: Permissions.Commands.COMMAND_USER_CMDS,
         callback: async (Player) => {
-          var commandsArray = Object.entries(commands);
+          var commandsArray = Object.entries(this.Manager.commands);
           for (var i = 0; i < commandsArray.length; i++) {
             Player.Tell(`^7[^6${commandsArray[i][0]}^7] ${this.lookup[`COMMAND_${commandsArray[i][0].toLocaleUpperCase()}`]}`)
             await delay(500)
