@@ -17,6 +17,7 @@ new sqlite3.Database(path.join(__dirname, '../Database/Database1.db'), (err) => 
         logging: false,
         storage: path.join(__dirname, '../Database/Database1.db')
     })
+    Models.DB = sequelize
     fs.readdir(directoryPath, (err, files) => {
         if (err) {
             return console.log('Unable to scan directory: ' + err);

@@ -797,6 +797,7 @@ class Webfront {
                         Clients: Clients
                     }
                 }
+                status.Online = false
                 Manager.Server.previousStatus = status
                 Servers.push(status)
                 continue
