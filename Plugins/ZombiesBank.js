@@ -82,7 +82,7 @@ class Plugin {
             }
             this.setPlayerMoney(Player.ClientId, parseInt(totalMoney) - parseInt(withdrawMoney))
             Player.Tell(`Successfully withdrew ^2$${withdrawMoney}^7 from your bank account!`)
-            await Player.Server.Rcon.executeCommandAsync(`set bank_withdraw ${Player.Clientslot};${withdrawMoney}`)
+            await Player.Server.Rcon.executeCommandAsync(`set bank_withdraw ${Player.Guid};${withdrawMoney}`)
         }
     }
     this.Manager.commands['deposit'] = {
@@ -106,7 +106,7 @@ class Plugin {
             }
             Player.Tell(`Successfully deposited ^2$${depositMoney}^7 into your bank account!`)
             this.setPlayerMoney(Player.ClientId, parseInt(totalMoney) + parseInt(depositMoney))
-            await Player.Server.Rcon.executeCommandAsync(`set bank_deposit ${Player.Clientslot};${depositMoney}`)
+            await Player.Server.Rcon.executeCommandAsync(`set bank_deposit ${Player.Guid};${depositMoney}`)
         }
     }
     this.Manager.commands['money'] = {
