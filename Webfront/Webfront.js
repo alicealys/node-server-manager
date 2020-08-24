@@ -111,7 +111,7 @@ class Webfront {
             })
         });
         
-        this.app.use('/auth/*', apiLimiter)
+        //this.app.use('/auth/*', apiLimiter)
 
 
         var salt1 = bcrypt.genSaltSync();
@@ -183,47 +183,14 @@ class Webfront {
             var tokenHash = await db.getTokenHash(req.session.ClientId)
             var passwordHash = await db.getClientField(req.session.ClientId, 'Password')
 
-            // If the Client does NOT have a password
-            if (!passwordHash) {
-                bcrypt.compare(req.body.previous, tokenHash, (err, same) => {
-                    if (!same) {
-                        res.end(JSON.stringify({
-                            success: false,
-                            error: 'Invalid credentials'
-                        })) 
-                        return
-                    }
-                    bcrypt.hash(req.body.password, 10, async (err, hash) => {
-                        await db.setClientField(req.session.ClientId, 'Password', hash)
-                        res.end(JSON.stringify({
-                            success: true
-                        }))
-                    });
-                })
-            } else {
-                bcrypt.compare(req.body.previous, tokenHash.Token, function(err, result) {
-                    if (!result) {
-                        bcrypt.compare(req.body.previous, passwordHash, (err, same) => {
-                            if (!same) {
-                                res.end(JSON.stringify({
-                                    success: false,
-                                    error: 'Invalid credentials'
-                                })) 
-                                return
-                            }
-                            bcrypt.hash(req.body.password, 10, async (err, hash) => {
-                                await db.setClientField(req.session.ClientId, 'Password', hash)
-                                res.end(JSON.stringify({
-                                    success: true
-                                }))
-                            });
-                        })
-                    } else {
-                        if ((new Date() - new Date(tokenHash.Date)) / 1000  > 120) {
+            bcrypt.compare(req.body.previous, tokenHash.Token, function(err, result) {
+                if (!result) {
+                    bcrypt.compare(req.body.previous, passwordHash, (err, same) => {
+                        if (!same) {
                             res.end(JSON.stringify({
                                 success: false,
-                                error: 'Invalid Credentials'
-                            }))
+                                error: 'Invalid credentials'
+                            })) 
                             return
                         }
                         bcrypt.hash(req.body.password, 10, async (err, hash) => {
@@ -232,9 +199,23 @@ class Webfront {
                                 success: true
                             }))
                         });
+                    })
+                } else {
+                    if ((new Date() - new Date(tokenHash.Date)) / 1000  > 120) {
+                        res.end(JSON.stringify({
+                            success: false,
+                            error: 'Invalid Credentials'
+                        }))
+                        return
                     }
-                })
-            }
+                    bcrypt.hash(req.body.password, 10, async (err, hash) => {
+                        await db.setClientField(req.session.ClientId, 'Password', hash)
+                        res.end(JSON.stringify({
+                            success: true
+                        }))
+                    });
+                }
+            })
         })
         this.app.post('/auth/login', async (req, res, next) => {
             if (req.body.ClientId == undefined || req.body.Token == undefined) {
@@ -803,7 +784,7 @@ class Webfront {
                 continue
             }
 
-            var MaxClients = Manager.Server.comMaxClients.length > 0 ? Manager.Server.comMaxClients : Manager.Server.MaxClients
+            var MaxClients = Manager.Server.comMaxClients ? Manager.Server.comMaxClients.length > 0 ? Manager.Server.comMaxClients : Manager.Server.MaxClients : 0
 
             var Dvars = {
                 Map: Manager.Server.Mapname,
