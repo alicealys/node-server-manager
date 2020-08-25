@@ -12,6 +12,7 @@
         <script type='text/javascript' src='/js/profile.js'></script>
         <link rel="stylesheet" type="text/css" href="/css/xbbcode.css">
         <script src="/js/xbbcode.js" type="text/javascript"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
         <script src="/js/moment-with-locales.js" type="text/javascript"></script>
         <script src="/js/moment-timezone-with-data-10-year-range.js" type="text/javascript"></script>
         <script type='text/javascript' src='/js/font-awesome.js'></script>
@@ -31,6 +32,7 @@
             <div class='wf-profile-header'>
                 <div class='wf-profile-header-name'>
                     <div class='profile-header-left'>
+                        <% if (Client.Flag) {%><div class='wf-profile-header-online'></div><div class='flag-icon wf-profile-flag flag-icon-<%=Client.Flag%>'></div><%}%>
                         <%= Client.Name %>
                         <i class='fas fa-circle fa-xs wf-profile-status iw-<%= Client.Status.Color %>'></i>
                         <div class='wf-profile-header-online'><%= Client.Status.String %></div>

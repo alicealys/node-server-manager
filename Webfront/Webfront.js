@@ -7,6 +7,7 @@ const ejs       = require('ejs')
 const moment    = require('moment')
 const bodyParser= require('body-parser')
 const bcrypt    = require('bcrypt')
+const fetch     = require('node-fetch')
 const ws        = require('ws')
 const Permissions = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
 const https     = require('https')
@@ -459,21 +460,34 @@ class Webfront {
             }
             return false
         }
+        
+        var getFlag = async (IPAddress) => {
+            return (await (await fetch(`https://extreme-ip-lookup.com/json/${IPAddress}`)).json()).countryCode.toLocaleLowerCase()
+        }
 
         this.app.get('/id/:id', async (req, res, next) => {
             res.setHeader('Content-type', 'text/html')
             var Client = await db.getClient(req.params.id)
-            if (Client) {
-                Client.Role = getRoleFrom(Client.PermissionLevel, 1).Name
-                Client.Stats = await db.getPlayerStatsTotal(Client.ClientId)
-                Client.Meta = await db.getClientMeta(Client.ClientId)
-                Client.InGame = await this.getClientStatus(Client.Guid)
-                Client.WebStatus = getClientWebStatus(Client.ClientId)
-                Client.Messages = await db.getMessages(Client.ClientId, 0, 50)
-                Client.messageCount = (await db.getAllMessages(Client.ClientId)).length
-                Client.Ban = await db.isBanned(Client.ClientId)
+            if (!Client) {
+                res.setHeader('Content-type', 'text/html')
+                res.status(404)
+                ejs.renderFile(path.join(__dirname, '/html/error.ejs'), {header: header, error: {Code: 404, Description: 'Profile not found'}}, (err, str) => {
+                    res.end(str)
+                });
+                return
             }
+
+            Client.Role = getRoleFrom(Client.PermissionLevel, 1).Name
+            Client.Stats = await db.getPlayerStatsTotal(Client.ClientId)
+            Client.Meta = await db.getClientMeta(Client.ClientId)
+            Client.InGame = await this.getClientStatus(Client.Guid)
+            Client.WebStatus = getClientWebStatus(Client.ClientId)
+            Client.Messages = await db.getMessages(Client.ClientId, 0, 50)
+            Client.messageCount = (await db.getAllMessages(Client.ClientId)).length
+            Client.Ban = await db.isBanned(Client.ClientId)
+            Client.Flag = Client.IPAddress ? await getFlag(Client.IPAddress.split(':')[0]) : null
             Client.Status = {}
+
             switch (true) {
                 case (!Client.InGame.Online && !Client.WebStatus):
                     Client.Status.String = 'OFFLINE'

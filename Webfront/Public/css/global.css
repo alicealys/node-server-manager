@@ -3791,3 +3791,9 @@ select option:hover {
   display:flex;
   flex-flow: row;
 }
+.wf-profile-flag {
+  width: 15px;
+  margin-right:10px;
+  height:10px;
+  padding:10px;
+}
