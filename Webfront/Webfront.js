@@ -798,7 +798,7 @@ class Webfront {
                 continue
             }
 
-            var MaxClients = Manager.Server.comMaxClients ? Manager.Server.comMaxClients.length > 0 ? Manager.Server.comMaxClients : Manager.Server.MaxClients : 0
+            var MaxClients = Manager.Server.comMaxClients.length > 0 ? Manager.Server.comMaxClients : Manager.Server.MaxClients
 
             var Dvars = {
                 Map: Manager.Server.Mapname,
