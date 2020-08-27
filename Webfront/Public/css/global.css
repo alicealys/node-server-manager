@@ -1,9 +1,9 @@
 :root {
-    --color-1:        #141414;
-    --color-2:        #1E1E1E;
-    --color-text:     #CBC5BB;
+    --color-1:        #111213;
+    --color-2:        #191A1C;
+    --color-text:     #D5D0C7;
     --color-text-dark: #7a7162;
-    --color-3:        #0f0f0f;
+    --color-3:        #0C0D0E;
     --color-fade1:    #9CDCFE;
     --color-fade2:    #CE9178;
     --color-4:        #404040;
@@ -3222,15 +3222,16 @@ body {
 }
 .wf-header-right {
   display: flex;
+  padding-right:20px;
 }
 .wf-header-left {
   display: flex;
-  padding-right:100px;
 }
 #wf-header {
-  position: relative;
-  top:-10px;
-  left:-10px;
+  position: fixed;
+  top:0px;
+  left:0px;
+  z-index: 999;
   -webkit-box-shadow: 0px 0px 9px -1px var(--color-text);
   -moz-box-shadow: 0px 0px 9px -1px var(--color-text);
   box-shadow: 0px 0px 9px -1px var(--color-text);
@@ -3241,6 +3242,10 @@ body {
   width:calc(100% + 20px);
   margin-bottom:10px;
   background-color: var(--color-3);
+}
+.wf-header-width {
+  height:70px;
+  width:100%;
 }
 @media only screen and (max-width: 900px) {
   .wf-header-title {
@@ -3704,6 +3709,7 @@ body {
   min-width: 400px;
   top: 50px;
   left: 50px;
+  z-index: 99999;
   resize: both!important;
   position: fixed;
   display:flex;
