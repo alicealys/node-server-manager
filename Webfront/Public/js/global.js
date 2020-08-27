@@ -1,5 +1,5 @@
 window.addEventListener('load', () => {
-    var socket = new WebSocket(`wss://${window.location.hostname}/?action=socket_listen_servers`)
+    var socket = new WebSocket(`wss://${window.location.host}/?action=socket_listen_servers`)
 
     socket.addEventListener('connect', (e) => {
         console.log('%c[ NSMSocket ]%c Connected', 'color:cyan, color: white')

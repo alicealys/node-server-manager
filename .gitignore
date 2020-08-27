@@ -1,3 +1,4 @@
 *.json
 *.db
 *.txt
+node_modules
