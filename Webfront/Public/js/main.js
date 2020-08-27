@@ -451,3 +451,15 @@ function dragElement(elmnt) {
         document.onmousemove = null;
     }
 }
+
+window.addEventListener('load', async () => {
+    document.querySelectorAll(`*[data-xbbcode]`).forEach(xbb => {
+        var rawText = xbb.textContent.trim()
+        var result = XBBCODE.process({
+          text: rawText,
+          removeMisalignedTags: true,
+          addInLineBreaks: false
+        })
+        xbb.innerHTML = result.html
+    })
+})

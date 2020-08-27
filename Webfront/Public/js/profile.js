@@ -44,7 +44,7 @@ window.addEventListener('load', () => {
       e.preventDefault()
       var text = (e.originalEvent || e).clipboardData.getData('text/plain')
       document.execCommand("insertHTML", false, escapeHtml(text))
-  });
+    });
     submitButton.addEventListener('click', async (e) => {
       description.innerHTML = description.innerHTML.replace(new RegExp(/<br>/g, 'g'), `\n`)
       var rawText = description.textContent.trim()

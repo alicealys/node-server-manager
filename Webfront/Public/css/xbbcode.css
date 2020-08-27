@@ -27,6 +27,15 @@
 	text-align: justify;
 }
 
+.xbbcode-line {
+    display:block;
+    height: 1em;
+}
+
+.xbbcode-radius * {
+    border-radius:inherit;
+}
+
 .xbbcode-left {
 	display: block;
 	text-align: left;

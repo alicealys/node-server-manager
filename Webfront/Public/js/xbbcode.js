@@ -208,7 +208,14 @@ var XBBCODE = (function() {
                 return '</span>';
             }
         },
-
+        "line": {
+            openTag: function(params,content) {
+                return `<div class='xbbcode-line'>`;
+            },
+            closeTag: function(params,content) {
+                return '</div>';
+            }
+        },
         "i": {
             openTag: function(params,content) {
                 return '<span class="xbbcode-i">';
@@ -219,6 +226,9 @@ var XBBCODE = (function() {
         },
         "img": {
             openTag: function(params,content) {
+                params = params || '';
+
+                var height = parseInt(params.substr(1))
 
                 var myUrl = content;
 
@@ -227,7 +237,7 @@ var XBBCODE = (function() {
                     myUrl = "";
                 }
 
-                return '<img src="' + myUrl + '" />';
+                return `<img style='height:${height}px' src="${myUrl}" />`;
             },
             closeTag: function(params,content) {
                 return '';
@@ -338,6 +348,17 @@ var XBBCODE = (function() {
         "s": {
             openTag: function(params,content) {
                 return '<span class="xbbcode-s">';
+            },
+            closeTag: function(params,content) {
+                return '</span>';
+            }
+        },
+        "radius": {
+            openTag: function(params,content) {
+                params = params || '';
+                var radius = params.substr(1)
+
+                return `<span class='xbbcode-radius' style=border-radius:${radius}>`;
             },
             closeTag: function(params,content) {
                 return '</span>';

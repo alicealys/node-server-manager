@@ -10,6 +10,8 @@ const bcrypt    = require('bcrypt')
 const fetch     = require('node-fetch')
 const ws        = require('ws')
 const Permissions = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
+const configName = path.join(__dirname, `../Configuration/NSMConfiguration.json`)
+const config = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`))
 const https     = require('https')
 const { Server } = require('http')
 const rateLimit = require("express-rate-limit")
@@ -139,7 +141,7 @@ class Webfront {
             if (req.session.ClientId) {
                 Client = await db.getClient(req.session.ClientId)
             }
-            ejs.renderFile(path.join(__dirname, '/html/header.ejs'), {session: req.session, Permissions: Permissions, Client: Client}, (err, str) => {
+            ejs.renderFile(path.join(__dirname, '/html/header.ejs'), {session: req.session, Permissions: Permissions, Client: Client, config: config}, (err, str) => {
                 header = str
             });
             next()
@@ -284,6 +286,14 @@ class Webfront {
             });
         })
 
+        this.app.get('/info', async (req, res, next) =>  {
+            res.setHeader('Content-type', 'text/html')
+            var Client = req.session.ClientId ? await db.getClient(req.session.ClientId) : null
+            ejs.renderFile(path.join(__dirname, '/html/info.ejs'), {header: header, Client: Client, Info: config.Info, Permissions: Permissions}, (err, str) => {
+                res.end(str)
+            });
+        })
+
         this.app.get('/api/stats', async (req, res, next) => {
             var sort = req.query.sort ? req.query.sort : 'Kills'
             var Stats = await db.getStats(req.query.page, req.query.limit, sort)
@@ -307,7 +317,7 @@ class Webfront {
                         error: 'Unauthorized'
                     }))
                 return
-                case (!req.query.target || !req.query.command):
+                case (!req.query.command):
                     res.end(JSON.stringify({
                         success: false,
                         error: 'Parameters missing'
@@ -344,11 +354,11 @@ class Webfront {
                 })
                 return found;
             }
-            var inGame = findClient(req.query.target)
+            var inGame = req.query.target ? findClient(req.query.target) : null
             switch (req.query.command.toLocaleUpperCase()) {
                 case 'COMMAND_BAN':
                     switch (true) {
-                        case (!req.query.reason):
+                        case (!req.query.target || !req.query.reason):
                             res.end(JSON.stringify({
                                 success: false,
                                 error: 'Parameters missing'
@@ -373,12 +383,48 @@ class Webfront {
                         error: ''
                     }))
                 break
+                case 'COMMAND_CHANGE_INFO':
+                    switch (true) {
+                        case (!req.query.value):
+                            res.end(JSON.stringify({
+                                success: false,
+                                error: 'Parameters missing'
+                            }))
+                        return
+                    }
+
+                    try { JSON.parse(req.query.value) }
+                    catch (e) {
+                        console.log(e)
+                        res.end(JSON.stringify({
+                            success: false,
+                            error: 'Invalid format'
+                        }))
+                        return
+                    }
+
+                    config.Info = Buffer.from(JSON.parse(req.query.value).value, 'base64').toString()
+                    fs.writeFile(configName, JSON.stringify(config), (err) => {
+                        if (err) {
+                            console.log(err)
+                            res.end(JSON.stringify({
+                                success: false,
+                                error: 'Error occurred, view console for details'
+                            }))
+                            return
+                        }
+                        res.end(JSON.stringify({
+                            success: true,
+                            error: ''
+                        }))
+                    })
+                break
                 case 'COMMAND_SETROLE':
 
                 break
                 case 'COMMAND_KICK':
                     switch (true) {
-                        case (!req.query.reason):
+                        case (!req.query.target || !req.query.reason):
                             res.end(JSON.stringify({
                                 success: false,
                                 error: 'Parameters missing'
@@ -798,7 +844,7 @@ class Webfront {
                 continue
             }
 
-            var MaxClients = Manager.Server.comMaxClients.length > 0 ? Manager.Server.comMaxClients : Manager.Server.MaxClients
+            var MaxClients = Manager.Server.comMaxClients ? Manager.Server.comMaxClients : Manager.Server.MaxClients
 
             var Dvars = {
                 Map: Manager.Server.Mapname,
