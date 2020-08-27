@@ -55,6 +55,7 @@ class ConfigMaker {
                     'WebfrontSSL-Cert': configTemplate[4].value,
                     'webfrontHostname': configTemplate[5].value,
                     'discordHookUrl': configTemplate[6].value,
+                    'Info': '',
                     'Servers':[
                         {
                             'IP' : configTemplate[7].value,
@@ -83,7 +84,8 @@ class ConfigMaker {
                             "COMMAND_TP" : "ROLE_ADMIN",
                             "COMMAND_RCON" : "ROLE_OWNER",
                             "COMMAND_TOKEN" : "ROLE_MODERATOR",
-                            "COMMAND_BAN" : "ROLE_MODERATOR"
+                            "COMMAND_BAN" : "ROLE_MODERATOR",
+                            "COMMAND_CHANGE_INFO" : "ROLE_ADMIN"
                         },
                         "Roles" : {
                             "ROLE_BANNED" : "Banned",
