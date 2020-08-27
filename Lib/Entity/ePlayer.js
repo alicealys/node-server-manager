@@ -55,7 +55,9 @@ class ePlayer extends EventEmitter {
         this.Kick(`You have been banned for: ^5${Reason} ${secondsToDhms(Duration)}^7 left`, Origin)
       }
       Tell (text) {
-        this.Server.Rcon.executeCommandAsync(`tell ${this.Clientslot} ${text}`)
+        this.Server.Rcon.executeCommandAsync(this.Server.Rcon.commandPrefixes.Rcon.Tell
+                                            .replace('%CLIENT%', this.Clientslot)
+                                            .replace('%MESSAGE%', text))
       }
       Kick (Message, Origin) {
         this.Server.DB.addPenalty({
@@ -65,7 +67,9 @@ class ePlayer extends EventEmitter {
           Duration: 0,
           Reason: Message
         })
-        this.Server.Rcon.executeCommandAsync(`clientkick ${this.Clientslot} "You were kicked: ^5${Message}"`)
+        this.Server.Rcon.executeCommandAsync(this.Server.Rcon.commandPrefixes.Rcon.clientKick
+                                            .replace('%CLIENT%', this.Clientslot)
+                                            .replace('%REASON%', Message))
   } 
 }
 module.exports = ePlayer

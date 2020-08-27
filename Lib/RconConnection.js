@@ -1,13 +1,15 @@
-const dgram = require('dgram');
-const path = require('path')
-const _utils = require(path.join(__dirname, '../Utils/Utils.js'))
-const Utils = new _utils();
+const dgram             = require('dgram');
+const path              = require('path')
+const commandPrefixes   = require('./RconCommandPrefixes')
+const _utils            = require(path.join(__dirname, '../Utils/Utils.js'))
+const Utils             = new _utils();
 
 class Rcon {
     constructor (ip, port, password) {
-      this.ip = ip;
-      this.port = port;
-      this.password = password;
+      this.ip = ip
+      this.port = port
+      this.password = password
+      this.commandPrefixes = commandPrefixes
       this.isRunning = true
       this.previousClients = []
       this.client = dgram.createSocket('udp4')
@@ -15,7 +17,10 @@ class Rcon {
     async executeCommandAsync(command) {
       return new Promise(async (resolve, reject) => {
         var client =  dgram.createSocket('udp4')
-        var message = new Buffer.from(`\xff\xff\xff\xffrcon ${this.password} ${command}`, 'binary')
+        var message = new Buffer.from(this.commandPrefixes.Rcon.prefix
+                                      .replace('%PASSWORD%', this.password)
+                                      .replace('%COMMAND%', command)
+                                      , 'binary')
 
         try {
           client.on('listening', () => {
@@ -53,12 +58,12 @@ class Rcon {
       });
     }
     async getDvar(dvar) {
-        var dvar = await this.executeCommandAsync(`get ${dvar}`)
+        var dvar = await this.executeCommandAsync(this.commandPrefixes.Rcon.getDvar.replace('%DVAR%', dvar))
         if (!dvar) return false
         return dvar.match(/"(.*?)"/g)[0].slice(1, -1)
     }
     async getStatus() {
-      var status = await this.executeCommandAsync('status')
+      var status = await this.executeCommandAsync(this.commandPrefixes.Rcon.status)
       if (!status) return false
       status = status.split('\n').slice(1, -1)
       switch (true) {
@@ -104,7 +109,7 @@ class Rcon {
       return {success: true, data : { map, clients }}
     }
     async getClients() {
-      var status = await this.executeCommandAsync('status');
+      var status = await this.executeCommandAsync(this.commandPrefixes.Rcon.status);
       if (!status) return this.previousClients
       status = status.trim().split('\n').slice(4).map(x => x.trim().split(/\s+/));
       var clients = new Array(18).fill(null)

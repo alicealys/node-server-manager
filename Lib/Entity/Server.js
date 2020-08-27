@@ -1,5 +1,6 @@
-const ePlayer = require('./ePlayer.js')
-const EventEmitter = require('events')
+const ePlayer         = require('./ePlayer.js')
+const fs              = require('fs')
+const EventEmitter    = require('events')
 
 class _Server extends EventEmitter {
     constructor(IP, PORT, RCON, DATABASE) {
@@ -24,21 +25,19 @@ class _Server extends EventEmitter {
     async setDvarsAsync() {
       try {
         // Set hostname
-        this.Hostname = this.COD2BashColor(await this.Rcon.getDvar('sv_hostname'))
+        this.Hostname = this.COD2BashColor(await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.hostname))
 
-        this.HostnameRaw = await this.Rcon.getDvar('sv_hostname')
+        this.HostnameRaw = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.hostname)
         // Set mapname
-        this.Mapname = await this.Rcon.getDvar("mapname")
+        this.Mapname = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.mapname)
 
-        this.MaxClients = await this.Rcon.getDvar("sv_maxclients")
-
-        this.comMaxClients = await this.Rcon.getDvar("com_maxclients")
+        this.MaxClients = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.maxclients)
       }
       catch (e) {}
     }
     async Heartbeat() {
       try {
-        var status = await this.Rcon.executeCommandAsync('status')
+        var status = await this.Rcon.executeCommandAsync(this.Rcon.commandPrefixes.Rcon.status)
         if (!status) {
           this.Rcon.isRunning = false
           console.log(`${this.IP}:${this.PORT} is not responding`)
