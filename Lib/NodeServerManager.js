@@ -15,6 +15,23 @@ var Info = {
 
 var Managers = []
 
+class Logger {
+  constructor(dirName, fileName) {
+    this.fileName = fileName
+    this.dirName = dirName
+  }
+  writeLn(data) {
+    if (!fs.existsSync(this.dirName)) {
+      fs.mkdirSync(this.dirName)
+    }
+
+    data = `[Log] ${new Date()} - - ${data}\n`
+    fs.appendFile(path.join(this.dirName, this.fileName), data, (err) => {
+      if (err) console.log(err)
+    })
+  }
+}
+
 class NSM {
   constructor (configuration) {
     this.Version = Info.Version
@@ -24,6 +41,7 @@ class NSM {
     this.PASSWORD = configuration.PASSWORD
     this.LOGFILE = configuration.LOGFILE
     this.LOGSERVER = configuration.LOGSERVER
+    this.logger = new Logger(path.join(__dirname, `../Log/`), `NSM-${this.IP}:${this.PORT}.log`)
     this.Server = null
     this.loadedPlugins = {}
     this.StartAsync()
@@ -57,13 +75,13 @@ class NSM {
           return console.log('Unable to scan directory: ' + err);
       } 
       files.forEach( (file) => {
-          console.log(`Loading plugin \x1b[33m${file}\x1b[0m for server ${this.Server.IP}:${this.Server.PORT}`)
+          this.logger.writeLn(`Loading plugin \x1b[33m${file}\x1b[0m for server ${this.Server.IP}:${this.Server.PORT}`)
           try {
             let plugin = require(path.join(__dirname, `../Plugins/${file}`))
             new plugin(this.Server, this)
           }
           catch (e) {
-            console.log(`Error evaluating plugin \x1b[33m${file}\x1b[0m: \x1b[31m${e.toString()}\x1b[0m`)
+            this.logger.writeLn(`Error evaluating plugin \x1b[33m${file}\x1b[0m: \x1b[31m${e.toString()}\x1b[0m`)
           }
   
       });

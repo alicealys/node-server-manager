@@ -2,3 +2,5 @@
 *.db
 *.txt
 node_modules
+*.log
+*.db-journal

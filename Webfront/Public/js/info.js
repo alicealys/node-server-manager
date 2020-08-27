@@ -17,8 +17,8 @@ function infoEdit() {
     info.setAttribute('contenteditable', true)
 }
 
-function xbbFormat(el) {
-    var rawText = el.textContent.trim()
+async function xbbFormat(el) {
+    var rawText = await replacePlaceholders(el.textContent.trim())
     var result = XBBCODE.process({
       text: rawText,
       removeMisalignedTags: true,

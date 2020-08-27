@@ -1,6 +1,7 @@
 const ePlayer         = require('./ePlayer.js')
 const fs              = require('fs')
 const EventEmitter    = require('events')
+const ip              = require('public-ip')
 
 class _Server extends EventEmitter {
     constructor(IP, PORT, RCON, DATABASE) {
@@ -32,6 +33,8 @@ class _Server extends EventEmitter {
         this.Mapname = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.mapname)
 
         this.MaxClients = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.maxclients)
+
+        this.externalIP = !this.IP.match(/(^127\.)|(localhost)|(^192\.168\.)|(^10\.)|(^172\.1[6-9]\.)|(^172\.2[0-9]\.)|(^172\.3[0-1]\.)|(^::1$)|(^[fF][cCdD])/g) ? this.IP : await ip.v4()
       }
       catch (e) {}
     }

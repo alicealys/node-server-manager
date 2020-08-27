@@ -286,6 +286,27 @@ class Webfront {
             });
         })
 
+        this.app.get('/api/statistics', async (req, res, next) => {
+            var getPlayerCount = () => {
+                var count = 0
+                this.Managers.forEach(m => count += m.Server.Clients.filter((value) => { return value }).length)
+                return count
+            }
+            var Managers = this.Managers
+            var topServer = Managers.sort((a, b) => {return b.Server.Clients.filter((value) => { return value }).length - a.Server.Clients.filter((value) => { return value }).length})[0].Server
+            var statistics = {
+                serverCount: this.Managers.length,
+                playerCount: getPlayerCount(),
+                topServer: {
+                    playerCount: topServer.Clients.filter((value) => { return value }).length,
+                    Hostname: topServer.Hostname,
+                    IP: topServer.externalIP,
+                    PORT: topServer.PORT
+                }
+            }
+            res.end(JSON.stringify(statistics))
+        })
+
         this.app.get('/info', async (req, res, next) =>  {
             res.setHeader('Content-type', 'text/html')
             var Client = req.session.ClientId ? await db.getClient(req.session.ClientId) : null

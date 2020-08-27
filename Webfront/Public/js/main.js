@@ -453,13 +453,26 @@ function dragElement(elmnt) {
 }
 
 window.addEventListener('load', async () => {
-    document.querySelectorAll(`*[data-xbbcode]`).forEach(xbb => {
-        var rawText = xbb.textContent.trim()
+    document.querySelectorAll(`*[data-xbbcode]`).forEach(async xbb => {
+        xbb.style.display = 'none'
+        var rawText = await replacePlaceholders(xbb.textContent.trim())
         var result = XBBCODE.process({
           text: rawText,
           removeMisalignedTags: true,
           addInLineBreaks: false
         })
         xbb.innerHTML = result.html
+        xbb.style.display = ''
     })
 })
+
+async function replacePlaceholders(text) {
+    var statistics = JSON.parse(await makeRequest('GET', '/api/statistics', null))
+    text = text.replace('{PLAYERCOUNT}', statistics.playerCount)
+               .replace('{SERVERCOUNT}', statistics.serverCount)
+               .replace('{TOPSERVER-IP}', statistics.topServer.IP)
+               .replace('{TOPSERVER-PORT}', statistics.topServer.PORT)
+               .replace('{TOPSERVER-HOSTNAME}', statistics.topServer.Hostname)
+               .replace('{TOPSERVER-PLAYERS}', statistics.topServer.playerCount)
+    return text
+}

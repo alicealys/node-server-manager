@@ -224,6 +224,16 @@ var XBBCODE = (function() {
                 return '</span>';
             }
         },
+        "colorcode": {
+            openTag: function(params,content) {
+
+                return `<span>${COD2HTML(content)}`;
+            },
+            closeTag: function(params,content) {
+                return '</span>';
+            },
+            displayContent: false
+        },
         "img": {
             openTag: function(params,content) {
                 params = params || '';
@@ -817,4 +827,25 @@ var XBBCODE = (function() {
 // for node
 if (typeof module !== "undefined") {
     module.exports = XBBCODE;
+}
+
+function COD2HTML(text, white = '#FFFFFF') {
+    text = `^7${text}`
+    var colorCodes = {
+        '^1' : `style='color: #FF3131'`,
+        '^2' : `style='color: #86C000'`,
+        '^3' : `style='color: #FFAD22'`,
+        '^4' : `style='color: #0082BA'`,
+        '^5' : `style='color: #25BDF1'`,
+        '^6' : `style='color: #9750DD'`,
+        '^7' : `style='color: ${white}'`,
+        '^8' : `style='color: #000000'`,
+        '^9' : `style='color: #99A3B0'`,
+        '^0' : `style='color: #000000'`,
+        '^:' : `data-rainbow-text`
+    }
+    var formattedText = text.replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), (a) => {
+        return `</span><span ${colorCodes[a]}>`
+    })
+    return formattedText.substr(7) + '</span>'
 }
