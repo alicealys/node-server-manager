@@ -14,14 +14,14 @@ class _Server extends EventEmitter {
       this.clientActivity = []
       this.DB = DATABASE
       this.MaxClients = 18
-      this.Mapname = 'Offline'
+      this.Mapname = null
       this.HostnameRaw = `[${this.IP}:${this.PORT}]`
       this.uptime = 0
       this.previousUptime = 0
       this.previousStatus = null
       this.setMaxListeners(18)
       this.Heartbeat();
-      setInterval(this.Heartbeat.bind(this), 15000)
+      this.HeartbeatInt = setInterval(this.Heartbeat.bind(this), 15000)
     }
     COD2BashColor(string) {
         return string.replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), `\x1b[3$1m`)

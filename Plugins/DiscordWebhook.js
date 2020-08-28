@@ -44,18 +44,14 @@ class Plugin {
     }
     async sendHook(Title, Description, Url) {
         try {
-            var Hostname = (await this.Server.Rcon.getDvar('sv_hostname')).replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), '')
-            var Mapname = await this.Server.Rcon.getDvar('mapname')
-            var clientCount = this.Server.Clients.filter(x => x != null).length
-            var maxClients = await this.Server.Rcon.getDvar('sv_maxclients')
             var messageEmbed = new MessageBuilder()
             .setTitle(Title)
             .setDescription(Description)
             .setURL(Url)
             .setColor('#00b0f4')
-            .addField('Hostname', `\`${Hostname}\``, true)
-            .addField('Map', `\`${Mapname}\``, true)
-            .addField('Players', `\`${clientCount} / ${maxClients}\``, true)
+            .addField('Hostname', `\`${this.Server.HostnameRaw.replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), '')}\``, true)
+            .addField('Map', `\`${this.Server.Mapname}\``, true)
+            .addField('Players', `\`${this.Server.Clients.filter((value) => {return value}).length} / ${this.Server.MaxClients}\``, true)
             .setFooter('Node Server Manager')
             .setTimestamp();
             hook.send(messageEmbed)

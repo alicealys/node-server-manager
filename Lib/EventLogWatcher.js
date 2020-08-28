@@ -6,11 +6,12 @@ const readLastLines = require('read-last-lines')
 const _EventDispatcher = require('./EventDispatcher.js')
 
 class EventLogWatcher extends EventParser {
-    constructor (logfile, Server) {
+    constructor (logfile, Server, Manager) {
         super(Server)
         this.previousMD5 = null
         this.logfile = logfile
         this.Server = Server
+        this.EventDispatcher = new _EventDispatcher(Server, Manager)
     }
     init () {
         fs.watch(this.logfile, async (event, filename) => {
@@ -23,8 +24,7 @@ class EventLogWatcher extends EventParser {
           
               this.previousMD5 = currentMD5;
               
-              var EventDispatcher = new _EventDispatcher(this.Server)
-              EventDispatcher.dispatchCallback(event)
+              this.EventDispatcher.dispatchCallback(event)
             } 
         });
     }

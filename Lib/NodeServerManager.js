@@ -51,7 +51,7 @@ class NSM {
     // Connect to the server's rcon
     this.RconConnection = new RconConnection(this.IP, this.PORT, this.PASSWORD)
     this.Server = new Server(this.IP, this.PORT, this.RconConnection, new _Database())
-    this._EventLogWatcher = this.LOGFILE ? new EventLogWatcher(this.LOGFILE, this.Server) : new ServerLogWatcher(this.LOGSERVER, this.Server)
+    this._EventLogWatcher = this.LOGFILE ? new EventLogWatcher(this.LOGFILE, this.Server, this) : new ServerLogWatcher(this.LOGSERVER, this.Server, this)
 
     // Load plugins before initializing Server.Clients
     this.LoadPlugins()
@@ -59,7 +59,13 @@ class NSM {
     // Load Server Dvars
     await this.Server.setDvarsAsync()
 
-    console.log(`Now watching \x1b[33m${this.Server.Hostname}\x1b[0m at \x1b[35m${this.IP}:${this.PORT}\x1b[0m`)
+    if (this.Server.Hostname) {
+      console.log(`Now watching \x1b[33m${this.Server.Hostname}\x1b[0m at \x1b[35m${this.IP}:${this.PORT}\x1b[0m`)
+    } else {
+      console.log(`Not watching \x1b[35m${this.IP}:${this.PORT}\x1b[0m: communication failed`)
+      clearInterval(this.Server.HeartbeatInt)
+      return
+    }
 
     // Load Client from status command
     await this.Server.loadClientsAsync()
@@ -100,7 +106,7 @@ if (fs.existsSync(path.join(__dirname, `../Configuration/NSMConfiguration.json`)
 
 
   configuration.Servers.forEach(config => {
-    Managers.push(new NSM(config))
+     Managers.push(new NSM(config))
   })
 
   const Webfront = require(path.join(__dirname, `../Webfront/Webfront.js`))

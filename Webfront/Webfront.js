@@ -839,25 +839,9 @@ class Webfront {
                 })
             })
 
-            if (!Manager.Server.Rcon.isRunning) {
+            if (!Manager.Server.Rcon.isRunning || !Manager.Server.Mapname) {
                 var status = Manager.Server.previousStatus
-                if (!status) {
-                    status = {
-                        ServerId: i,
-                        Online: false,
-                        Uptime: Manager.Server.uptime,
-                        clientActivity: [],
-                        clientHistory: [],
-                        IP: Manager.Server.IP,
-                        PORT: Manager.Server.PORT,
-                        Dvars: {
-                            Map: 'Offline',
-                            MaxClients: 18,
-                            Hostname: `[${Manager.Server.IP}:${Manager.Server.PORT}]`
-                        },
-                        Clients: Clients
-                    }
-                }
+                if (!status) continue
                 status.Online = false
                 Manager.Server.previousStatus = status
                 Servers.push(status)

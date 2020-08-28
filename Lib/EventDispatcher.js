@@ -1,8 +1,9 @@
 const ePlayer       = require('./Entity/ePlayer.js')
 
 class EventDispatcher {
-    constructor(Server) {
+    constructor(Server, Manager) {
         this.Server = Server
+        this.Manager = Manager
     }
     async dispatchCallback(event) {
         if (!event) return
@@ -72,7 +73,7 @@ class EventDispatcher {
             this.Server.previousUptime = event.data.TimeOffset
         }
         catch (e) {
-          console.log(`[${new Date()}] Error occurred while dispatching event [${this.Server.IP}:${this.Server.PORT}]`)
+          this.Manager.logger.writeLn(`Error occurred while dispatching event`)
         }
     }
 }
