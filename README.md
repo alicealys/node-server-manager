@@ -16,7 +16,7 @@ chmod +x StartNSM.sh
 Requirements
 * nodejs
 * npm
-Install both from [here](https://nodejs.org/en/)
+\n(Install both from [here](https://nodejs.org/en/))
 ```batch
 // Clone the repository
 cd node-server-manager
