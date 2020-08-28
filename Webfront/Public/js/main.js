@@ -464,6 +464,14 @@ window.addEventListener('load', async () => {
         xbb.innerHTML = result.html
         xbb.style.display = ''
     })
+    document.querySelectorAll('*[data-textbox]').forEach(div => {
+        div.addEventListener('keydown', (e) => {
+            if (e.keyCode === 13) {
+                e.preventDefault()
+                document.execCommand('insertHTML', false, '\n');
+            }
+        })
+    })
 })
 
 async function replacePlaceholders(text) {

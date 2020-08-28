@@ -39,7 +39,7 @@ var escapeHtml = (text) => {
 }
 
 function submitInfo(info) {
-    info.innerHTML = info.innerHTML.replace(new RegExp(/<br>/g, 'g'), `\n`).replace(/\uFFFD/g, '')
+    info.innerHTML = info.innerHTML.replace(new RegExp(/<br>/g, 'g'), `\n`).replace(/\uFFFD/g, '').replace(/&nbsp;/g, ' ')
     info.setAttribute('data-raw-text', info.textContent.trim())
     xbbFormat(info)
     info.setAttribute('contenteditable', false)

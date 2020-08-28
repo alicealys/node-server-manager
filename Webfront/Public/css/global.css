@@ -3232,9 +3232,9 @@ body {
   top:0px;
   left:0px;
   z-index: 999;
-  -webkit-box-shadow: 0px 0px 9px -1px var(--color-text);
-  -moz-box-shadow: 0px 0px 9px -1px var(--color-text);
-  box-shadow: 0px 0px 9px -1px var(--color-text);
+  -webkit-box-shadow: 0px 0px 5px -1px var(--color-text);
+  -moz-box-shadow: 0px 0px 5px -1px var(--color-text);
+  box-shadow: 0px 0px 5px -1px var(--color-text);
   right:0px;
   display:flex;
   flex-flow: row wrap;
@@ -3253,9 +3253,9 @@ body {
   height:25px;
   display:flex;
   align-items: center;
-  -webkit-box-shadow: 0px 0px 9px -1px var(--color-text);
-  -moz-box-shadow: 0px 0px 9px -1px var(--color-text);
-  box-shadow: 0px 0px 9px -1px var(--color-text);
+  -webkit-box-shadow: 0px 0px 5px -1px var(--color-text);
+  -moz-box-shadow: 0px 0px 5px -1px var(--color-text);
+  box-shadow: 0px 0px 5px -1px var(--color-text);
   background-color: var(--color-3);
 }
 

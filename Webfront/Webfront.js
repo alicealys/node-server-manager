@@ -298,7 +298,7 @@ class Webfront {
                 playerCount: getPlayerCount(),
                 topServer: {
                     playerCount: topServer.Clients.filter((value) => { return value }).length,
-                    Hostname: topServer.Hostname,
+                    Hostname: topServer.HostnameRaw,
                     IP: topServer.externalIP,
                     PORT: topServer.PORT
                 }
