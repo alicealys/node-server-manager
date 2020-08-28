@@ -13,6 +13,9 @@ class _Server extends EventEmitter {
       this.clientHistory = []
       this.clientActivity = []
       this.DB = DATABASE
+      this.MaxClients = 18
+      this.Mapname = 'Offline'
+      this.HostnameRaw = `[${this.IP}:${this.PORT}]`
       this.uptime = 0
       this.previousUptime = 0
       this.previousStatus = null

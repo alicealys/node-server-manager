@@ -23,6 +23,7 @@ class ConfigMaker {
                 {Question: 'SSL Certificate file', value: '', depends: 2},
                 {Question: 'Webfront Hostname', value: ''},
                 {Question: 'Discord WebHook url', value: ''},
+                {Question: 'MOTD', value: 'No message of the day today :('},
                 {Question: 'Server IP', value: 'localhost'},
                 {Question: 'Server Port', value: 27016},
                 {Question: 'Server Rcon Password', value: ''},
@@ -55,13 +56,14 @@ class ConfigMaker {
                     'WebfrontSSL-Cert': configTemplate[4].value,
                     'webfrontHostname': configTemplate[5].value,
                     'discordHookUrl': configTemplate[6].value,
+                    'MOTD':  configTemplate[7].value,
                     'Info': '',
                     'Servers':[
                         {
-                            'IP' : configTemplate[7].value,
-                            'PORT' : configTemplate[8].value,
-                            'PASSWORD' : configTemplate[9].value,
-                            'LOGFILE' : configTemplate[10].value,
+                            'IP' : configTemplate[8].value,
+                            'PORT' : configTemplate[9].value,
+                            'PASSWORD' : configTemplate[10].value,
+                            'LOGFILE' : configTemplate[11].value,
                         }
             
                     ],

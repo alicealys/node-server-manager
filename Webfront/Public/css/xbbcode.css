@@ -27,6 +27,14 @@
 	text-align: justify;
 }
 
+.xbbcode-colorcode * {
+    display:inline-block;
+}
+
+.xbbcode-colorcode {
+    display: inline-block;
+}
+
 .xbbcode-line {
     display:block;
     height: 1em;

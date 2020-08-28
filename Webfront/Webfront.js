@@ -137,11 +137,10 @@ class Webfront {
 
         var header = null
         this.app.use(async (req, res, next) => {
-            var Client = null
-            if (req.session.ClientId) {
-                Client = await db.getClient(req.session.ClientId)
-            }
-            ejs.renderFile(path.join(__dirname, '/html/header.ejs'), {session: req.session, Permissions: Permissions, Client: Client, config: config}, (err, str) => {
+            var Client = req.session.ClientId ? await db.getClient(req.session.ClientId) : {Name: 'Guest', ClientId: 0}
+            var Motd = config.MOTD ? config.MOTD.replace('{USERNAME}', Client.Name)
+                                                .replace('{CLIENTID}', Client.ClientId) : null
+            ejs.renderFile(path.join(__dirname, '/html/header.ejs'), {session: req.session, Permissions: Permissions, Motd: Motd, Client: Client, config: config}, (err, str) => {
                 header = str
             });
             next()
@@ -292,7 +291,7 @@ class Webfront {
                 this.Managers.forEach(m => count += m.Server.Clients.filter((value) => { return value }).length)
                 return count
             }
-            var Managers = this.Managers
+            var Managers = this.Managers.concat()
             var topServer = Managers.sort((a, b) => {return b.Server.Clients.filter((value) => { return value }).length - a.Server.Clients.filter((value) => { return value }).length})[0].Server
             var statistics = {
                 serverCount: this.Managers.length,
@@ -425,7 +424,7 @@ class Webfront {
                     }
 
                     config.Info = Buffer.from(JSON.parse(req.query.value).value, 'base64').toString()
-                    fs.writeFile(configName, JSON.stringify(config), (err) => {
+                    fs.writeFile(configName, JSON.stringify(config, null, 4), (err) => {
                         if (err) {
                             console.log(err)
                             res.end(JSON.stringify({

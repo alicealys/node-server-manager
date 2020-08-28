@@ -3243,6 +3243,22 @@ body {
   margin-bottom:10px;
   background-color: var(--color-3);
 }
+.wf-footer {
+  position: fixed;
+  bottom:0px;
+  left:0px;
+  z-index: 999;
+  padding:7px;
+  width: 100%;
+  height:25px;
+  display:flex;
+  align-items: center;
+  -webkit-box-shadow: 0px 0px 9px -1px var(--color-text);
+  -moz-box-shadow: 0px 0px 9px -1px var(--color-text);
+  box-shadow: 0px 0px 9px -1px var(--color-text);
+  background-color: var(--color-3);
+}
+
 .wf-header-width {
   height:70px;
   width:100%;
@@ -3718,13 +3734,17 @@ body {
 .wf-profile-description-button:hover {
   color:var(--color-text-hover)
 }
+a {
+  text-decoration: underline;
+  color:inherit
+}
 .wf-info-text a {
   text-decoration: underline;
-  color:var(--color-text)
+  color:inherit
 }
 .wf-profile-description-inline a {
   text-decoration: underline;
-  color:var(--color-text)
+  color:inherit
 }
 .wf-notif-hostname {
   display: inline-block;
@@ -3833,4 +3853,52 @@ select option:hover {
   margin-right:10px;
   height:10px;
   padding:10px;
+}
+.marquee div {
+  width:100%;
+}
+.marquee div .default {
+  display: inline-block;
+  padding-left: 100%;
+  will-change: transform;
+  animation: marquee 30s linear infinite;
+}
+.marquee div .default span {
+  display:inline-block;
+  height: 1em;
+  width: max-content;
+}
+
+.marquee div .default * * {
+  display:inline-block;
+  width: max-content;
+}
+
+.marquee span:hover {
+  animation-play-state: paused
+}
+
+
+@keyframes marquee {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(-100%, 0); }
+}
+
+.marquee { 
+  width:100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee { 
+    white-space: normal;
+    width:100%;
+  }
+  .marquee span {
+    animation-iteration-count: 1;
+    animation-duration: 0.01;
+    padding-left: 0;
+  }
+}
+.wf-colorcode {
+  white-space: pre-wrap;
 }

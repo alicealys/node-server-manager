@@ -227,7 +227,7 @@ var XBBCODE = (function() {
         "colorcode": {
             openTag: function(params,content) {
 
-                return `<span>${COD2HTML(content)}`;
+                return `<span class='xbbcode-colorcode'>${COD2HTML(content)}`;
             },
             closeTag: function(params,content) {
                 return '</span>';
@@ -845,7 +845,7 @@ function COD2HTML(text, white = '#FFFFFF') {
         '^:' : `data-rainbow-text`
     }
     var formattedText = text.replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), (a) => {
-        return `</span><span ${colorCodes[a]}>`
+        return `</span><span class='wf-colorcode' ${colorCodes[a]}>`
     })
     return formattedText.substr(7) + '</span>'
 }
