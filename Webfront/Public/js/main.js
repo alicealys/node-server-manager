@@ -1,6 +1,7 @@
 var servers
 window.addEventListener('load', async () => {
-    var socket = new WebSocket(`wss://${window.location.host}`)
+    var wsProtocol = location.protocol === 'https:' ? 'wss' : 'ws'
+    var socket = new WebSocket(`${wsProtocol}://${window.location.host}`)
     socket.onopen = () => {
         setInterval(() => {
             socket.send(JSON.stringify({action: 'heartbeat'}))

@@ -1,6 +1,7 @@
 window.addEventListener('load', () => {
     if (!Profile.ClientId) return
-    var socket = new WebSocket(`wss://${window.location.host}/?action=socket_listen_messages`)
+    var wsProtocol = location.protocol === 'https:' ? 'wss' : 'ws'
+    var socket = new WebSocket(`${wsProtocol}://${window.location.host}/?action=socket_listen_messages`)
 
     socket.addEventListener('message', (e) => {
         var msg = JSON.parse(e.data)

@@ -1,5 +1,6 @@
 window.addEventListener('load', () => {
-    var socket = new WebSocket(`wss://${window.location.host}/?action=socket_listen_servers`)
+    var wsProtocol = location.protocol === 'https:' ? 'wss' : 'ws'
+    var socket = new WebSocket(`${wsProtocol}://${window.location.host}/?action=socket_listen_servers`)
 
     socket.addEventListener('connect', (e) => {
         console.log('%c[ NSMSocket ]%c Connected', 'color:cyan, color: white')
@@ -141,7 +142,7 @@ async function renderServerList() {
                     <div class='wf-serverlist-uptime hide-mobile' data-uptime><i class="fas fa-history"></i> ${time2str(status.Uptime)}</div>
                     <div class='wf-serverlist-players hide-mobile' data-playercount><i class="fas fa-users"></i> ${status.Clients.length} / ${status.Dvars.MaxClients} </div>
                     <div class='wf-serverlist-button hide-mobile' ><i class='fas fa-sort-up an' onclick='prependServer(${server.ServerId})'></i></div>
-                    <div class='wf-serverlist-button' ><i class='fas fa-plus an' style='transform:rotate(45deg)' data-more-button  data-shown='true'></i></div>
+                    <div class='wf-serverlist-button' ><i class='fas fa-arrow-right an' style='transform:rotate(90deg)' data-more-button  data-shown='true'></i></div>
                 </div>
 
                 <div class='wf-serverlist-server-more'>
@@ -172,7 +173,7 @@ async function renderServerList() {
         serverCard.querySelector('*[data-more-button]').addEventListener('click', (e) => {
             var shown = (e.target.getAttribute('data-shown')) == 'true'
             e.target.setAttribute('data-shown', (!shown).toString())
-            e.target.getAttribute('data-shown') == 'true' ? e.target.style.transform = 'rotate(45deg)' : e.target.style.transform = ''
+            e.target.getAttribute('data-shown') == 'true' ? e.target.style.transform = 'rotate(90deg)' : e.target.style.transform = ''
             e.target.parentNode.parentNode.parentNode.querySelector('.wf-serverlist-server-more').style.display = e.target.getAttribute('data-shown') == 'true' ? '' : 'none'
         })
 

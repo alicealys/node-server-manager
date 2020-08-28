@@ -1309,6 +1309,8 @@
     overflow-x:hidden!important;
     background-color:var(--color-2);
     user-select:none;
+    padding-bottom: 30px;
+    padding-top: 70px;
     overflow-y:hidden!important;
   }
   body::-webkit-scrollbar {
@@ -3163,12 +3165,13 @@ body {
   height: 1.2em;
 }
 .wf-more-player-list a {
-  width:43%;
+  width:calc(50% - 20px);
   display:inline-block;
 }
 .wf-more-feed {
   flex-grow: 1;
   margin:5px;
+  overflow-x:hidden;
   flex-basis: 1px;
   max-height: 200px;
   overflow-y:scroll;
@@ -3259,11 +3262,16 @@ body {
   background-color: var(--color-3);
 }
 
+.wf-footer-width {
+  height:30px;
+  width:100%;
+}
+
 .wf-header-width {
   height:70px;
   width:100%;
 }
-@media only screen and (max-width: 900px) {
+@media only screen and (max-width: 1000px) {
   .wf-header-title {
     text-decoration: none;
     font-size:30px;
@@ -3273,7 +3281,7 @@ body {
     display:none;
   }
 }
-@media only screen and (max-width: 500px) {
+@media only screen and (max-width: 600px) {
   .wf-header-search-wrap {
     display:none;
   }

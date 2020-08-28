@@ -1,5 +1,6 @@
 window.addEventListener('load', () => {
-    var socket = new WebSocket(`wss://${window.location.hostname}/?action=socket_listen_messages`)
+  var wsProtocol = location.protocol === 'https:' ? 'wss' : 'ws'
+  var socket = new WebSocket(`${wsProtocol}://${window.location.hostname}/?action=socket_listen_messages`)
 
     socket.addEventListener('message', (e) => {
         var msg = JSON.parse(e.data)

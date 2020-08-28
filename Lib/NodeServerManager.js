@@ -40,7 +40,7 @@ class NSM {
     this.PORT = configuration.PORT
     this.PASSWORD = configuration.PASSWORD
     this.LOGFILE = configuration.LOGFILE
-    this.LOGSERVER = configuration.LOGSERVER
+    this.LOGSERVERURI = configuration.LOGSERVERURI
     this.logger = new Logger(path.join(__dirname, `../Log/`), `NSM-${this.IP}:${this.PORT}.log`)
     this.Server = null
     this.loadedPlugins = {}
@@ -51,7 +51,7 @@ class NSM {
     // Connect to the server's rcon
     this.RconConnection = new RconConnection(this.IP, this.PORT, this.PASSWORD)
     this.Server = new Server(this.IP, this.PORT, this.RconConnection, new _Database())
-    this._EventLogWatcher = this.LOGFILE ? new EventLogWatcher(this.LOGFILE, this.Server, this) : new ServerLogWatcher(this.LOGSERVER, this.Server, this)
+    this._EventLogWatcher = this.LOGFILE ? new EventLogWatcher(this.LOGFILE, this.Server, this) : new ServerLogWatcher(this.LOGSERVERURI, this.Server, this)
 
     // Load plugins before initializing Server.Clients
     this.LoadPlugins()

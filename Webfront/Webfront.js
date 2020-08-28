@@ -20,11 +20,6 @@ const { connect } = require('http2')
 const Database  = require(path.join(__dirname, '../Lib/InitDatabase.js'))
 const db = new Database()
 
-const ssl = {
-    key: fs.readFileSync('/etc/ssl/private/private.key'),
-    cert: fs.readFileSync('/etc/ssl/certs/certificate.crt'),
-}
-
 var lookup = {
     errors: {
         404: 'This is not the page you are looking for...'

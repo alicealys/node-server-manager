@@ -7,16 +7,17 @@ const ws            = require('ws')
 const _EventDispatcher = require('./EventDispatcher.js')
 
 class EventLogWatcher extends EventParser {
-    constructor (logServer, Server, Manager) {
+    constructor (logServerURI, Server, Manager) {
         super(Server)
         this.previousMD5 = null
-        this.logServer = logServer
+        this.logServerURI = logServerURI
         this.Server = Server
+        this.Manager = Manager
         this.EventDispatcher = new _EventDispatcher(Server, Manager)
     }
     init () {
         try {
-            var socket = new ws(`ws://${this.logServer.IP}:${this.logServer.PORT}/?key=${this.logServer.KEY}`)
+            var socket = new ws(this.logServerURI)
             socket.onmessage = (msg) => {
                 var event = this.parseEvent(msg.data)
                 this.EventDispatcher.dispatchCallback(event)
