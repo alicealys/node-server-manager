@@ -57,7 +57,7 @@ class ConfigMaker {
                     'webfrontHostname': configTemplate[5].value,
                     'discordHookUrl': configTemplate[6].value,
                     'MOTD':  configTemplate[7].value,
-                    'Info': '',
+                    'Info': 'No info for now...',
                     'Servers':[
                         {
                             'IP' : configTemplate[8].value,

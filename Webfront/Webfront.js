@@ -13,10 +13,8 @@ const Permissions = require(path.join(__dirname, `../Configuration/NSMConfigurat
 const configName = path.join(__dirname, `../Configuration/NSMConfiguration.json`)
 const config = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`))
 const https     = require('https')
-const { Server } = require('http')
+const http = require('http')
 const rateLimit = require("express-rate-limit")
-const { hostname } = require('os')
-const { connect } = require('http2')
 const Database  = require(path.join(__dirname, '../Lib/InitDatabase.js'))
 const db = new Database()
 

@@ -14,8 +14,9 @@ chmod +x StartNSM.sh
 
 # Windows Install
 Requirements
-* nodejs (latest)
+* nodejs
 * npm
+Install both from [here](https://nodejs.org/en/)
 ```batch
 // Clone the repository
 cd node-server-manager
