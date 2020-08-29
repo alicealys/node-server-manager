@@ -14,7 +14,8 @@ class Database {
         if (!(await this.getClientId('Node'))) {
             try {
                 await Models.NSMClients.build({
-                    Guid: 'Node'
+                    Guid: 'Node',
+                    PermissionLevel: 6
                 }).save()
             }
             catch (e) { }
@@ -169,7 +170,8 @@ class Database {
             return {
                 Name: 'Node Server Manager',
                 ClientId: 1,
-                Guid: 'node'
+                Guid: 'node',
+                IPAddress: '127.0.0.1'
             }
         }
 

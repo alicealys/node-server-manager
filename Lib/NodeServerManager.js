@@ -1,12 +1,13 @@
-const fs = require('fs');
-const RconConnection = require('./RconConnection.js')
-const path = require('path');
-const Server = require(path.join(__dirname, '../Lib/Entity/Server.js'))
-const _Database = require(path.join(__dirname, '../Lib/InitDatabase.js'))
-const EventLogWatcher = require('./EventLogWatcher.js')
-const ServerLogWatcher = require('./ServerLogWatcher.js')
-const ConfigMaker = require('./ConfigMaker.js');
-const { config } = require('process');
+const fs                      = require('fs');
+const RconConnection          = require('./RconConnection.js')
+const path                    = require('path');
+const Server                  = require(path.join(__dirname, '../Lib/Entity/Server.js'))
+const _Database               = require(path.join(__dirname, '../Lib/InitDatabase.js'))
+const EventLogWatcher         = require('./EventLogWatcher.js')
+const ServerLogWatcher        = require('./ServerLogWatcher.js')
+const ConfigMaker             = require('./ConfigMaker.js');
+const { config }              = require('process');
+const _CLICommands            = require('./CLICommands.js')
 
 var Info = {
   Author: 'fed',
@@ -84,7 +85,7 @@ class NSM {
           this.logger.writeLn(`Loading plugin \x1b[33m${file}\x1b[0m for server ${this.Server.IP}:${this.Server.PORT}`)
           try {
             let plugin = require(path.join(__dirname, `../Plugins/${file}`))
-            new plugin(this.Server, this)
+            new plugin(this.Server, this, Managers)
           }
           catch (e) {
             this.logger.writeLn(`Error evaluating plugin \x1b[33m${file}\x1b[0m: \x1b[31m${e.toString()}\x1b[0m`)
@@ -123,3 +124,4 @@ if (fs.existsSync(path.join(__dirname, `../Configuration/NSMConfiguration.json`)
   configMake.init()
 }
 
+var CLICommands = new _CLICommands(Managers[0])
