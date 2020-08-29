@@ -28,7 +28,7 @@ StartNSM.bat
 | Paramter | Description |
 | --- | --- |
 | Enable webfront ( true / false ) | Whether you want to enable the webfront or not |
-| Webfront bind port [0-65536] | | Port the webfront will bind to |
+| Webfront bind port [0-65536] | Port the webfront will bind to |
 | Enable webfront https (true / false) | Whether to enable ssl on the webfront |
 | SSL Key file | Provide the path for the SSL key |
 | SSL Certificate file | Provide a path for the SSL certificate |
@@ -60,7 +60,7 @@ Text Placeholders
 | {TOPSERVER-IP} | IP of the currently most populated server |
 | {TOPSERVER-PORT} | Port of the currently most populated server |
 | {TOPSERVER-HOSTNAME} | Hostname of the currently most populated server |
-| {TOPSERVER-PLAYERs} | Player count of the currently most populated server |
+| {TOPSERVER-PLAYERS} | Player count of the currently most populated server |
 
 # Commands
 
