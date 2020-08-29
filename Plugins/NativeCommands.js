@@ -70,18 +70,20 @@ class Plugin {
       'COMMAND_FIND': 'Find a players\'s ID',
       'COMMAND_INFO': 'Get NSM info',
       'COMMAND_TOKEN_FORMAT': 'Your login token is %TOKEN%, valid for 2 minutes, your ClientID is ^2%CLIENTID%^7 { ^5numbers^7, ^3letters^7 }',
-      'COMMAND_PARSE_TIME_ERROR': 'Could not parse time, format: 1d (day), 2h (hours), 3m (mins), 10s (secs)'
+      'COMMAND_PARSE_TIME_ERROR': 'Could not parse time, format: 1d (day), 2h (hours), 3m (mins), 10s (secs)',
+      'RCON_SERVER_NOT_SPECIFIED': 'Please specify the server to execute this command on',
+      'SERVER_NOT_EXIST': 'Specified server doesn\'t exist or is offline, Usage: rcon serverid command'
     }
     this.Manager.commands = {
       'help': {
         ArgumentLength: 0,
         Permission: Permissions.Commands.COMMAND_USER_CMDS,
         inGame: false,
-        callback: async (Player) => {
+        callback: async (Player, args = null, delay) => {
           var commandsArray = Object.entries(this.Manager.commands);
           for (var i = 0; i < commandsArray.length; i++) {
             Player.Tell(`^7[^6${commandsArray[i][0]}^7] ${this.lookup[`COMMAND_${commandsArray[i][0].toLocaleUpperCase()}`]}`)
-            await delay(500)
+            delay && await delay(500)
           }
         }
       },
@@ -114,7 +116,7 @@ class Plugin {
         ArgumentLength: 0,
         Permission: Permissions.Commands.COMMAND_USER_CMDS,
         inGame: false,
-        callback: async (Player, args) => {
+        callback: async (Player, args, delay) => {
           var Managers = this.Managers.concat()
           if (args[1] && Managers[parseInt(args[1])] && Managers[parseInt(args[1])].Server.Mapname) {
             var Manager = Managers[parseInt(args[1])]
@@ -125,7 +127,7 @@ class Plugin {
             var Manager = Managers[i]
             if (!Manager.Server.Mapname) continue
             Player.Tell(`[^5${i}^7] - [${Manager.Server.HostnameRaw}]^7 - ^3${Manager.Server.IP}:^5${Manager.Server.PORT}^7 - ^5${Manager.Server.Clients.filter((value) => {return value}).length}^7 players online on ^5${Manager.Server.Mapname}`)
-            await delay(500)
+            delay && await delay(500)
           }
         }
       },
@@ -173,12 +175,25 @@ class Plugin {
         ArgumentLength: 1,
         Permission: Permissions.Commands.COMMAND_RCON,
         inGame: false,
-        callback: async (Player, args) => {
-          var result = (await this.Server.Rcon.executeCommandAsync(args.slice(1).join(' '))).split('\n')
+        callback: async (Player, args, delay) => {
+          var result = []
+          if (!Player.inGame) {
+            switch (true) {
+              case (args.length < 2):
+                Player.Tell(this.lookup.RCON_SERVER_NOT_SPECIFIED)
+              return
+              case (!this.Managers[parseInt(args[1])] || !this.Managers[parseInt(args[1])].Server.Mapname || !this.Managers[parseInt(args[1])].Server.Rcon.isRunning):
+                Player.Tell(this.lookup.SERVER_NOT_EXIST)
+              return
+            }
+            result = (await this.Managers[parseInt(args[1])].Server.Rcon.executeCommandAsync(args.slice(2).join(' '))).trim().split('\n')
+          } else {
+            result = (await this.Server.Rcon.executeCommandAsync(args.slice(1).join(' '))).trim().split('\n')
+          }
           result[0] = this.lookup.COMMAND_EXECUTE_SUCCESS
           for (var i = 0; i < result.length; i++) {
             Player.Tell(result[i])
-            await delay(300)
+            delay && await delay(300)
           }
         }
       },
@@ -287,7 +302,7 @@ class Plugin {
             return
           }
           var Target = this.findClient(Client.ClientId)
-          Target ? Target.Kick(`You have been kicked: ^5${args.slice(2).join(' ')}`, Player.ClientId) : Player.Tell(this.lookup.COMMAND_CLIENT_NOT_INGAME)
+          Target ? ( Player.Tell(`^5${Target.Name}^7 was kicked`), Target.Kick(`You have been kicked: ^5${args.slice(2).join(' ')}`, Player.ClientId)) : Player.Tell(this.lookup.COMMAND_CLIENT_NOT_INGAME)
         }
       },
       'unban': {
@@ -404,13 +419,13 @@ class Plugin {
         Alias: 'f',
         Permission: Permissions.Commands.COMMAND_USER_CMDS,
         inGame: false,
-        callback: async (Player, args) => {
+        callback: async (Player, args, delay) => {
            var MatchedClients = await this.Server.DB.getClientByName(args.slice(1).join(' '))
            if (MatchedClients.length <= 0) {Player.Tell(`Client not found`); return}
-           var i = 0, interval = setInterval(() => {
+           for (var i = 0; i < MatchedClients.length; i++) {
             Player.Tell(`^5${MatchedClients[i].Name} ^7| ^5@${MatchedClients[i].ClientId} ^7| ^5${this.getRoleFrom(MatchedClients[i].PermissionLevel, 1).Name} ^7| Active ${moment(MatchedClients[i].LastConnection).calendar()} | Joined ${moment(MatchedClients[i].FirstConnection).calendar()}`)
-            i++; if (i >= MatchedClients.length) clearInterval(interval)
-           }, 300)
+            delay && await delay(300)
+           }
         }
       }
     };
@@ -421,7 +436,6 @@ class Plugin {
     this.Managers.forEach(Manager => {
       if (Client) return
       Client = Manager.Server.Clients.find(x => x && x.ClientId == ClientId)
-      Client && (Server = Manager.Server)
     })
     return Client
   } 

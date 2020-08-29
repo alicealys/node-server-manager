@@ -72,14 +72,14 @@ function parseHTML(html) {
 async function notifyMe(ServerId, Client, Message) {
   const notifications = document.getElementById("notifications-cont")
   var n = document.createDocumentFragment()
-  var status = JSON.parse(await makeRequest('GET', `/api/players?ServerId=${ServerId}`))
+  var status = ServerId ? JSON.parse(await makeRequest('GET', `/api/players?ServerId=${ServerId}`)) : null
   Message = escapeHtml(Message);
   var notif = createElementFromHTML(`
   <div class='notification-notif notifFadeIn notifFadeOut'>
       <div class='notification-icon'></div>
       <div class='notification-textcontent'>
-          <div class='notification-user'><div><a href='/id/${Client.ClientId}' class='wf-link wf-bold'>${Client.Name}</a> @ <div class='wf-notif-hostname' data-colorcode>${parseCODColorCodes(status.Dvars.Hostname, 'var(--color-text)').outerHTML}</div></div></div>
-          <pre class='notification-text'>${Message}</pre>
+          <div class='notification-user'><div><a href='/id/${Client.ClientId}' class='wf-link wf-bold'>${status ? Client.Name : ''}</a> ${status ? '@' : ''} <div class='wf-notif-hostname' data-colorcode>${status ? COD2HTML(status.Dvars.Hostname, 'var(--color-text)') : 'Penalties'}</div></div></div>
+          <pre class='notification-text'>${COD2HTML(Message)}</pre>
       </div>
       <div notification-dismiss class='notification-btn'>
           <i class='fas fa-lg fa-times'></i>
@@ -155,14 +155,28 @@ function kickClient() {
         messageBox.querySelector('*[data-text-label]').innerHTML = 'Please provide a reason'
       return
     }
-    await makeRequest('GET', `/api/mod?command=COMMAND_KICK&target=${Profile.ClientId}&reason=${params.Reason}`)
+    var result = JSON.parse(await makeRequest('GET', `/api/mod?command=.kick ${Profile.ClientId} ${params.Reason}`))
+    notifyMe(null, Profile, result.result.join(' '))
     close()
   } 
   )
 }
 
 function banClient() {
-
+  messageBox(`Ban ${Profile.Name}`, 
+  [
+    {type: 'text', name: 'Reason', placeholder: 'Reason'}
+  ], 'Cancel', 'Ban', async (params, messageBox, close) => {
+    switch (true) {
+      case (params.Reason.length <= 0):
+        messageBox.querySelector('*[data-text-label]').innerHTML = 'Please provide a reason'
+      return
+    }
+    var result = JSON.parse(await makeRequest('GET', `/api/mod?command=.ban ${Profile.ClientId} ${params.Reason}`))
+    notifyMe(null, Profile, result.result.join(' '))
+    close()
+  } 
+  )
 }
 
 var nextPage = 1

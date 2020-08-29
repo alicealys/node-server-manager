@@ -355,10 +355,11 @@ async function newRCONWindow() {
         Window.querySelector('.wf-rcon-log').innerHTML = null
     })
     console.log(Window.style.height)
-    Window.querySelector('*[data-clear-btn]').addEventListener('click', (e) => {
+    var clearConsole = () => {
         Window.querySelector('.wf-rcon-log').innerHTML = null
         Window.writeLine('Last login: ' + moment().format('ddd MMM DD hh:mm:ss yy'))
-    })
+    }
+    Window.querySelector('*[data-clear-btn]').addEventListener('click', clearConsole)
     Window.querySelector('*[data-maximize-btn]').addEventListener('click', (e) => {
         e.target.setAttribute('data-maximized', !(e.target.getAttribute('data-maximized') == 'true'))
         e.target.className = e.target.getAttribute('data-maximized') == 'true' ? 'far fa-compress' : 'far fa-expand'
@@ -369,9 +370,17 @@ async function newRCONWindow() {
         if (e.keyCode == 13) {
             e.preventDefault()
             var command = e.target.textContent
+            var args = command.toLocaleLowerCase().split(/\s+/g)
+            switch (true) {
+                case (args[0] == 'clear'):
+                    clearConsole();
+                    e.target.innerHTML = null
+                return
+            }
+
             Window.writeLine(`^2${Client.Name}@node^7:^5~^7$ ${command}`)
             e.target.innerHTML = null
-            var result = JSON.parse(await makeRequest('GET', `/api/rcon?command=${command}&ServerId=${serversSelect.value}`, null))
+            var result = JSON.parse(await makeRequest('GET', `/api/mod?command=${command}&ServerId=${serversSelect.value}`, null))
             if (!result.success) return
             result.result.forEach(line => {
                 Window.writeLine(line)

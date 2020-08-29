@@ -24,6 +24,7 @@ class ConfigMaker {
                 {Question: 'Webfront Hostname', value: ''},
                 {Question: 'Discord WebHook url', value: ''},
                 {Question: 'MOTD', value: 'No message of the day today :('},
+                {Question: 'Command Prefix', value: '.'},
                 {Question: 'Server IP', value: 'localhost'},
                 {Question: 'Server Port', value: 27016},
                 {Question: 'Server Rcon Password', value: ''},
@@ -58,12 +59,13 @@ class ConfigMaker {
                     'discordHookUrl': configTemplate[6].value,
                     'MOTD':  configTemplate[7].value,
                     'Info': 'No info for now...',
+                    'commandPrefix': configTemplate[8].value,
                     'Servers':[
                         {
-                            'IP' : configTemplate[8].value,
-                            'PORT' : configTemplate[9].value,
-                            'PASSWORD' : configTemplate[10].value,
-                            'LOGFILE' : configTemplate[11].value,
+                            'IP' : configTemplate[9].value,
+                            'PORT' : configTemplate[10].value,
+                            'PASSWORD' : configTemplate[11].value,
+                            'LOGFILE' : configTemplate[12].value,
                         }
             
                     ],
@@ -75,7 +77,8 @@ class ConfigMaker {
                             "ROLE_TRUSTED" : 2,
                             "ROLE_MODERATOR" : 3,
                             "ROLE_ADMIN" : 4,
-                            "ROLE_OWNER" : 5
+                            "ROLE_OWNER" : 5,
+                            "ROLE_MANAGER": 6
                         },
                         "Commands" : {
                             "COMMAND_KICK" : "ROLE_MODERATOR",
@@ -96,7 +99,8 @@ class ConfigMaker {
                             "ROLE_TRUSTED" : "Trusted",
                             "ROLE_MODERATOR" : "Moderator",
                             "ROLE_ADMIN" : "Admin",
-                            "ROLE_OWNER" : "Owner"
+                            "ROLE_OWNER" : "Owner",
+                            "ROLE_MANAGER": "Node Server Manager"
                         }
                     }
                 }, null, 4)

@@ -321,150 +321,88 @@ class Webfront {
         })
 
         this.app.get('/api/mod', async (req, res, next) => {
-
             switch (true) {
-                case (!req.session.ClientId):
+                case (!req.session.ClientId || !req.query.command):
                     res.status(401)
                     res.end(JSON.stringify({
                         success: false,
                         error: 'Unauthorized'
                     }))
                 return
-                case (!req.query.command):
-                    res.end(JSON.stringify({
-                        success: false,
-                        error: 'Parameters missing'
-                    }))
-                return
             }
 
-            var Client = await db.getClient(req.session.ClientId)
-
-            switch (true) {
-                case (!Permissions.Commands[req.query.command.toLocaleUpperCase()]):
-                    res.end(JSON.stringify({
-                        success: false,
-                        error: 'Command not found'
-                    }))
-                return
-                case (Client.PermissionLevel < Permissions.Levels[Permissions.Commands[req.query.command.toLocaleUpperCase()]]):
-                    res.end(JSON.stringify({
-                        success: false,
-                        error: 'Forbidden'
-                    }))
-                return
+            var lookup = {
+                'COMMAND_NOT_FOUND' : 'Command not found, use ^3help^7 for a list of commands',
+                'COMMAND_ARGUMENT_ERROR' : 'Not enough arguments supplied',
+                'COMMAND_ENV_ERROR': 'This command can only be executed in-game'
             }
 
-            var findClient = (ClientId) => {
-                var found = false;
-                this.Managers.forEach(Manager => {
-                    Manager.Server.Clients.forEach(Client => {
-                        if (!Client) return
-                        if (Client.ClientId == ClientId) {
-                            found = Client;
-                        }
-                    })
-                })
-                return found;
-            }
-            var inGame = req.query.target ? findClient(req.query.target) : null
-            switch (req.query.command.toLocaleUpperCase()) {
-                case 'COMMAND_BAN':
-                    switch (true) {
-                        case (!req.query.target || !req.query.reason):
-                            res.end(JSON.stringify({
-                                success: false,
-                                error: 'Parameters missing'
-                            }))
-                        return
-                        case (Client.PermissionLevel < inGame.PermissionLevel):
-                            res.end(JSON.stringify({
-                                success: false,
-                                error: 'Forbidden'
-                            }))
-                        return
+            if (req.query.command.startsWith(config.commandPrefix)) {
+                var result = []
+                var Client = await db.getClient(req.session.ClientId)
+                var Player = {
+                    ClientId: req.session.ClientId,
+                    PermissionLevel : Client.PermissionLevel,
+                    inGame: false,
+                    Tell: (text) => {
+                        result.push(text)
                     }
-                    inGame ? inGame.Ban(req.query.reason, req.session.ClientId) : this.Server.DB.addPenalty({
-                        TargetId: req.query.target,
-                        OriginId: req.session.ClientId,
-                        PenaltyType: 'PENALTY_PERMA_BAN',
-                        Duration: 0,
-                        Reason: req.query.reason
-                    })
-                    res.end(JSON.stringify({
-                        success: true,
-                        error: ''
-                    }))
-                break
-                case 'COMMAND_CHANGE_INFO':
-                    switch (true) {
-                        case (!req.query.value):
-                            res.end(JSON.stringify({
-                                success: false,
-                                error: 'Parameters missing'
-                            }))
-                        return
-                    }
-
-                    try { JSON.parse(req.query.value) }
-                    catch (e) {
-                        console.log(e)
+                }
+                var end = () => {
+                res.end(JSON.stringify({
+                    success: true,
+                    result: result
+                }))
+                }
+                var args = req.query.command.substr(1).split(/\s+/)
+                args[0] = args[0].toLocaleLowerCase()
+                switch (true) {
+                  case (!this.Managers[0].commands[args[0]]):
+                    Player.Tell(lookup.COMMAND_NOT_FOUND)
+                    end()
+                    return
+                  case (this.Managers[0].commands[args[0]].inGame || this.Managers[0].commands[args[0]].inGame == undefined):
+                    Player.Tell(lookup.COMMAND_ENV_ERROR)
+                    end()
+                    return
+                  case (Player.PermissionLevel < Permissions.Levels[this.Managers[0].commands[args[0]].Permission]):
+                    Player.Tell(lookup.COMMAND_FORBIDDEN)
+                    end()
+                    return;
+                  case (args.length - 1 < this.Managers[0].commands[args[0]].ArgumentLength):
+                    Player.Tell(lookup.COMMAND_ARGUMENT_ERROR)
+                    end()
+                    return
+        
+                }
+                await this.Managers[0].commands[args[0]].callback(Player, args, false)
+                end()
+            } else {
+                switch (true) {
+                    case (!req.session.ClientId):
+                        res.status(403)
+                        res.end()
+                    return;
+                    case ((await db.getClient(req.session.ClientId)).PermissionLevel < Permissions.Levels[Permissions.Commands.COMMAND_RCON]):
                         res.end(JSON.stringify({
                             success: false,
-                            error: 'Invalid format'
+                            error: `You don't have access to the RCON, please use normal commands with the ^3${config.commandPrefix}^7 prefix`
                         }))
-                        return
-                    }
-
-                    config.Info = Buffer.from(JSON.parse(req.query.value).value, 'base64').toString()
-                    fs.writeFile(configName, JSON.stringify(config, null, 4), (err) => {
-                        if (err) {
-                            console.log(err)
-                            res.end(JSON.stringify({
-                                success: false,
-                                error: 'Error occurred, view console for details'
-                            }))
-                            return
-                        }
+                    return
+                    case (!this.Managers[req.query.ServerId]):
                         res.end(JSON.stringify({
-                            success: true,
-                            error: ''
+                            success: false,
+                            error: 'Server not found'
                         }))
-                    })
-                break
-                case 'COMMAND_SETROLE':
-
-                break
-                case 'COMMAND_KICK':
-                    switch (true) {
-                        case (!req.query.target || !req.query.reason):
-                            res.end(JSON.stringify({
-                                success: false,
-                                error: 'Parameters missing'
-                            }))
-                        return
-                        case (Client.PermissionLevel < inGame.PermissionLevel):
-                            res.end(JSON.stringify({
-                                success: false,
-                                error: 'Forbidden'
-                            }))
-                        return
-                        case (!inGame):
-                            res.end(JSON.stringify({
-                                success: false,
-                                error: 'Client not found'
-                            }))
-                        return
-                    }
-                    inGame && inGame.Kick(req.query.reason, req.session.ClientId)
-                    res.end(JSON.stringify({
-                        success: true,
-                        error: ''
-                    }))
-                return
+                    return
+                }
+                var result = (await this.Managers[req.query.ServerId].Server.Rcon.executeCommandAsync(req.query.command)).trim().split('\n')
+                result.length == 1 ? result[0] = 'Command executed successfully' : result = result.splice(1)
+                res.end(JSON.stringify({
+                    success: true,
+                    result: result
+                }))
             }
-
-
         })
 
         var escapeHtml = (text) => {
@@ -604,31 +542,6 @@ class Webfront {
                 }
             })
             res.end(JSON.stringify(connectedClients))
-        })
-
-        this.app.get('/api/rcon', async (req, res, next) => {
-            switch (true) {
-                case (!req.session.ClientId):
-                    res.status(403)
-                    res.end()
-                return;
-                case ((await db.getClient(req.session.ClientId)).PermissionLevel < Permissions.Levels[Permissions.Commands.COMMAND_RCON]):
-                    res.status(403)
-                    res.end()
-                return
-                case (!this.Managers[req.query.ServerId]):
-                    res.end(JSON.stringify({
-                        success: false,
-                        error: 'Server not found'
-                    }))
-                return
-            }
-            var result = (await this.Managers[req.query.ServerId].Server.Rcon.executeCommandAsync(req.query.command)).trim().split('\n')
-            result.length == 1 ? result[0] = 'Command executed successfully' : result = result.splice(1)
-            res.end(JSON.stringify({
-                success: true,
-                result: result
-            }))
         })
         this.app.set('view engine', 'jshtml')
         this.app.get('/search', async (req, res, next) => {

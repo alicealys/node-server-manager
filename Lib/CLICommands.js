@@ -9,6 +9,7 @@ class CLICommands {
     constructor(Manager) {
         this.Player = {
             ClientId: 1,
+            inGame: false,
             Tell: (msg) => {
                 console.log(this.COD2BashColor(`^7${msg}^7`))
             }

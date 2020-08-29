@@ -9,7 +9,7 @@
         <div class='wf-profile-menu' id='profile-menu'>
             <a href='/id/<%= session.ClientId %>' class='wf-profile-menu-entry'>Profile</a>
             <div data-menu-command='password' class='wf-profile-menu-entry'>Change Password</div>
-            <% if (Client.PermissionLevel >= Permissions.Levels[Permissions.Commands.COMMAND_RCON]) {%>
+            <% if (Client.PermissionLevel >= Permissions.Levels.ROLE_MODERATOR) {%>
             <div onclick='newRCONWindow()' class='wf-profile-menu-entry'>Remote Console</div>
             <% }%>
             <% if (Client.PermissionLevel >= Permissions.Levels['ROLE_ADMIN']) {%>
