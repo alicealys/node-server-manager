@@ -10,6 +10,19 @@ class Utils {
                 return Guid;
         }
     }
+    getRandomInt(min, max) {
+      min = Math.ceil(min)
+      max = Math.floor(max)
+      return Math.floor(Math.random() * (max - min)) + min
+    }
+    findClient(ClientId, Managers) {
+      var Client = null
+      Managers.forEach(Manager => {
+        if (Client) return
+        Client = Manager.Server.Clients.find(x => x && x.ClientId == ClientId)
+      })
+      return Client
+    } 
     getRoleFrom (Value, Type) {
         switch (Type) {
           case 0:
@@ -37,6 +50,25 @@ class Utils {
         }
         return false
       }
+      parseStatusLine(line) {
+        var reverse = line.split('').reverse().join('')
+        // reverses the line and splits it until the 4th space (which should be the space right after the end of the name)
+        var arr = reverse.split(/\s+/g)
+        var result = arr.splice(0, 4)
+        result.push(arr.join(' '))
+        var address = result[2].split('').reverse().join('') // unreverse the ip
+        var vars = result[4].split('').reverse().join('').split(/\s+/g).filter((x) => { return x.length })
+        var name = vars.splice(5).join(' ')
+        return {
+            num: vars[0],
+            score: vars[1],
+            bot: vars[2],
+            ping: vars[3],
+            guid: vars[4],
+            name: name,
+            address: address
+        }
+    }
       chunkArray (arr, len) {
 
         var chunks = [],

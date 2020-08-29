@@ -88,7 +88,7 @@ class Rcon {
       })*/
       var gamename = await this.getDvar('gamename')
       rawClients.forEach(client => {
-        var end = client.match(/\b([0-9])\s+(unknown|bot|((?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:(?<!\.)\b|\.)){4})/g)[0]
+        /*var end = client.match(/\b([0-9])\s+(unknown|bot|((?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:(?<!\.)\b|\.)){4})/g)[0]
 
         // split line until the end of the client name
         client = client.substr(0, client.indexOf(end)).trim()
@@ -103,8 +103,8 @@ class Rcon {
           score: meta[1],
           lastmsg: end.split(/\s+/g)[0],
           address: end.split(/\s+/g)[1]
-        }
-        clients.push(parsedClient)
+        }*/
+        clients.push(Utils.parseStatusLine(client))
       })
       return {success: true, data : { map, clients }}
     }

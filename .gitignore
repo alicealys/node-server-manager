@@ -4,3 +4,5 @@
 node_modules
 *.log
 *.db-journal
+*.save
+*.swp

@@ -4,13 +4,16 @@ const path              = require('path')
 const Models            = require(path.join(__dirname, `../Lib/DatabaseModels.js`))
 const Database  = require(path.join(__dirname, '../Lib/InitDatabase.js'))
 const db = new Database()
+const _utils            = require(path.join(__dirname, '../Utils/Utils.js'))
+const Utils             = new _utils()
 
 const Permissions = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
 
 class Plugin {
-  constructor(Server, Manager) {
+  constructor(Server, Manager, Managers) {
     this.Server = Server
     this.Manager = Manager
+    this.Managers = Managers
     this.Server.on('connect', this.onPlayerConnect.bind(this))
     this.init()
   }
@@ -49,6 +52,12 @@ class Plugin {
     this.NSMZombiesStats.sync()
   }
   async getZMStats(ClientId) {
+      if (ClientId == 1) {
+          return {
+              Money: Infinity,
+              LockerWeapon: 'none'
+          }
+      }
     var ZMStats = await this.NSMZombiesStats.findAll({
         where: {
             ClientId: ClientId
@@ -109,12 +118,51 @@ class Plugin {
             await Player.Server.Rcon.executeCommandAsync(`set bank_deposit ${Player.Guid};${depositMoney}`)
         }
     }
-    this.Manager.commands['money'] = {
-        ArgumentLength: 0,
+    this.Manager.commands['pay'] = {
+        ArgumentLength: 2,
+        inGame: false,
         Permission: Permissions.Commands.COMMAND_USER_CMDS,
         callback: async (Player, args) => {
-            var money = await Player.Server.Rcon.getDvar(`${Player.Clientslot}_money`);
-            Player.Tell(`You have a total of: ^2$${(await this.getZMStats(Player.ClientId)).Money}^7 in your bank account`)
+            var Target = await this.Server.DB.getClient(args[1])
+            switch (true) {
+                case (!Target):
+                    Player.Tell('Client not found')
+                return
+            }
+            var totalMoney = (await this.getZMStats(Player.ClientId)).Money
+            var moneyToGive = parseInt(args[2])
+            switch (true) {
+                case (!Number.isInteger(moneyToGive) || moneyToGive < 0):
+                    Player.Tell(`Could not parse value`)
+                return
+                case (totalMoney < parseInt(moneyToGive * 1.05) && Player.Guid != 'Node'):
+                    Player.Tell(`Insufficient funds`)
+                return
+            }
+            Target.totalMoney = (await this.getZMStats(Target.ClientId)).Money
+            await this.setPlayerMoney(Player.ClientId, parseInt(totalMoney) - parseInt(parseInt(moneyToGive) * 1.05))
+            this.setPlayerMoney(Target.ClientId, parseInt(Target.totalMoney) + parseInt(moneyToGive))
+            Player.Tell(`Successfully transfered ^2$${moneyToGive}^7 to ^5${Target.Name}^7's bank account! You payed a ^1$${parseInt(moneyToGive * 0.05)} ^7fee, Transaction ID: ^6#${Utils.getRandomInt(10000000, 90000000)}`)
+            Target.inGame = Utils.findClient(Target.ClientId, this.Managers)
+            Target.inGame && Target.inGame.Tell(`Received ^2$${moneyToGive}^7 from ^5${Player.Name}^7!`)
+        }
+    }
+    this.Manager.commands['money'] = {
+        ArgumentLength: 0,
+        inGame: false,
+        Permission: Permissions.Commands.COMMAND_USER_CMDS,
+        callback: async (Player, args) => {
+            if (args[1]) {
+                var Client = await this.Server.DB.getClient(parseInt(args[1]))
+                if (!Client) {
+                    Player.Tell(`You have a total of: ^2$${(await this.getZMStats(Player.ClientId)).Money}^7 in your bank account`)
+                    return
+                }
+                Player.Tell(`^5${Client.Name}^7 has a total of: ^2$${(await this.getZMStats(Client.ClientId)).Money}^7 in their bank account`)
+            } else {
+                Player.Tell(`You have a total of: ^2$${(await this.getZMStats(Player.ClientId)).Money}^7 in your bank account`)
+            }
+
         }
     }
 
