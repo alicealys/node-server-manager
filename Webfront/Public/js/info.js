@@ -43,5 +43,5 @@ function submitInfo(info) {
     info.setAttribute('data-raw-text', info.textContent.trim())
     xbbFormat(info)
     info.setAttribute('contenteditable', false)
-    makeRequest('GET', `/api/mod?command=COMMAND_CHANGE_INFO&value=${JSON.stringify({value: btoa(info.getAttribute('data-raw-text'))})}`, null)
+    makeRequest('GET', `/api/admin?command=COMMAND_CHANGE_INFO&value=${JSON.stringify({value: btoa(info.getAttribute('data-raw-text'))})}`, null)
 }

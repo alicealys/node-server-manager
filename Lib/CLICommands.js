@@ -8,6 +8,7 @@ const rl = readline.createInterface({
 class CLICommands {
     constructor(Manager) {
         this.Player = {
+            Name: 'Node Server Manager',
             ClientId: 1,
             inGame: false,
             Tell: (msg) => {

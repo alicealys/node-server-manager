@@ -380,7 +380,7 @@ async function newRCONWindow() {
 
             Window.writeLine(`^2${Client.Name}@node^7:^5~^7$ ${command}`)
             e.target.innerHTML = null
-            var result = JSON.parse(await makeRequest('GET', `/api/mod?command=${command}&ServerId=${serversSelect.value}`, null))
+            var result = JSON.parse(await makeRequest('GET', `/api/mod?command=${btoa(command)}&ServerId=${serversSelect.value}`, null))
             if (!result.success) return
             result.result.forEach(line => {
                 Window.writeLine(line)

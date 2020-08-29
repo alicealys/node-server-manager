@@ -6,7 +6,6 @@ const _Database               = require(path.join(__dirname, '../Lib/InitDatabas
 const EventLogWatcher         = require('./EventLogWatcher.js')
 const ServerLogWatcher        = require('./ServerLogWatcher.js')
 const ConfigMaker             = require('./ConfigMaker.js');
-const { config }              = require('process');
 const _CLICommands            = require('./CLICommands.js')
 
 var Info = {

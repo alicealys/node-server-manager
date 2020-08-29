@@ -319,10 +319,165 @@ class Webfront {
             })
             res.end(JSON.stringify(Stats))
         })
+        this.app.get('/api/admin', async (req, res, next) => {
+            switch (true) {
+                case (!req.session.ClientId):
+                    res.status(401)
+                    res.end(JSON.stringify({
+                        success: false,
+                        error: 'Unauthorized'
+                    }))
+                return
+                case (!req.query.command):
+                    res.end(JSON.stringify({
+                        success: false,
+                        error: 'Parameters missing'
+                    }))
+                return
+            }
 
+            var Client = await db.getClient(req.session.ClientId)
+
+            switch (true) {
+                case (!Permissions.Commands[req.query.command.toLocaleUpperCase()]):
+                    res.end(JSON.stringify({
+                        success: false,
+                        error: 'Command not found'
+                    }))
+                return
+                case (Client.PermissionLevel < Permissions.Levels[Permissions.Commands[req.query.command.toLocaleUpperCase()]]):
+                    res.end(JSON.stringify({
+                        success: false,
+                        error: 'Forbidden'
+                    }))
+                return
+            }
+
+            var findClient = (ClientId) => {
+                var found = false;
+                this.Managers.forEach(Manager => {
+                    Manager.Server.Clients.forEach(Client => {
+                        if (!Client) return
+                        if (Client.ClientId == ClientId) {
+                            found = Client;
+                        }
+                    })
+                })
+                return found;
+            }
+            var inGame = req.query.target ? findClient(req.query.target) : null
+            switch (req.query.command.toLocaleUpperCase()) {
+                case 'COMMAND_BAN':
+                    switch (true) {
+                        case (!req.query.target || !req.query.reason):
+                            res.end(JSON.stringify({
+                                success: false,
+                                error: 'Parameters missing'
+                            }))
+                        return
+                        case (Client.PermissionLevel < inGame.PermissionLevel):
+                            res.end(JSON.stringify({
+                                success: false,
+                                error: 'Forbidden'
+                            }))
+                        return
+                    }
+                    inGame ? inGame.Ban(req.query.reason, req.session.ClientId) : this.Server.DB.addPenalty({
+                        TargetId: req.query.target,
+                        OriginId: req.session.ClientId,
+                        PenaltyType: 'PENALTY_PERMA_BAN',
+                        Duration: 0,
+                        Reason: req.query.reason
+                    })
+                    res.end(JSON.stringify({
+                        success: true,
+                        error: ''
+                    }))
+                break
+                case 'COMMAND_CHANGE_INFO':
+                    switch (true) {
+                        case (!req.query.value):
+                            res.end(JSON.stringify({
+                                success: false,
+                                error: 'Parameters missing'
+                            }))
+                        return
+                    }
+
+                    try { JSON.parse(req.query.value) }
+                    catch (e) {
+                        console.log(e)
+                        res.end(JSON.stringify({
+                            success: false,
+                            error: 'Invalid format'
+                        }))
+                        return
+                    }
+
+                    config.Info = Buffer.from(JSON.parse(req.query.value).value, 'base64').toString()
+                    fs.writeFile(configName, JSON.stringify(config, null, 4), (err) => {
+                        if (err) {
+                            console.log(err)
+                            res.end(JSON.stringify({
+                                success: false,
+                                error: 'Error occurred, view console for details'
+                            }))
+                            return
+                        }
+                        res.end(JSON.stringify({
+                            success: true,
+                            error: ''
+                        }))
+                    })
+                break
+                case 'COMMAND_SETROLE':
+
+                break
+                case 'COMMAND_KICK':
+                    switch (true) {
+                        case (!req.query.target || !req.query.reason):
+                            res.end(JSON.stringify({
+                                success: false,
+                                error: 'Parameters missing'
+                            }))
+                        return
+                        case (Client.PermissionLevel < inGame.PermissionLevel):
+                            res.end(JSON.stringify({
+                                success: false,
+                                error: 'Forbidden'
+                            }))
+                        return
+                        case (!inGame):
+                            res.end(JSON.stringify({
+                                success: false,
+                                error: 'Client not found'
+                            }))
+                        return
+                    }
+                    inGame && inGame.Kick(req.query.reason, req.session.ClientId)
+                    res.end(JSON.stringify({
+                        success: true,
+                        error: ''
+                    }))
+                return
+            }
+        })
         this.app.get('/api/mod', async (req, res, next) => {
             switch (true) {
                 case (!req.session.ClientId || !req.query.command):
+                    res.status(401)
+                    res.end(JSON.stringify({
+                        success: false,
+                        error: 'Unauthorized'
+                    }))
+
+                return
+            }
+
+            var Client = await db.getClient(req.session.ClientId)
+
+            switch (true) {
+                case (Client.PermissionLevel < Permissions.Levels.ROLE_MODERATOR):
                     res.status(401)
                     res.end(JSON.stringify({
                         success: false,
@@ -337,10 +492,14 @@ class Webfront {
                 'COMMAND_ENV_ERROR': 'This command can only be executed in-game'
             }
 
-            if (req.query.command.startsWith(config.commandPrefix)) {
+            var command = Buffer.from(req.query.command, 'base64').toString()
+            console.log(command)
+
+            if (command.startsWith(config.commandPrefix)) {
                 var result = []
-                var Client = await db.getClient(req.session.ClientId)
+
                 var Player = {
+                    Name: Client.Name,
                     ClientId: req.session.ClientId,
                     PermissionLevel : Client.PermissionLevel,
                     inGame: false,
@@ -354,7 +513,7 @@ class Webfront {
                     result: result
                 }))
                 }
-                var args = req.query.command.substr(1).split(/\s+/)
+                var args = command.substr(1).split(/\s+/)
                 args[0] = args[0].toLocaleLowerCase()
                 switch (true) {
                   case (!this.Managers[0].commands[args[0]]):

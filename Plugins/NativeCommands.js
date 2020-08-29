@@ -1,8 +1,10 @@
 const moment = require('moment')
 const path = require('path')
 const crypto = require('crypto')
-const delay = require('delay')
+const wait = require('delay')
 const Permissions = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
+const _utils            = require(path.join(__dirname, '../Utils/Utils.js'))
+const Utils             = new _utils();
 
 class Plugin {
   constructor(Server, Manager, Managers) {
@@ -83,7 +85,7 @@ class Plugin {
           var commandsArray = Object.entries(this.Manager.commands);
           for (var i = 0; i < commandsArray.length; i++) {
             Player.Tell(`^7[^6${commandsArray[i][0]}^7] ${this.lookup[`COMMAND_${commandsArray[i][0].toLocaleUpperCase()}`]}`)
-            delay && await delay(500)
+            delay && await wait(500)
           }
         }
       },
@@ -93,6 +95,59 @@ class Plugin {
         inGame: false,
         callback: function (Player) {
           Player.Tell('pong')
+        }
+      },
+      'broadcast': {
+        ArgumentLength: 1,
+        Permission: Permissions.Commands.COMMAND_BROADCAST,
+        inGame: false,
+        callback: async (Player, args) => {
+          this.Managers.forEach(Manager => {
+            Manager.Server.Broadcast(`^7[^1Broadcast ^7(^5${Player.Name}^7)] ${args.slice(1).join(' ')}`)
+          })
+        }
+      },
+      'tell': {
+        ArgumentLength: 2,
+        Permission: Permissions.Commands.COMMAND_USER_CMDS,
+        inGame: false,
+        callback: async (Player, args = null, delay) => {
+          var Client = await this.Server.DB.getClient(parseInt(args[1]))
+          switch (true) {
+            case (!Client):
+              Player.Tell(this.lookup.COMMAND_CLIENT_NOT_FOUND)
+            return
+          }
+          var Target = this.findClient(Client.ClientId)
+          switch (true) {
+            case (!Target):
+              Player.Tell(this.lookup.COMMAND_CLIENT_NOT_INGAME)
+            return
+          }
+
+          Target.Tell(`^3[^5${Player.Name}^3 (#^5${Player.ClientId}^3) -> me]^7 ${args[2]}`)
+          Player.Tell(`^3[me -> ^5${Target.Name} ^3(#^5${Target.ClientId}^3)^3]^7 ${args[2]}`)
+        }
+      },
+      'players': {
+        ArgumentLength: 0,
+        Permission: Permissions.Commands.COMMAND_USER_CMDS,
+        inGame: false,
+        callback: async (Player, args = null, delay) => {
+          var Managers = this.Managers.concat()
+          Player.Tell(`Player list:`)
+          for (var j = 0; j < Managers.length; j++) {
+            var Manager = Managers[j]
+            var Clients = Utils.chunkArray(Manager.Server.Clients.filter((value) => {return value}), 4)
+            for (var i = 0; i < Clients.length; i++) {
+              var line = []
+              for (var o = 0; o < Clients[i].length; o++) {
+                line.push(`^7[^6${Utils.getRoleFrom(Clients[i][o].PermissionLevel, 1).Name}^7 (#^5${Clients[i][o].ClientId}^7)] ^5${Clients[i][o].Name}^7`)
+              }
+              Player.Tell(line.join(' '))
+              delay && await wait(500)
+            }
+          }
         }
       },
       'info': {
@@ -127,7 +182,7 @@ class Plugin {
             var Manager = Managers[i]
             if (!Manager.Server.Mapname) continue
             Player.Tell(`[^5${i}^7] - [${Manager.Server.HostnameRaw}]^7 - ^3${Manager.Server.IP}:^5${Manager.Server.PORT}^7 - ^5${Manager.Server.Clients.filter((value) => {return value}).length}^7 players online on ^5${Manager.Server.Mapname}`)
-            delay && await delay(500)
+            delay && await wait(500)
           }
         }
       },
@@ -193,7 +248,7 @@ class Plugin {
           result[0] = this.lookup.COMMAND_EXECUTE_SUCCESS
           for (var i = 0; i < result.length; i++) {
             Player.Tell(result[i])
-            delay && await delay(300)
+            delay && await wait(300)
           }
         }
       },
@@ -424,7 +479,7 @@ class Plugin {
            if (MatchedClients.length <= 0) {Player.Tell(`Client not found`); return}
            for (var i = 0; i < MatchedClients.length; i++) {
             Player.Tell(`^5${MatchedClients[i].Name} ^7| ^5@${MatchedClients[i].ClientId} ^7| ^5${this.getRoleFrom(MatchedClients[i].PermissionLevel, 1).Name} ^7| Active ${moment(MatchedClients[i].LastConnection).calendar()} | Joined ${moment(MatchedClients[i].FirstConnection).calendar()}`)
-            delay && await delay(300)
+            delay && await wait(300)
            }
         }
       }
@@ -452,7 +507,7 @@ class Plugin {
           Player.Tell(this.lookup.COMMAND_ARGUMENT_ERROR)
           return;
       }
-      this.Manager.commands[args[0]].callback(Player, args)
+      this.Manager.commands[args[0]].callback(Player, args, true)
   }
   timeConvert (n) {
     var num = n;
