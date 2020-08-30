@@ -104,7 +104,7 @@ class Rcon {
           lastmsg: end.split(/\s+/g)[0],
           address: end.split(/\s+/g)[1]
         }*/
-        clients.push(Utils.parseStatusLine(client))
+        clients.push(Utils.parseStatusLine(client, gamename))
       })
       return {success: true, data : { map, clients }}
     }

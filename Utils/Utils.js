@@ -59,7 +59,7 @@ class Utils {
         })
         return found
       }
-      parseStatusLine(line) {
+      parseStatusLine(line, Gamename) {
         var reverse = line.split('').reverse().join('')
         // reverses the line and splits it until the 4th space (which should be the space right after the end of the name)
         var arr = reverse.split(/\s+/g)
@@ -73,7 +73,7 @@ class Utils {
             score: vars[1],
             bot: vars[2],
             ping: vars[3],
-            guid: vars[4],
+            guid: this.convertGuid(vars[4], Gamename),
             name: name,
             address: address
         }

@@ -41,6 +41,7 @@ class EventDispatcher {
                 await wait(100)
                 try { var IPAddress = (await this.Server.Rcon.getClientByGuid(event.data.Origin.Guid)).address } 
                   catch (e) {}
+
                 var Player = new ePlayer(event.data.Origin.Guid, event.data.Origin.Name, event.data.Origin.Clientslot, IPAddress, this.Server);
                 await Player.build()
                 this.Server.emit('connect', Player);
