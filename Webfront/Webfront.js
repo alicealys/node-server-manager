@@ -17,6 +17,8 @@ const http = require('http')
 const rateLimit = require("express-rate-limit")
 const Database  = require(path.join(__dirname, '../Lib/InitDatabase.js'))
 const db = new Database()
+const _utils            = require(path.join(__dirname, '../Utils/Utils.js'))
+const Utils             = new _utils()
 
 var lookup = {
     errors: {
@@ -493,7 +495,6 @@ class Webfront {
             }
 
             var command = Buffer.from(req.query.command, 'base64').toString()
-            console.log(command)
 
             if (command.startsWith(config.commandPrefix)) {
                 var result = []
@@ -514,27 +515,27 @@ class Webfront {
                 }))
                 }
                 var args = command.substr(1).split(/\s+/)
-                args[0] = args[0].toLocaleLowerCase()
+                var command = Utils.getCommand(this.Managers[0].commands, args[0])
                 switch (true) {
-                  case (!this.Managers[0].commands[args[0]]):
+                  case (!this.Managers[0].commands[command]):
                     Player.Tell(lookup.COMMAND_NOT_FOUND)
                     end()
                     return
-                  case (this.Managers[0].commands[args[0]].inGame || this.Managers[0].commands[args[0]].inGame == undefined):
+                  case (this.Managers[0].commands[command].inGame || this.Managers[0].commands[command].inGame == undefined):
                     Player.Tell(lookup.COMMAND_ENV_ERROR)
                     end()
                     return
-                  case (Player.PermissionLevel < Permissions.Levels[this.Managers[0].commands[args[0]].Permission]):
+                  case (Player.PermissionLevel < Permissions.Levels[this.Managers[0].commands[command].Permission]):
                     Player.Tell(lookup.COMMAND_FORBIDDEN)
                     end()
                     return;
-                  case (args.length - 1 < this.Managers[0].commands[args[0]].ArgumentLength):
+                  case (args.length - 1 < this.Managers[0].commands[command].ArgumentLength):
                     Player.Tell(lookup.COMMAND_ARGUMENT_ERROR)
                     end()
                     return
         
                 }
-                await this.Managers[0].commands[args[0]].callback(Player, args, false)
+                await this.Managers[0].commands[command].callback(Player, args, false)
                 end()
             } else {
                 switch (true) {

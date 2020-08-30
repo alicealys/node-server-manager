@@ -1,9 +1,12 @@
+const path            = require('path')
 const readline        = require('readline')
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
     terminal: false
 })
+const _utils            = require(path.join(__dirname, '../Utils/Utils.js'))
+const Utils             = new _utils();
 
 class CLICommands {
     constructor(Manager) {
@@ -28,20 +31,20 @@ class CLICommands {
             'COMMAND_ENV_ERROR': 'This command can only be executed in-game'
         }
         var args = line.split(/\s+/)
-        args[0] = args[0].toLocaleLowerCase()
+        var command = Utils.getCommand(this.Manager.commands, args[0])
         switch (true) {
-          case (!this.Manager.commands[args[0]]):
+          case (!this.Manager.commands[command]):
             this.Player.Tell(this.lookup.COMMAND_NOT_FOUND)
             return
-          case (this.Manager.commands[args[0]].inGame || this.Manager.commands[args[0]].inGame == undefined):
+          case (this.Manager.commands[command].inGame || this.Manager.commands[command].inGame == undefined):
             this.Player.Tell(this.lookup.COMMAND_ENV_ERROR)
             return
-          case (args.length - 1 < this.Manager.commands[args[0]].ArgumentLength):
+          case (args.length - 1 < this.Manager.commands[command].ArgumentLength):
             this.Player.Tell(this.lookup.COMMAND_ARGUMENT_ERROR)
             return
 
         }
-        this.Manager.commands[args[0]].callback(this.Player, args)
+        this.Manager.commands[command].callback(this.Player, args)
     }
 }
 

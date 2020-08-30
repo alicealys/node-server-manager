@@ -292,6 +292,7 @@ class Plugin {
         ArgumentLength: 2,
         Permission: Permissions.Commands.COMMAND_SETROLE,
         inGame: false,
+        Alias: 'sr',
         callback: async (Player, args) => {
             var Role = args.slice(2).join(' ')
             var Client = await this.Server.DB.getClient(args[1]);
@@ -495,19 +496,19 @@ class Plugin {
     return Client
   } 
   playerCommand (Player, args) {
-      args[0] = args[0].toLocaleLowerCase()
+      var command = Utils.getCommand(this.Manager.commands, args[0])
       switch (true) {
-        case (!this.Manager.commands[args[0]]):
+        case (!this.Manager.commands[command]):
           Player.Tell(this.lookup.COMMAND_NOT_FOUND)
           return;
-        case (Player.PermissionLevel < Permissions.Levels[this.Manager.commands[args[0]].Permission]):
+        case (Player.PermissionLevel < Permissions.Levels[this.Manager.commands[command].Permission]):
           Player.Tell(this.lookup.COMMAND_FORBIDDEN)
           return;
-        case (args.length - 1 < this.Manager.commands[args[0]].ArgumentLength):
+        case (args.length - 1 < this.Manager.commands[command].ArgumentLength):
           Player.Tell(this.lookup.COMMAND_ARGUMENT_ERROR)
           return;
       }
-      this.Manager.commands[args[0]].callback(Player, args, true)
+      this.Manager.commands[command].callback(Player, args, true)
   }
   timeConvert (n) {
     var num = n;

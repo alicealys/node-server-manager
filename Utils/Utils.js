@@ -50,6 +50,15 @@ class Utils {
         }
         return false
       }
+      getCommand(commands, name) {
+        var found = name
+        Object.entries(commands).forEach(command => {
+          if (command[0].toLocaleLowerCase() == name.toLocaleLowerCase() || (command[1].Alias && command[1].Alias.toLocaleLowerCase() == name.toLocaleLowerCase())) {
+            found = command[0]
+          }
+        })
+        return found
+      }
       parseStatusLine(line) {
         var reverse = line.split('').reverse().join('')
         // reverses the line and splits it until the 4th space (which should be the space right after the end of the name)
@@ -58,7 +67,7 @@ class Utils {
         result.push(arr.join(' '))
         var address = result[2].split('').reverse().join('') // unreverse the ip
         var vars = result[4].split('').reverse().join('').split(/\s+/g).filter((x) => { return x.length })
-        var name = vars.splice(5).join(' ')
+        var name = vars.splice(5).join(' ').replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), ``)
         return {
             num: vars[0],
             score: vars[1],
