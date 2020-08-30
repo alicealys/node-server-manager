@@ -60,6 +60,15 @@ class ConfigMaker {
                     'MOTD':  configTemplate[7].value,
                     'Info': 'No info for now...',
                     'commandPrefix': configTemplate[8].value,
+                    "autoMessagesInterval": 60,
+                    "autoMessages": [
+                        "A total of ^5{TOTALCLIENTS}^7 players have played on this server",
+                        "Join the discord at ^5discord.gg/^7!",
+                        "This server uses ^1Node Server Manager^7 get it at ^5github.com/fedddddd/node-server-manager^7",
+                        "There are ^5{PLAYERCOUNT}^7 online players across ^5{SERVERCOUNT}^7 servers at the moment",
+                        "^5{TOTALKILLS}^7 players have been killed on this server",
+                        "^5{TOTALPLAYEDTIME}^7 hours have been wasted playing on this server"
+                    ],
                     'Servers':[
                         {
                             'IP' : configTemplate[9].value,

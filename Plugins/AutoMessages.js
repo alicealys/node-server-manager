@@ -20,7 +20,6 @@ class Plugin {
             'WELCOME_PLAYER_BROADCAST': '^%LEVEL%%ROLE%^7 ^5%PLAYER%^7 joined from ^5%LOCATION%^7'
         }
 
-
         this.Server.on('connect', async (Player) => {
             var connections = await this.Server.DB.getAllConnections(Player.ClientId)
             Player.Tell(lookup.WELCOME_PLAYER
@@ -63,6 +62,16 @@ class Plugin {
                 async get() {
                     var Managers = placeholders.Managers.concat()
                     return Managers.filter((Manager) => { return Manager.Server.Mapname} ).length
+                }
+            },
+            'TOTALKILLS': {
+                async get() {
+                    return (await placeholders.Server.DB.getGlobalStats()).totalKills
+                }
+            },
+            'TOTALPLAYEDTIME': {
+                async get() {
+                    return parseInt(((await placeholders.Server.DB.getGlobalStats()).totalPlayedTime) / 60)
                 }
             }
         }

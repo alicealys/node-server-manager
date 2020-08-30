@@ -311,6 +311,17 @@ class Database {
         return Stats.length > 0 ? Stats[0].dataValues : false
     }
 
+    async getGlobalStats() {
+        var totalKills = (await Models.NSMKills.count({}))
+
+        var totalPlayedTime = (await Models.NSMPlayerStats.findAll({
+            attributes: [[Sequelize.fn('sum', Sequelize.col('PlayedTime')), 'totalPlayedTime']],
+        }))[0].dataValues.totalPlayedTime
+
+        return {totalKills, totalPlayedTime}
+        //return Stats.length > 0 ? Stats[0].dataValues : false
+    }
+
     async getPlayerStats(ClientId) {
         var Player = await this.getClient(ClientId)
         if (!Player) return false
@@ -334,7 +345,7 @@ class Database {
     }
 
     async getAllClients() {
-        return await Models.NSMClients.findAll({})
+        return await Models.NSMClients.count({})
     }
 
     async getAllConnections(ClientId) {
