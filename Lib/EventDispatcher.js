@@ -1,4 +1,5 @@
 const ePlayer       = require('./Entity/ePlayer.js')
+const wait          = require('delay')
 
 class EventDispatcher {
     constructor(Server, Manager) {
@@ -37,8 +38,9 @@ class EventDispatcher {
                     this.Server.Clients[i] = null
                   }
                 }
-
-                try { var IPAddress = await this.Server.Rcon.getClientByName(event.data.Origin.Name).IPAddress } catch (e) {}
+                await wait(100)
+                try { var IPAddress = (await this.Server.Rcon.getClientByGuid(event.data.Origin.Guid)).address } 
+                  catch (e) {}
                 var Player = new ePlayer(event.data.Origin.Guid, event.data.Origin.Name, event.data.Origin.Clientslot, IPAddress, this.Server);
                 await Player.build()
                 this.Server.emit('connect', Player);

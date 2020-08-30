@@ -125,12 +125,11 @@ class Rcon {
       this.previousClients = clients
       return clients;
     }
-    async getClientByName(name) {
-      var clients = await this.getClients();
+    async getClientByGuid(guid) {
+      var clients = (await this.getStatus()).data.clients;
       for (var i = 0; i < clients.length; i++) {
-        if (clients[i] == null) continue;
-        if (clients[i].Name == name) {
-          return clients[i];
+        if (clients[i].guid == guid) {
+          return clients[i]
         }
       } 
     }

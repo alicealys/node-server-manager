@@ -266,6 +266,31 @@ class Webfront {
             return `${rhours}:${rminutes}`
         }
 
+        this.app.get('/settings', async (req, res, next) => {
+            res.redirect('/settings/profile')
+        })
+
+        this.app.get('/settings/:sub', async (req, res, next) => {
+            if (!req.session.ClientId) {
+                res.setHeader('Content-type', 'text/html')
+                res.status(401)
+                ejs.renderFile(path.join(__dirname, '/html/error.ejs'), {header: header, error: {Code: 401, Description: 'You must be logged in to do that'}}, (err, str) => {
+                    res.end(str)
+                });
+                return
+            }
+            var pages = ['security', 'profile']
+            if (!pages.includes(req.params.sub.toLocaleLowerCase())) {
+                next()
+                return
+            }
+            var Client = await db.getClient(req.session.ClientId)
+            res.setHeader('Content-type', 'text/html')
+            ejs.renderFile(path.join(__dirname, `/html/settings/${req.params.sub.toLocaleLowerCase()}.ejs`), {header: header, Client: Client}, (err, str) => {
+                res.end(str)
+            });
+        })
+
         this.app.get('/stats', async (req, res, next) => {
             var sort = req.query.sort ? req.query.sort : 'Kills'
             var Stats = await db.getStats(0, 50, sort)

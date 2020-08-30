@@ -332,6 +332,20 @@ class Database {
 
         return result.length > 0 ? result[0].dataValues.ClientId : false
     }
+
+    async getAllClients() {
+        return await Models.NSMClients.findAll({})
+    }
+
+    async getAllConnections(ClientId) {
+        var Connections = await Models.NSMConnections.findAll({
+            where: {
+                ClientId
+            }
+        })
+        return Connections.length > 0 ? Connections : false
+    }
+
     async logConnection(ePlayer) {
         var ClientId = await this.getClientId(ePlayer.Guid)
         
