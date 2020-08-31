@@ -22,7 +22,7 @@ class ePlayer extends EventEmitter {
         this.Name = Name
         this.inGame = true
         this.IPAddress = IPAddress
-        this.Clientslot = parseInt(Clientslot)
+        this.Clientslot = Clientslot
         this.Server = Server
         this.Server.Clients[Clientslot] = this
       }
@@ -65,7 +65,7 @@ class ePlayer extends EventEmitter {
                                             .replace('%CLIENT%', this.Clientslot)
                                             .replace('%MESSAGE%', text))
       }
-      Kick (Message, Origin) {
+      Kick (Message, Origin = 1) {
         this.Server.DB.addPenalty({
           TargetId: this.ClientId,
           OriginId: Origin,
@@ -75,7 +75,7 @@ class ePlayer extends EventEmitter {
         })
         this.Server.Rcon.executeCommandAsync(this.Server.Rcon.commandPrefixes.Rcon.clientKick
                                             .replace('%CLIENT%', this.Clientslot)
-                                            .replace('You have been kicked: ^5%REASON%', Message))
+                                            .replace('%REASON%', `You have been kicked: ^5${Message}`))
   } 
 }
 module.exports = ePlayer

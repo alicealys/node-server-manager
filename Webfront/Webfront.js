@@ -466,7 +466,7 @@ class Webfront {
                     Client.Tell(`Login authorized`)
                 break
                 case 'kick':
-                    Client.Kick(`Unauthorized`)
+                    Client.Kick(`Unauthorized`, 1)
                     res.end(JSON.stringify({
                         success: true
                     }))
