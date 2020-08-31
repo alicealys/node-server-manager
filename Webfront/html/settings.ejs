@@ -72,7 +72,7 @@
                 </div>
                 <div class='wf-settings-desc'>
                     <div class='api-category-endpoint-values-desc'>
-                        To protect your account from GUID spoofing you can enable the in-game login, each time you join you will be prompted to authorize the login through the webfront. To enable this you must have a password
+                        To protect your account from GUID spoofing you can enable the in-game login, each time you join you will be prompted to authorize the login through <a href='/authenticator'>here</a>.
                         <br><span class='api-endpoint-parameter'>Status</span>: <span class='api-data-type'><%= Client.Settings.InGameLogin ? 'Enabled' : 'Disabled'%></span>
                     </div>
                     <div class='wf-settings-button <%= Client.hasPassword ? '' : 'wf-settings-button-disabled' %>' <%= Client.hasPassword ? 'enabled' : 'disabled' %> <%= Client.hasPassword ? 'enabled' : 'disabled' %> data-setting='auth-ingame'>

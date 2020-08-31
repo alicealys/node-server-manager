@@ -3910,6 +3910,16 @@ select option:hover {
 .wf-colorcode {
   white-space: pre-wrap;
 }
+.wf-auth-button {
+  display:inline-block;
+  padding: 5px 10px;
+  min-width: 80px;
+  text-align: center;
+  margin:5px;
+  background-color: var(--color-1);
+  border-radius:5px;
+  cursor:pointer;
+}
 .wf-settings-button {
   display:inline-block;
   padding: 5px 10px;
@@ -3919,6 +3929,10 @@ select option:hover {
   background-color: var(--color-2);
   border-radius:5px;
   cursor:pointer;
+}
+.wf-auth-button:hover {
+  background-color: var(--color-3);
+  color: var(--color-text-hover);
 }
 .wf-settings-button:hover {
   background-color: var(--color-3);
@@ -3941,4 +3955,23 @@ select option:hover {
   padding:5px;
   margin:0px;
   border-radius:5px;
+}
+.wf-client-auth {
+  display:flex;
+  align-items: center;
+}
+.wf-client-auth div {
+  flex-grow:1;
+  flex-basis: 1px;
+  text-align:center;
+}
+.wf-client-auth-row {
+  padding:10px;
+  margin:5px;
+  background-color: var(--color-2);
+  border-radius:5px;
+}
+.wf-client-auth-title {
+  padding:10px;
+  margin:5px;
 }

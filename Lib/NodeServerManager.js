@@ -7,6 +7,7 @@ const EventLogWatcher         = require('./EventLogWatcher.js')
 const ServerLogWatcher        = require('./ServerLogWatcher.js')
 const ConfigMaker             = require('./ConfigMaker.js');
 const _CLICommands            = require('./CLICommands.js')
+const sessionStore            = new (require(path.join(__dirname, `../Webfront/SessionStore.js`)))()             
 
 var Info = {
   Author: 'fed',
@@ -14,6 +15,7 @@ var Info = {
 }
 
 var Managers = []
+var Webfront = null
 
 class Logger {
   constructor(dirName, fileName) {
@@ -50,7 +52,7 @@ class NSM {
 
     // Connect to the server's rcon
     this.RconConnection = new RconConnection(this.IP, this.PORT, this.PASSWORD)
-    this.Server = new Server(this.IP, this.PORT, this.RconConnection, new _Database())
+    this.Server = new Server(this.IP, this.PORT, this.RconConnection, new _Database(), sessionStore)
     this._EventLogWatcher = this.LOGFILE ? new EventLogWatcher(this.LOGFILE, this.Server, this) : new ServerLogWatcher(this.LOGSERVERURI, this.Server, this)
 
     // Load plugins before initializing Server.Clients
@@ -109,15 +111,15 @@ if (fs.existsSync(path.join(__dirname, `../Configuration/NSMConfiguration.json`)
      Managers.push(new NSM(config))
   })
 
-  const Webfront = require(path.join(__dirname, `../Webfront/Webfront.js`))
+  const _Webfront = require(path.join(__dirname, `../Webfront/Webfront.js`))
 
-  configuration.Webfront && (new Webfront(Managers, { 
+  configuration.Webfront && (Webfront = new _Webfront(Managers, { 
     SSL: configuration.WebfrontSSL, 
     Key: configuration['WebfrontSSL-Key'], 
     Cert: configuration['WebfrontSSL-Cert'], 
     Port: configuration.WebfrontPort, 
-    Hostname: configuration.WebfrontHostname 
-  }))
+    Hostname: configuration.WebfrontHostname, 
+  }, sessionStore))
 } else {
   var configMake = new ConfigMaker()
   configMake.init()

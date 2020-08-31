@@ -21,7 +21,6 @@ const _utils            = require(path.join(__dirname, '../Utils/Utils.js'))
 const Utils             = new _utils()
 const Auth              = new (require('./api/Auth.js'))(db)
 const twoFactor         = require('node-2fa')
-const { resolveNaptr } = require('dns')
 
 var lookup = {
     errors: {
@@ -58,11 +57,12 @@ function getRoleFrom (Value, Type) {
 }
 
 class Webfront {
-    constructor(Managers, Config) {
+    constructor(Managers, Config, sessionStore) {
         this.Managers = Managers
         this.pollRate = 300000
         this.Config = Config
         this.socketClients = []
+        this.sessionStore = sessionStore
         this.Start()
     }
     async getClientStatus(Guid) {
@@ -415,6 +415,96 @@ class Webfront {
             var rminutes = Math.round(minutes);
             return `${rhours}:${rminutes}`
         }
+
+        var getSessionClientId = (SessionID) => {
+            var found = false
+            this.Managers.forEach(Manager => {
+                if (found) return
+                Manager.Server.Clients.forEach(Client => {
+                    if (found || !Client || !Client.Session) return
+                    if (Client.Session.ID === SessionID) {
+                        found = Client
+                    }
+                })
+            })
+            return found
+        }
+
+        this.app.get('/api/authenticator', async (req, res, next) => {
+            switch (true) {
+                case (!req.session.ClientId):
+                    res.status(401)
+                    res.end(JSON.stringify({
+                        success: false,
+                        error: 'Unauthorized'
+                    }))
+                return
+                case (!req.query.action || !req.query.session):
+                    res.end(JSON.stringify({
+                        success: false,
+                        error: 'Parameters missing'
+                    }))
+                return
+            }
+
+            var Client = getSessionClientId(req.query.session)
+            if (Client.ClientId != req.session.ClientId) {
+                res.status(401)
+                res.end(JSON.stringify({
+                    success: false,
+                    error: 'Unauthorized'
+                }))
+                return
+            }
+
+            switch (req.query.action) {
+                case 'allow':
+                    Client.Session.Data.Authorized = true
+                    res.end(JSON.stringify({
+                        success: true
+                    }))
+                    Client.Tell(`Login authorized`)
+                break
+                case 'kick':
+                    Client.Kick(`Unauthorized`)
+                    res.end(JSON.stringify({
+                        success: true
+                    }))
+                break
+                default:
+                    res.end(JSON.stringify({
+                        success: false,
+                        error: 'Invalid parameters'
+                    }))
+                break
+            }
+        })
+
+        this.app.get('/authenticator', async (req, res, next) => {
+            if (!req.session.ClientId) {
+                res.setHeader('Content-type', 'text/html')
+                res.status(401)
+                ejs.renderFile(path.join(__dirname, '/html/error.ejs'), {header: header, error: {Code: 401, Description: 'You must be logged in to do that'}}, (err, str) => {
+                    res.end(str)
+                });
+                return
+            }
+            var Client = await db.getClient(req.session.ClientId)
+
+            var clientsToAuth = []
+
+            this.Managers.forEach(Manager => {
+                Manager.Server.Clients.forEach(ingameClient => {
+                    if (!ingameClient ||!ingameClient.Session) return
+                    (ingameClient.ClientId == Client.ClientId && !ingameClient.Session.Data.Authorized) && (clientsToAuth.push(ingameClient))
+                })
+            })
+
+            res.setHeader('Content-type', 'text/html')
+            ejs.renderFile(path.join(__dirname, `/html/authenticator.ejs`), {header: header, Client: Client, clientsToAuth: clientsToAuth}, (err, str) => {
+                res.end(str)
+            });
+        })
 
         this.app.get('/settings', async (req, res, next) => {
             if (!req.session.ClientId) {

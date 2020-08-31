@@ -8,6 +8,8 @@
         </script>
         <div class='wf-profile-menu' id='profile-menu'>
             <a href='/id/<%= session.ClientId %>' class='wf-profile-menu-entry'>Profile</a>
+            <a href='/settings' class='wf-profile-menu-entry'>Settings</a>
+            <a href='/authenticator' class='wf-profile-menu-entry'>Authenticator</a>
             <div data-menu-command='password' class='wf-profile-menu-entry'>Change Password</div>
             <% if (Client.PermissionLevel >= Permissions.Levels.ROLE_MODERATOR) {%>
             <div onclick='newRCONWindow()' class='wf-profile-menu-entry'>Remote Console</div>

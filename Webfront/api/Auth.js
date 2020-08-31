@@ -19,8 +19,9 @@ class Auth {
         })
     }
     async Token(ClientId, Token) {
+        var Client = await this.db.getClient(ClientId)
         var tokenHash = await this.db.getTokenHash(ClientId)
-        if (!tokenHash) return false
+        if (!tokenHash || !Client.Settings.TokenLogin) return false
         return new Promise((resolve, reject) => {
             bcrypt.compare(Token, tokenHash.Token, (err, same) => {
                 if (!same) {

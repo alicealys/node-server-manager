@@ -1,4 +1,5 @@
-const EventEmitter = require('events')
+const EventEmitter      = require('events')
+const crypto            = require('crypto')
 
 function secondsToDhms (seconds) {
   seconds = Number(seconds);
@@ -21,7 +22,7 @@ class ePlayer extends EventEmitter {
         this.Name = Name
         this.inGame = true
         this.IPAddress = IPAddress
-        this.Clientslot = Clientslot
+        this.Clientslot = parseInt(Clientslot)
         this.Server = Server
         this.Server.Clients[Clientslot] = this
       }
@@ -32,8 +33,12 @@ class ePlayer extends EventEmitter {
         await this.Server.DB.addClient(this.Guid)
         this.ClientId = await this.Server.DB.getClientId(this.Guid)
         await this.Server.DB.initializeStats(this.ClientId)
+
         this.PermissionLevel = await this.Server.DB.getClientLevel(this.ClientId)
         this.Server.DB.logConnection(this)
+
+        this.IPAddress.split(':')[0] && (this.Session = this.Server.sessionStore.createSession(this.IPAddress.split(':')[0]))
+        this.Session && (this.Session.Data.Authorized = this.Session.Data.Authorized != undefined ? this.Session.Data.Authorized : false)
       }
       Ban (Reason, Origin) {
         this.Server.DB.addPenalty({
@@ -70,7 +75,7 @@ class ePlayer extends EventEmitter {
         })
         this.Server.Rcon.executeCommandAsync(this.Server.Rcon.commandPrefixes.Rcon.clientKick
                                             .replace('%CLIENT%', this.Clientslot)
-                                            .replace('%REASON%', Message))
+                                            .replace('You have been kicked: ^5%REASON%', Message))
   } 
 }
 module.exports = ePlayer

@@ -4,7 +4,7 @@ const EventEmitter    = require('events')
 const ip              = require('public-ip')
 
 class _Server extends EventEmitter {
-    constructor(IP, PORT, RCON, DATABASE) {
+    constructor(IP, PORT, RCON, DATABASE, sessionStore) {
       super()
       this.Clients = new Array(18).fill(null)
       this.Rcon = RCON
@@ -23,6 +23,7 @@ class _Server extends EventEmitter {
       this.Heartbeat()
       this.heartbeatRetry = 1
       this.HeartbeatInt = setInterval(this.Heartbeat.bind(this), 15000)
+      this.sessionStore = sessionStore
     }
     COD2BashColor(string) {
         return string.replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), `\x1b[3$1m`)
