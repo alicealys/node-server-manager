@@ -39,10 +39,11 @@ window.addEventListener('load', async () => {
             'Hello!\nYou can find your credentials by typing .token in game!', 
         [
             {type: 'text', name: 'ClientId', placeholder: 'ClientId'},
-            {type: 'password', name: 'Token', placeholder: 'Token / Password'}
+            {type: 'password', name: 'Token', placeholder: 'Token / Password'},
+            {type: 'password', name: 'twofactor', placeholder: '2FA (Optional)'}
         ], 'Cancel', 'Login', async (params, messageBox) => {
             messageBox.querySelector('*[data-text-label]').innerHTML = 'Logging in... <i class="fas fa-slash fa-spin"></i>'
-            var loginStatus = JSON.parse(await makeFormRequest('POST', '/auth/login', `ClientId=${params.ClientId}&Token=${params.Token}`))
+            var loginStatus = JSON.parse(await makeFormRequest('POST', '/auth/login', `ClientId=${params.ClientId}&Token=${params.Token}&twofactor=${params.twofactor}`))
             loginStatus.success ? window.location.href = window.location.href : messageBox.querySelector('*[data-text-label]').innerHTML = loginStatus.error
         })
     })
@@ -205,6 +206,9 @@ var messageBox = (text, params, deny, accept, callback) => {
         }, 50);
         window.removeEventListener('keydown', windowEnter)
     }
+    messageBox.setText = (text) => {
+        messageBox.querySelector('*[data-text-label]').innerHTML = text
+    } 
     var acceptMessagebox = () => {
         var params = {}
         messageBox.querySelector('*[data-form-cont]').querySelectorAll('input').forEach(form => {

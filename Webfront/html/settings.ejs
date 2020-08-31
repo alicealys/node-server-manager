@@ -1,0 +1,85 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=0.7">
+        <title><%= Client.Name %> | Profile Overview</title>
+        <meta property="og:title" content="Server Overview | Node Server Manager">
+        <meta property="og:type" content="website">
+        <meta property="og:description" content="Node Server Manager is a administration tool for Plutonium IW5">
+        <meta name="description" content="<%= Client.Name %> | Profile Overview">
+        <meta name="keywords" content="IW4MAdmin, IW5, Plutonium, T6, NodeJs, server, administration, IW4x, MW2, Modern Warfare 3">
+        <script type='text/javascript' src='/js/main.js'></script>
+        <script type='text/javascript' src='/js/settings.js'></script>
+        <link rel="stylesheet" type="text/css" href="/css/xbbcode.css">
+        <link rel="stylesheet" type="text/css" href="/css/xbbcode.css">
+        <script src="/js/xbbcode.js" type="text/javascript"></script>
+        <script src="/js/xbbcode.js" type="text/javascript"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
+        <script src="/js/moment-with-locales.js" type="text/javascript"></script>
+        <script src="/js/moment-timezone-with-data-10-year-range.js" type="text/javascript"></script>
+        <script type='text/javascript' src='/js/font-awesome.js'></script>
+        <script>
+            var clientSettings = {
+                ClientId: parseInt('<%= Client.ClientId %>'),
+                Name: '<%= Client.Name %>',
+                Settings: JSON.parse('<%- JSON.stringify(Client.Settings) %>')
+            }
+        </script>
+        <link rel='stylesheet' type='text/css' href='/css/global.css'></link>
+    </head>
+    <body>
+        <%- header%>
+        <div class='wf-profile wf-default'>
+            <div class='wf-settings-sub'>
+                <div class='api-category-name'>
+                    Token Login
+                </div>
+                <div class='wf-settings-desc'>
+                    <div class='api-category-endpoint-values-desc'>
+                        Use the token command in game to login to the webfront<br>
+                        <span class='api-endpoint-parameter'>Status</span>: <span class='api-data-type'><%= Client.Settings.TokenLogin ? 'Enabled' : 'Disabled'%></span>
+                    </div>
+                    <div class='wf-settings-button <%= Client.hasPassword ? '' : 'wf-settings-button-disabled' %>' <%= Client.hasPassword ? 'enabled' : 'disabled' %> data-setting='auth-token'>
+                        <%= Client.Settings.TokenLogin ? 'Disable' : 'Enable'%>
+                    </div>
+                </div>
+            </div>
+            <div class='wf-settings-sub'>
+                <div class='api-category-name'>
+                    Two Factor Authentication
+                </div>
+                <div class='wf-settings-desc'>
+                    <div class='api-category-endpoint-values-desc'>
+                        To better protect your account enable two factor authentication<br>
+                        <span class='api-endpoint-parameter'>Status</span>: <span class='api-data-type'><%= Client.Settings.TwoFactor ? 'Enabled' : 'Disabled'%></span>
+                    </div>
+                    <div class='wf-settings-button <%= Client.hasPassword ? '' : 'wf-settings-button-disabled' %>' <%= Client.hasPassword ? 'enabled' : 'disabled' %> data-setting='auth-2fa'>
+                        <%= Client.Settings.TwoFactor ? 'Disable' : 'Enable'%>
+                    </div>
+                    <div class='api-category-endpoint-values-desc' data-2fa-enable style='display:none'>
+                        <img class='wf-2fa-img' data-2fauth-link src=''>
+                        <span class='api-desc-line'>Scan this code using a mobile authenticator app or use this code</span>
+                        <span class='api-desc-line'><span data-2fauth-code class='api-code'></span></span>
+                        <div class='wf-settings-button' data-2fa-confirm>
+                            Enter Code
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class='wf-settings-sub'>
+                <div class='api-category-name'>
+                    In-Game Login
+                </div>
+                <div class='wf-settings-desc'>
+                    <div class='api-category-endpoint-values-desc'>
+                        To protect your account from GUID spoofing you can enable the in-game login, each time you join you will be prompted to authorize the login through the webfront. To enable this you must have a password
+                        <br><span class='api-endpoint-parameter'>Status</span>: <span class='api-data-type'><%= Client.Settings.InGameLogin ? 'Enabled' : 'Disabled'%></span>
+                    </div>
+                    <div class='wf-settings-button <%= Client.hasPassword ? '' : 'wf-settings-button-disabled' %>' <%= Client.hasPassword ? 'enabled' : 'disabled' %> <%= Client.hasPassword ? 'enabled' : 'disabled' %> data-setting='auth-ingame'>
+                        <%= Client.Settings.InGameLogin ? 'Disable' : 'Enable'%>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

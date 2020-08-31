@@ -34,6 +34,27 @@ class Database {
                 ClientId: ClientId
             }).save()
         }
+        if (!(await this.getClientSettings(ClientId))) {
+            await Models.NSMSettings.build({
+                ClientId
+            }).save()
+        }
+    }
+
+    async setClientSetting(ClientId, Setting, Value) {
+        return await Models.NSMSettings.update(
+            { [Setting]: Value },
+            { where: { ClientId: ClientId } })
+    }
+
+    async getClientSettings(ClientId) {
+
+        var Settings = await Models.NSMSettings.findAll({
+            where: {
+                ClientId
+            }
+        })
+        return Settings.length > 0 ? Settings[0].dataValues : false
     }
 
     async getMostUsedWeapon(ClientId) {
@@ -193,9 +214,13 @@ class Database {
 
         if (Connection.length == 0) return false
 
+        await this.initializeStats(ClientId)
+
         delete Client[0].dataValues.Password
         
         var Client = {...Client[0].dataValues, ...Connection[0].dataValues}
+
+        Client.Settings = await this.getClientSettings(ClientId)
 
         return Client
     }
@@ -345,7 +370,7 @@ class Database {
     }
 
     async getAllClients() {
-        return await Models.NSMClients.count({})
+        return await Models.NSMClients.findAll({})
     }
 
     async getAllConnections(ClientId) {

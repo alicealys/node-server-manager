@@ -20,7 +20,8 @@ class _Server extends EventEmitter {
       this.previousUptime = 0
       this.previousStatus = null
       this.setMaxListeners(18)
-      this.Heartbeat();
+      this.Heartbeat()
+      this.heartbeatRetry = 1
       this.HeartbeatInt = setInterval(this.Heartbeat.bind(this), 15000)
     }
     COD2BashColor(string) {
@@ -45,10 +46,14 @@ class _Server extends EventEmitter {
       try {
         var status = await this.Rcon.executeCommandAsync(this.Rcon.commandPrefixes.Rcon.status)
         if (!status) {
-          this.Rcon.isRunning = false
-          console.log(`${this.IP}:${this.PORT} is not responding`)
+          this.heartbeatRetry > 0 && this.heartbeatRetry--
+          if (this.heartbeatRetry <= 0) {
+            this.Rcon.isRunning = false
+            console.log(`${this.IP}:${this.PORT} is not responding`)
+          }
         }
         if (!this.Rcon.isRunning && status != false) {
+          this.heartbeatRetry = 1
           this.Rcon.isRunning = true
           console.log(`${this.IP}:${this.PORT} is responding again, reloading clients...`)
           setTimeout( async () => {

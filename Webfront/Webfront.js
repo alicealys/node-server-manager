@@ -19,6 +19,9 @@ const Database  = require(path.join(__dirname, '../Lib/InitDatabase.js'))
 const db = new Database()
 const _utils            = require(path.join(__dirname, '../Utils/Utils.js'))
 const Utils             = new _utils()
+const Auth              = new (require('./api/Auth.js'))(db)
+const twoFactor         = require('node-2fa')
+const { resolveNaptr } = require('dns')
 
 var lookup = {
     errors: {
@@ -214,6 +217,161 @@ class Webfront {
                 }
             })
         })
+
+        this.app.post('/auth/changesetting', async (req, res, next) => {
+            var settings = ['InGameLogin', 'TokenLogin']
+            switch (true) {
+                case (!req.session.ClientId || !req.body.password):
+                    res.status(401)
+                    res.end(JSON.stringify({
+                        success: false,
+                        error: 'Unauthorized'
+                    }))
+                return
+                case (!settings.includes(req.query.setting)):
+                    res.end(JSON.stringify({
+                        success: false,
+                        error: 'Invalid parameter'
+                    }))
+                return
+            }
+            var result = await Auth.Password(req.session.ClientId, req.body.password)
+            result && await db.setClientSetting(req.session.ClientId, req.query.setting, (req.query.value == 'true'))
+            res.end(JSON.stringify({
+                success: result
+            }))
+        })
+
+        this.app.post('/auth/2fa', async (req, res, next) => {
+            switch (true) {
+                case (!req.session.ClientId):
+                    res.status(401)
+                    res.end(JSON.stringify({
+                        success: false,
+                        error: 'Unauthorized'
+                    }))
+                return
+            }
+
+            var Client = await db.getClient(req.session.ClientId)
+
+            switch (req.query.action) {
+                case 'enable':
+                    switch (true) {
+                        case (!req.body.password || req.body.token):
+                            res.end(JSON.stringify({
+                                success: false,
+                                error: 'Missing parameters'
+                            }))
+                        return
+                    }
+                    var passwordResult = await Auth.Password(Client.ClientId, req.body.password)
+                    var result         = ((await Auth.twoFactor(Client.ClientId, req.body.token)) && passwordResult)
+
+                    result && await db.setClientSetting(Client.ClientId, 'TwoFactor', true)
+                    res.end(JSON.stringify({success: result}))
+                break
+                case 'disable':
+                    switch (true) {
+                        case (!req.body.password || req.body.token):
+                            res.end(JSON.stringify({
+                                success: false,
+                                error: 'Missing parameters'
+                            }))
+                        return
+                    }
+                    var passwordResult = await Auth.Password(Client.ClientId, req.body.password)
+                    var result         = ((await Auth.twoFactor(Client.ClientId, req.body.token)) && passwordResult)
+
+                    result && await db.setClientSetting(Client.ClientId, 'TwoFactor', false)
+                    res.end(JSON.stringify({success: result}))
+                break
+                case 'request':
+                    if (!Client.Settings.TwoFactor) {
+                        var newSecret = twoFactor.generateSecret({name: `NSM-Webfront`, account: Client.Name})
+                        await db.setClientField(Client.ClientId, 'Secret', newSecret.secret)
+                        res.end(JSON.stringify({
+                            success: true,
+                            secret: newSecret
+                        }))
+                    } else {
+                        res.end(JSON.stringify({
+                            success: false,
+                            error: '2FA already enabled'
+                        }))
+                    }
+                break
+                default:
+                    res.end()
+                break
+            }
+        })
+
+        this.app.get('/auth/2fa', async (req, res, next) => {
+            switch (true) {
+                case (!req.session.ClientId):
+                    res.status(401)
+                    res.end(JSON.stringify({
+                        success: false,
+                        error: 'Unauthorized'
+                    }))
+                return
+            }
+
+            var Client = await db.getClient(req.session.ClientId)
+
+            switch (req.query.action) {
+                case 'request':
+                    if (!Client.Settings.TwoFactor) {
+                        var newSecret = twoFactor.generateSecret({name: `NSM-Webfront`, account: Client.Name})
+                        await db.setClientField(Client.ClientId, 'Secret', newSecret.secret)
+                        res.end(JSON.stringify({
+                            success: true,
+                            secret: newSecret
+                        }))
+                    } else {
+                        res.end(JSON.stringify({
+                            success: false,
+                            error: '2FA already enabled'
+                        }))
+                    }
+                break
+                default:
+                    res.end()
+                break
+            }
+        })
+
+        this.app.post('/auth/auth', async (req, res, next) => {
+            switch (true) {
+                case (!req.session.ClientId):
+                    res.status(401)
+                    res.end(JSON.stringify({
+                        success: false,
+                        error: 'Unauthorized'
+                    }))
+                return
+            }
+
+            switch (req.query['_']) {
+                case 'password':
+                    res.end(JSON.stringify({
+                        success: await Auth.Password(req.session.ClientId, req.body.password)
+                    }))
+                break
+                case 'token':
+                    res.end(JSON.stringify({
+                        success: await Auth.Token(req.session.ClientId, req.body.token)
+                    }))
+                break
+                case '2fa':
+                    res.end(JSON.stringify({
+                        success: await Auth.twoFactor(req.session.ClientId, req.body.token)
+                    }))
+                break
+            }
+        })
+
         this.app.post('/auth/login', async (req, res, next) => {
             if (req.body.ClientId == undefined || req.body.Token == undefined) {
                 res.end(JSON.stringify({
@@ -222,39 +380,31 @@ class Webfront {
                 }))
                 return
             }
+            var Client = await db.getClient(req.body.ClientId)
+            var twoFactorResult = Client.Settings.TwoFactor ? await Auth.twoFactor(Client.ClientId, req.body.twofactor) : true
 
-            var tokenHash = await db.getTokenHash(req.body.ClientId)
-            var passwordHash = await db.getClientField(req.body.ClientId, 'Password')
+            var passwordResult  = await Auth.Password(req.body.ClientId, req.body.Token)
+            var tokenResult     = await Auth.Token(req.body.ClientId, req.body.Token)
 
-            bcrypt.compare(req.body.Token, tokenHash.Token, function(err, result) {
-                if (!result) {
-                    bcrypt.compare(req.body.Token, passwordHash, function(err, result) {
-                        if (result) {
-                            req.session.ClientId = req.body.ClientId
-                            res.end(JSON.stringify({
-                                success: true,
-                            }))
-                        } else {
-                            res.end(JSON.stringify({
-                                success: false,
-                                error: 'Invalid credentials'
-                            }))
-                        }
-                    })
-                } else {
-                    if (!tokenHash || (new Date() - new Date(tokenHash.Date)) / 1000  > 120) {
-                        res.end(JSON.stringify({
-                            success: false,
-                            error: 'Invalid Credentials'
-                        }))
-                        return
-                    }
-                    req.session.ClientId = req.body.ClientId
+            switch (true) {
+                case (!passwordResult && !tokenResult):
                     res.end(JSON.stringify({
-                        success: result
+                        success: false,
+                        error: 'Invalid credentials'
                     }))
-                }
-            })
+                return
+                case (!twoFactorResult):
+                    res.end(JSON.stringify({
+                        success: false,
+                        error: 'Invalid 2FA code'
+                    }))
+                return
+            }
+
+            req.session.ClientId = req.body.ClientId
+            res.end(JSON.stringify({
+                success: true
+            }))
         })
 
         var timeConvert = (n) => {
@@ -267,10 +417,6 @@ class Webfront {
         }
 
         this.app.get('/settings', async (req, res, next) => {
-            res.redirect('/settings/profile')
-        })
-
-        this.app.get('/settings/:sub', async (req, res, next) => {
             if (!req.session.ClientId) {
                 res.setHeader('Content-type', 'text/html')
                 res.status(401)
@@ -279,14 +425,10 @@ class Webfront {
                 });
                 return
             }
-            var pages = ['security', 'profile']
-            if (!pages.includes(req.params.sub.toLocaleLowerCase())) {
-                next()
-                return
-            }
             var Client = await db.getClient(req.session.ClientId)
+            Client.hasPassword = await db.getClientField(Client.ClientId, 'Password') != null
             res.setHeader('Content-type', 'text/html')
-            ejs.renderFile(path.join(__dirname, `/html/settings/${req.params.sub.toLocaleLowerCase()}.ejs`), {header: header, Client: Client}, (err, str) => {
+            ejs.renderFile(path.join(__dirname, `/html/settings.ejs`), {header: header, Client: Client}, (err, str) => {
                 res.end(str)
             });
         })

@@ -22,6 +22,7 @@
     "log-timestamp": "^0.3.0",
     "md5": "^2.3.0",
     "moment": "^2.27.0",
+    "node-2fa": "^1.1.2",
     "node-fetch": "^2.6.0",
     "package.json": "^2.0.1",
     "public-ip": "^4.0.2",
@@ -52,6 +53,12 @@
   "homepage": "https://github.com/fedddddd/node-server-manager#readme",
   "description": "Server Manager for Plutonium IW5 Servers",
   "pkg": {
-    "scripts": ["Lib/**/*.js","Lib/*.js", "Webfront/*.js", "Utils/*.js", "Plugins/*.js"]
+    "scripts": [
+      "Lib/**/*.js",
+      "Lib/*.js",
+      "Webfront/*.js",
+      "Utils/*.js",
+      "Plugins/*.js"
+    ]
   }
 }

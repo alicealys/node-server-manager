@@ -17,6 +17,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true,
             defaultValue: null,
         },
+        Secret: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+            defaultValue: null,
+        },
         Guid: {
             type: DataTypes.TEXT,
             allowNull: false,

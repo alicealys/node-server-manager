@@ -3910,3 +3910,35 @@ select option:hover {
 .wf-colorcode {
   white-space: pre-wrap;
 }
+.wf-settings-button {
+  display:inline-block;
+  padding: 5px 10px;
+  min-width: 80px;
+  text-align: center;
+  margin:5px;
+  background-color: var(--color-2);
+  border-radius:5px;
+  cursor:pointer;
+}
+.wf-settings-button:hover {
+  background-color: var(--color-3);
+  color: var(--color-text-hover);
+}
+.wf-settings-button-disabled {
+  opacity: 0.6;
+  cursor: no-drop!important;
+}
+.wf-settings-button-disabled:hover {
+  background-color: var(--color-2)!important;
+  color: var(--color-text)!important;
+}
+.wf-settings-desc {
+  padding-top:10px;
+  padding-bottom:10px;
+  padding-left: 20px;
+}
+.wf-2fa-img {
+  padding:5px;
+  margin:0px;
+  border-radius:5px;
+}
