@@ -337,7 +337,7 @@ class Plugin {
             return
           }
           var Target = this.findClient(Client.ClientId)
-          Target ? ( Player.Tell(`^5${Target.Name}^7 was kicked`), Target.Kick(`You have been kicked: ^5${args.slice(2).join(' ')}`, Player.ClientId)) : Player.Tell(localization.COMMAND_CLIENT_NOT_INGAME)
+          Target ? ( Player.Tell(`^5${Target.Name}^7 was kicked`), Target.Kick(`${args.slice(2).join(' ')}`, Player.ClientId)) : Player.Tell(localization.COMMAND_CLIENT_NOT_INGAME)
         }
       },
       'unban': {
@@ -356,6 +356,14 @@ class Plugin {
           }
 
           var count = await this.Server.DB.unbanClient(Client.ClientId, Reason, Player.ClientId)
+
+          this.Server.DB.addPenalty({
+            TargetId: Client.ClientId,
+            OriginId: Player.ClientId,
+            PenaltyType: 'PENALTY_UNBAN',
+            Duration: 0,
+            Reason: Reason
+          })
 
           count > 0 ? Player.Tell(`Unbanned ^5${Client.Name}^7 for ^5${Reason}^7`) : Player.Tell(`^5${Client.Name}^7 is not banned`)
         }
@@ -401,7 +409,7 @@ class Plugin {
 
 
           this.Server.DB.addPenalty({
-            TargetId: args[1],
+            TargetId: Client.ClientId,
             OriginId: Player.ClientId,
             PenaltyType: 'PENALTY_TEMP_BAN',
             Duration: Duration,
@@ -439,7 +447,7 @@ class Plugin {
 
 
           this.Server.DB.addPenalty({
-            TargetId: args[1],
+            TargetId: Client.ClientId,
             OriginId: Player.ClientId,
             PenaltyType: 'PENALTY_PERMA_BAN',
             Duration: 0,

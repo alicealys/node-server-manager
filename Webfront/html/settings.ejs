@@ -31,6 +31,7 @@
         <%- header%>
         <div class='wf-profile wf-default'>
             <div class='wf-settings-sub'>
+                <%= !Client.hasPassword ? 'To change any of these settings you must set a password first' : ''%>
                 <div class='api-category-name'>
                     Token Login
                 </div>
@@ -72,7 +73,7 @@
                 </div>
                 <div class='wf-settings-desc'>
                     <div class='api-category-endpoint-values-desc'>
-                        To protect your account from GUID spoofing you can enable the in-game login, each time you join you will be prompted to authorize the login through <a href='/authenticator'>here</a>.
+                        To protect your server from GUID spoofing you can enable the in-game login, each time you join you will be prompted to authorize the login through <a href='/authenticator'>here</a> before being able to execute any commands.
                         <br><span class='api-endpoint-parameter'>Status</span>: <span class='api-data-type'><%= Client.Settings.InGameLogin ? 'Enabled' : 'Disabled'%></span>
                     </div>
                     <div class='wf-settings-button <%= Client.hasPassword ? '' : 'wf-settings-button-disabled' %>' <%= Client.hasPassword ? 'enabled' : 'disabled' %> <%= Client.hasPassword ? 'enabled' : 'disabled' %> data-setting='auth-ingame'>

@@ -172,8 +172,6 @@ class Database {
             { where: { TargetId: TargetId, Active: true } }
         )
 
-        console.log(Penalties)
-
         Penalties.length > 0 && await Models.NSMPenalties.build({
             TargetId,
             OriginId,

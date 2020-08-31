@@ -79,6 +79,9 @@ window.addEventListener('load', async () => {
                             case (params.password != params.confirm):
                                 messageBox.querySelector('*[data-text-label]').innerHTML = 'Passwords don\'t match'
                                 return
+                            case (params.password.length < 8):
+                                messageBox.setText('Password is too short')
+                                return
                             case (params.password.length > 64):
                                 messageBox.querySelector('*[data-text-label]').innerHTML = 'Password is too long'
                                 return

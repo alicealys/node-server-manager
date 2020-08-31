@@ -4,6 +4,7 @@ const { Webhook, MessageBuilder }       = require('discord-webhook-node')
 var hook                = new Webhook({ url: config.discordHookUrl, throwErrors: false, retryOnLimit: false,})
 const discord           = require('discord.js')
 const fetch             = require('node-fetch')
+const Utils             = new (require(path.join(__dirname, '../Utils/Utils.js')))()
 
 hook.setUsername('NSM Bot')
 
@@ -13,6 +14,7 @@ class Plugin {
         this.Manager = Manager
         this.Server.on('connect', this.onPlayerConnect.bind(this))
         this.Server.on('disconnect', this.onPlayerDisconnect.bind(this))
+        this.Server.on('penalty', this.onPlayerPenalty.bind(this))
     }
     async onPlayerConnect (Player) {
         this.sendHook(`:inbox_tray: ${Player.Name}`, ' ' ,`${config.webfrontHostname}/id/${Player.ClientId}`)
@@ -26,17 +28,27 @@ class Plugin {
     async getFlag (IPAddress) {
         return (await (await fetch(`https://extreme-ip-lookup.com/json/${IPAddress.split(':')[0]}`)).json()).countryCode.toLocaleLowerCase()
     }
-    async sendHookPenalty(Title, Description, Url, Type, Reason, Duration) {
+    async onPlayerPenalty(Type, Target, Reason, Origin, Duration = -1) {
+        var translation = {
+            'PENALTY_TEMP_BAN': 'Temp ban',
+            'PENALTY_PERMA_BAN': 'Perma ban',
+            'PENALTY_KICK': 'Kick'
+        }
+        Origin = (await Target.Server.DB.getClient(Origin)).Name
+        this.sendHookPenalty(`:hammer: ${Target.Name}`, ' ', `${config.webfrontHostname}/id/${Target.ClientId}`, translation[Type], Reason, Origin, Duration)
+    }
+    async sendHookPenalty(Title, Description, Url, Type, Reason, Origin, Duration) {
         var messageEmbed = new MessageBuilder()
         .setTitle(Title)
         .setDescription(Description)
         .setURL(Url)
         .setColor('#00b0f4')
         .addField('Type', Type, true)
-        .addField('Reason', stripColorCodes(Reason), true)
-        .addField('Duration', Duration, true)
+        .addField('Origin', Origin, true)
+        .addField('Reason', `\`${this.stripColorCodes(Reason)}\``, true)
         .setFooter('Node Server Manager')
-        .setTimestamp();
+        .setTimestamp()
+        Duration > 0 && messageEmbed.addField('Duration', Utils.time2str(Duration), true)
         hook.send(messageEmbed)
     }
     stripColorCodes(string) {

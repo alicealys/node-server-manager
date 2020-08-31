@@ -171,13 +171,19 @@ class Webfront {
                         success: false,
                         error: 'Not logged in'
                     }))
-                    return;
+                return
                 case (!req.body.password || !req.body.previous):
                     res.end(JSON.stringify({
                         success: false,
                         error: 'Parameters missing'
                     }))
-                    return;
+                return
+                case (req.body.password.length < 8 || req.body.password.length > 64):
+                    res.end(JSON.stringify({
+                        success: false,
+                        error: 'Invalid parameter'
+                    }))
+                return
             }
             
             var tokenHash = await db.getTokenHash(req.session.ClientId)

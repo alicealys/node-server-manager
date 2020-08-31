@@ -48,7 +48,8 @@ class ePlayer extends EventEmitter {
           Duration: 0,
           Reason: Reason
         })
-        this.Kick(`You have been permanently banned for: ^5${Reason}`, Origin)
+        this.Server.emit('penalty', 'PENALTY_PERMA_BAN', this, Reason, Origin)
+        this.Kick(`You have been permanently banned for: ^5${Reason}`, Origin, false, '')
       }
       Tempban (Reason, Origin, Duration) {
         this.Server.DB.addPenalty({
@@ -58,14 +59,15 @@ class ePlayer extends EventEmitter {
           Duration: Duration,
           Reason: Reason
         })
-        this.Kick(`You have been banned for: ^5${Reason} ${secondsToDhms(Duration)}^7 left`, Origin)
+        this.Server.emit('penalty', 'PENALTY_TEMP_BAN', this, Reason, Origin, Duration)
+        this.Kick(`You have been banned for: ^5${Reason} ${secondsToDhms(Duration)}^7 left`, Origin, false, '')
       }
       Tell (text) {
         this.Server.Rcon.executeCommandAsync(this.Server.Rcon.commandPrefixes.Rcon.Tell
                                             .replace('%CLIENT%', this.Clientslot)
                                             .replace('%MESSAGE%', text))
       }
-      Kick (Message, Origin = 1) {
+      Kick (Message, Origin = 1, Log = true, Basemsg = 'You have been kicked: ^5') {
         this.Server.DB.addPenalty({
           TargetId: this.ClientId,
           OriginId: Origin,
@@ -73,9 +75,10 @@ class ePlayer extends EventEmitter {
           Duration: 0,
           Reason: Message
         })
+        Log && this.Server.emit('penalty', 'PENALTY_KICK', this, Message, Origin)
         this.Server.Rcon.executeCommandAsync(this.Server.Rcon.commandPrefixes.Rcon.clientKick
                                             .replace('%CLIENT%', this.Clientslot)
-                                            .replace('%REASON%', `You have been kicked: ^5${Message}`))
+                                            .replace('%REASON%', `${Basemsg}${Message}`))
   } 
 }
 module.exports = ePlayer

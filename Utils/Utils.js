@@ -78,7 +78,25 @@ class Utils {
             address: address
         }
     }
-      chunkArray (arr, len) {
+    time2str(secs) {
+      var unit = 's'
+      switch (true) {
+          case (secs < 3600):
+              secs /= 60
+              unit = 'min'
+          break
+          case (secs >= 3600 && secs < 86400):
+              secs /= 3600
+              unit = 'h'
+          break
+          case (secs >= 86400):
+              secs /= 86400
+              unit = 'd'
+          break
+      }
+      return `${secs.toFixed(1)}${unit}`
+    }
+    chunkArray (arr, len) {
 
         var chunks = [],
             i = 0,
