@@ -150,3 +150,9 @@ Then run StartLogServer.sh or simply run `node Lib/NodeLogServer.js`
 | logFile | Path to the log file | 
 | key | Key to protect the websocket |
 | ssl | Should contain ssl `key` and `cert` files if possible |
+
+In your manager configuration add (`ws` or `wss` if you have ssl enabled):
+```json
+"LOGSERVERURI" : "ws://ip:port/&key=key"
+```
+to the server
