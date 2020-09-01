@@ -124,3 +124,29 @@ class Plugin {
 
 module.exports = Plugin
 ```
+# Log Server
+If your dedicated server is in a different vps / server from Node Server Manager you can use the log server to share the logfile
+To do that create a json file named NLSConfiguration in Configuration/ and configure it:
+```json
+{
+  "Servers": [
+    {
+      "bindPort" : 1337,
+      "logFile" : "/home/whatever/pluto/storage/iw5/games_mp.log",
+      "key" : "1337",
+      "ssl" : {
+        "cert" : "/etc/ssl/certs/certificate.crt",
+        "key" : "/etc/ssl/private/private.key"
+      }
+    }
+  ]
+}
+```
+Then run StartLogServer.sh or simply run `node Lib/NodeLogServer.js`
+
+| Parameters | Description |
+| --- | --- |
+| bindPort | Port the websocket will bind to |
+| logFile | Path to the log file | 
+| key | Key to protect the websocket |
+| ssl | Should contain ssl `key` and `cert` files if possible |
