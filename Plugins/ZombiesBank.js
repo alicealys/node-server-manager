@@ -123,7 +123,7 @@ class Plugin {
         inGame: false,
         Permission: Permissions.Commands.COMMAND_USER_CMDS,
         callback: async (Player, args) => {
-            var Target = await this.Server.DB.getClient(args[1])
+            var Target = await this.getClient(args[1])
             switch (true) {
                 case (!Target):
                     Player.Tell('Client not found')
@@ -153,7 +153,7 @@ class Plugin {
         Permission: Permissions.Commands.COMMAND_USER_CMDS,
         callback: async (Player, args) => {
             if (args[1]) {
-                var Client = await this.Server.DB.getClient(parseInt(args[1]))
+                var Client = await this.getClient(args[1])
                 if (!Client) {
                     Player.Tell(`You have a total of: ^2$${(await this.getZMStats(Player.ClientId)).Money}^7 in your bank account`)
                     return
@@ -165,7 +165,21 @@ class Plugin {
 
         }
     }
-
   }
+  async getClient(name) {
+    var clientIdRegex = /\@([0-9]+)/g
+    var Clients = name.match(clientIdRegex) ? [await this.Server.DB.getClient(clientIdRegex.exec(name)[1])] : ((name.length >= 3 && !name.match('%')) ? (await this.Server.DB.getClientByName(name)) : false)
+    var Client = Clients ? (Clients.length > 1 ? Clients.filter((Client) => { return this.findClient(Client.ClientId)})[0] : Clients[0]) : false
+    return Client
+     
+  }
+  findClient(ClientId) {
+    var Client = null
+    this.Managers.forEach(Manager => {
+      if (Client) return
+      Client = Manager.Server.Clients.find(x => x && x.ClientId == ClientId)
+    })
+    return Client
+  } 
 }
 module.exports = Plugin

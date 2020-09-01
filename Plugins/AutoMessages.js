@@ -1,7 +1,5 @@
 const path              = require('path')
 const fetch             = require('node-fetch')
-const { get } = require('http')
-const { inherits } = require('util')
 const _utils            = require(path.join(__dirname, '../Utils/Utils.js'))
 const Utils             = new _utils()
 const config = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`))

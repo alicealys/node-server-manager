@@ -85,7 +85,7 @@ class Plugin {
         Permission: Permissions.Commands.COMMAND_USER_CMDS,
         inGame: false,
         callback: async (Player, args = null, delay) => {
-          var Client = await this.Server.DB.getClient(parseInt(args[1]))
+          var Client = await this.getClient(args[1])
           switch (true) {
             case (!Client):
               Player.Tell(localization.COMMAND_CLIENT_NOT_FOUND)
@@ -98,8 +98,8 @@ class Plugin {
             return
           }
 
-          Target.Tell(`^3[^5${Player.Name}^3 (#^5${Player.ClientId}^3) -> me]^7 ${args[2]}`)
-          Player.Tell(`^3[me -> ^5${Target.Name} ^3(#^5${Target.ClientId}^3)^3]^7 ${args[2]}`)
+          Target.Tell(`^3[^5${Player.Name}^3 (@^5${Player.ClientId}^3) -> me]^7 ${args[2]}`)
+          Player.Tell(`^3[me -> ^5${Target.Name} ^3(@^5${Target.ClientId}^3)^3]^7 ${args[2]}`)
         }
       },
       'players': {
@@ -115,7 +115,7 @@ class Plugin {
             for (var i = 0; i < Clients.length; i++) {
               var line = []
               for (var o = 0; o < Clients[i].length; o++) {
-                line.push(`^7[^6${Utils.getRoleFrom(Clients[i][o].PermissionLevel, 1).Name}^7 (#^5${Clients[i][o].ClientId}^7)] ^5${Clients[i][o].Name}^7`)
+                line.push(`^7[^6${Utils.getRoleFrom(Clients[i][o].PermissionLevel, 1).Name}^7 (@^5${Clients[i][o].ClientId}^7)] ^5${Clients[i][o].Name}^7`)
               }
               Player.Tell(line.join(' '))
               delay && await wait(500)
@@ -137,7 +137,7 @@ class Plugin {
         inGame: false,
         callback: async (Player) => {
           var info = await this.Server.DB.getClient(Player.ClientId)
-          Player.Tell(`[^5${info.Name}^7]  [#^5${info.ClientId}^7]  [^5${this.getRoleFrom(Math.min(info.PermissionLevel, 5), 1).Name}^7] [^5${info.IPAddress}^7] [^5${info.Guid}^7]`)
+          Player.Tell(`[^5${info.Name}^7]  [@^5${info.ClientId}^7]  [^5${this.getRoleFrom(Math.min(info.PermissionLevel, 5), 1).Name}^7] [^5${info.IPAddress}^7] [^5${info.Guid}^7]`)
         }
       },
       'servers': {
@@ -164,7 +164,7 @@ class Plugin {
         Permission: Permissions.Commands.COMMAND_USER_CMDS,
         inGame: false,
         callback: async (Player, args) => {
-          var ClientId = !args[1] ? Player.ClientId : args[1]
+          var ClientId = !args[1] ? Player.ClientId : (await this.getClient(args[1])).ClientId
           var Stats = await this.Server.DB.getPlayerStatsTotal(ClientId)
           var OtherStats = await this.Server.DB.getPlayerStats(ClientId)
           if (Stats)
@@ -237,7 +237,7 @@ class Plugin {
         Permission: Permissions.Commands.COMMAND_TP,
         inGame: true,
         callback: async (Player, args) => {
-          var Client = await this.Server.DB.getClient(args[1])
+          var Client = await this.getClient(args[1])
           var Target = await this.Server.Rcon.getClientByGuid(Client.Guid)
           switch (true) {
             case !Client:
@@ -255,7 +255,7 @@ class Plugin {
         Permission: Permissions.Commands.COMMAND_TP,
         inGame: true,
         callback: async (Player, args) => {
-          var Client = await this.Server.DB.getClient(args[1])
+          var Client = await this.getClient(args[1])
           var Target = await this.Server.Rcon.getClientByGuid(Client.Guid)
           switch (true) {
             case !Client:
@@ -275,7 +275,7 @@ class Plugin {
         Alias: 'sr',
         callback: async (Player, args) => {
             var Role = args.slice(2).join(' ')
-            var Client = await this.Server.DB.getClient(args[1]);
+            var Client = await this.getClient(args[1])
             
             var Permission = this.getRoleFrom(Role, 0)
             switch (true) {
@@ -315,7 +315,7 @@ class Plugin {
               Player.Tell(`You're already the owner!`)
               return;
             case (Owner.ClientId != Player.ClientId):
-              Player.Tell(`${this.Server.DB.getClient(Owner.ClientId).Name} owns this server`)
+              Player.Tell(`^5${(await this.Server.DB.getClient(Owner.ClientId)).Name}^7 owns this server`)
               return;
           }
         }
@@ -326,7 +326,7 @@ class Plugin {
         Permission: Permissions.Commands.COMMAND_KICK,
         inGame: false,
         callback: async (Player, args) => {
-          var Client = await this.Server.DB.getClient(args[1])
+          var Client = await this.getClient(args[1])
 
           switch (true) {
             case (!Client):
@@ -346,7 +346,7 @@ class Plugin {
         Permission: Permissions.Commands.COMMAND_KICK,
         inGame: false,
         callback: async (Player, args) => {
-          var Client = await this.Server.DB.getClient(args[1])
+          var Client = await this.getClient(args[1])
           var Reason = args.slice(2).join(' ')
 
           switch (true) {
@@ -382,7 +382,7 @@ class Plugin {
             's': 1,
           }
 
-          var Client = await this.Server.DB.getClient(args[1])
+          var Client = await this.getClient(args[1])
 
           var parts = Array.from(args[2].match(/([0-9]+)([A-Za-z]+)/)).slice(1)
 
@@ -424,7 +424,7 @@ class Plugin {
         Permission: Permissions.Commands.COMMAND_BAN,
         inGame: false,
         callback: async (Player, args) => {
-          var Client = await this.Server.DB.getClient(args[1])
+          var Client = await this.getClient(args[1])
 
           switch (true) {
             case (!Client):
@@ -473,6 +473,13 @@ class Plugin {
       }
     };
       this.Server.on('event', this.onEventAsync.bind(this));
+  }
+  async getClient(name) {
+    var clientIdRegex = /\@([0-9]+)/g
+    var Clients = name.match(clientIdRegex) ? [await this.Server.DB.getClient(clientIdRegex.exec(name)[1])] : ((name.length >= 3 && !name.match('%')) ? (await this.Server.DB.getClientByName(name)) : false)
+    var Client = Clients ? (Clients.length > 1 ? Clients.filter((Client) => { return this.findClient(Client.ClientId)})[0] : Clients[0]) : false
+    return Client
+     
   }
   findClient(ClientId) {
     var Client = null

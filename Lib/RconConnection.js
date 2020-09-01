@@ -78,6 +78,7 @@ class Rcon {
       var gamename = await this.getDvar('gamename')
       rawClients.forEach(client => {
         var regex = /^ *([0-9]+) +-?([0-9]+) +-?([0-9]+) +-?([0-9]+) +((?:[A-Za-z0-9]){8,32}|(?:[A-Za-z0-9]){8,32}|bot[0-9]+|(?:[[A-Za-z0-9]+)) *(.{0,32}) +([0-9]+) +(\d+\.\d+\.\d+.\d+\:-*\d{1,5}|0+.0+:-*\d{1,5}|loopback|unknown) +(-*[0-9]+) +([0-9]+) *$/g
+        if (!client.match(regex)) return
         var match = regex.exec(client)
         for (var i = 0; i < match.length; i++) {
           match[i] = match[i].trim()
@@ -87,8 +88,8 @@ class Rcon {
           score: match[2],
           bot: match[3],
           ping: match[4],
-          guid: match[5],
-          name: match[6],
+          guid: Utils.convertGuid(match[5], gamename),
+          name: match[6].replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), ``),
           lastmgs: match[7],
           address: match[8],
           qport: match[9],
