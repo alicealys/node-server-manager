@@ -75,36 +75,25 @@ class Rcon {
       var map = status[0].split(/\s+/g)[1]
       var rawClients = status.slice(3)
       var clients = []
-      /*var indexes = status[1].split(/\s+/)
-      var columns = status[2].split(' ').map(x => x.length)
-
-      rawClients.forEach(client => {
-        var clientVars = []
-        client = client.split('')
-        columns.forEach(column => {
-          clientVars.push(client.splice(0, column + 1).join('').trim())
-        })
-        clients.push(clientVars.reduce((a, key, index) => Object.assign(a, { [indexes[index]] : key }), {}));
-      })*/
       var gamename = await this.getDvar('gamename')
       rawClients.forEach(client => {
-        /*var end = client.match(/\b([0-9])\s+(unknown|bot|((?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:(?<!\.)\b|\.)){4})/g)[0]
-
-        // split line until the end of the client name
-        client = client.substr(0, client.indexOf(end)).trim()
-        var meta = client.split(/\s+/g, 5) // num, bot, guid ... 
-        var name = client.split(/\s+/g).slice(meta.length).join(' ').replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), ``) // client name
-        var parsedClient = {
-          name: name,
-          guid: Utils.convertGuid(meta[4], gamename),
-          num: meta[0],
-          ping: meta[3],
-          bot: meta[2],
-          score: meta[1],
-          lastmsg: end.split(/\s+/g)[0],
-          address: end.split(/\s+/g)[1]
-        }*/
-        clients.push(Utils.parseStatusLine(client, gamename))
+        var regex = /^ *([0-9]+) +-?([0-9]+) +-?([0-9]+) +-?([0-9]+) +((?:[A-Za-z0-9]){8,32}|(?:[A-Za-z0-9]){8,32}|bot[0-9]+|(?:[[A-Za-z0-9]+)) *(.{0,32}) +([0-9]+) +(\d+\.\d+\.\d+.\d+\:-*\d{1,5}|0+.0+:-*\d{1,5}|loopback|unknown) +(-*[0-9]+) +([0-9]+) *$/g
+        var match = regex.exec(client)
+        for (var i = 0; i < match.length; i++) {
+          match[i] = match[i].trim()
+        }
+        clients.push({
+          num: match[1],
+          score: match[2],
+          bot: match[3],
+          ping: match[4],
+          guid: match[5],
+          name: match[6],
+          lastmgs: match[7],
+          address: match[8],
+          qport: match[9],
+          rate: match[10]
+        })
       })
       return {success: true, data : { map, clients }}
     }
