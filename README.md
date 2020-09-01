@@ -44,27 +44,62 @@ Other optional parameters
 | Paramter | Description |
 | --- | --- |
 | LOGSERVERURI | If your dedicated server is in a different vps / server you can use the log server for that (example url: ws://{ip}:{port}/&key={key}) |
-| Info | Text that will be shown in the /info page of the webfront, can be formatted using xbbcode [exmaple](http://patorjk.com/bbcode-previewer/) and cod color codes (^1, ^2,...) you can also add placeholders |
+| Info | Text that will be shown in the /info page of the webfront, can be formatted using xbbcode [example](http://patorjk.com/bbcode-previewer/) and cod color codes (^1, ^2,...) you can also add placeholders |
 | Permissions | Contains configuration for levels, commands and roles |
 | Levels | Contains role base names and their level |
 | Commands | Contains permissions for all commands |
 | Roles | Contains the role base names and their display names |
+| autoMessages | Array containing all auto messages |
+| autoMessagesInterval | Interval of auto messages |
+| sessionDuration | Duration of each session (for in game login |
+| commandPrefix | Command prefix |
 
 Text Placeholders
 | Name | Description |
 | --- | --- |
-| {USERNAME} | Current logged in client's username |
-| {CLIENTID} | Current logged in client's ClientId |
+| {USERNAME} | Current logged in client's username (motd only) |
+| {CLIENTID} | Current logged in client's ClientId (motd only) |
 | {PLAYERCOUNT} | Online players count |
 | {SERVERCOUNT} | Online servers count |
-| {TOPSERVER-IP} | IP of the currently most populated server |
-| {TOPSERVER-PORT} | Port of the currently most populated server |
-| {TOPSERVER-HOSTNAME} | Hostname of the currently most populated server |
-| {TOPSERVER-PLAYERS} | Player count of the currently most populated server |
+| {TOTALKILLS} | Total killed players (automessages only) |
+| {TOTALPLAYEDTIME} | Total played time of players (automessages only) |
+| {TOPSERVER-IP} | IP of the currently most populated server (info page only) |
+| {TOPSERVER-PORT} | Port of the currently most populated server (info page only) |
+| {TOPSERVER-HOSTNAME} | Hostname of the currently most populated server (info page only) |
+| {TOPSERVER-PLAYERS} | Player count of the currently most populated server (info page only) |
 
 # Commands
 
-soon 
+| Command | Alias | Permission | Description | Arguments |
+| --- | --- | --- | --- | --- |
+| help |  | User | Displays list of commands | |
+| ping |  | User | Pings server | |
+| broadcast |  | Admin | Broadcasts a message to all servers | | 
+| tell |  | User | Send a private message to any user in any server | |
+| players |  | User | Displays list of all players in all servers |  |
+| info |  | User | Displays version and author | |
+| whoami |  | User | Displays info about the user | |
+| servers |  | User | Displays list of all servers | |
+| stats |  | User | Displays stats about the specified user or self | ClientId (Optional) |
+| token |  | User | Displays a 6 character token that can be used to log in the webfront | |
+| rcon |  | Owner | Executes an rcon command | ServerId (if on command line), Command |
+| tp |  | Admin | Teleports to specified user (Requires server-side script) | ClientId |
+| tphere |  | Admin | Teleports user to self (Requires server-side script) | ClientId |
+| setrole | sr | Admin | Sets a user's role | ClientId, Role |
+| owner |  | User | Claims ownership of a server | | 
+| kick |  | Moderator | Kicks a player | ClientId, Reason |
+| unban | ub | Moderator | Unbans a player | ClientId, Reason |
+| tempban | tb | Moderator | Temp bans a player | ClientId, Duration, Reason |
+| ban | b | Moderator | Bans a player | ClientId, Reason |
+| find | f | User | Displays information about a user | Name |
+
+# Account Settings
+
+| Setting | Description | Default |
+| --- | --- | --- |
+| Token Login | Whether to enable token login (login using the token from the token command in game) | Enabled |
+| 2FA | Enable Two-Factor Authentication for the webfront | Disabled |
+| In Game Login | If enabled you must authorize logins (through /authenticator in the webfront) before being able to execute any commands in game (sessions last based on config value and refresh at each connection) | Disabled |
 
 # Plugins
 
