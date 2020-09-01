@@ -80,18 +80,18 @@ Text Placeholders
 | info |  | User | Displays version and author | |
 | whoami |  | User | Displays info about the user | |
 | servers |  | User | Displays list of all servers | |
-| stats |  | User | Displays stats about the specified user or self | ClientId (Optional) |
+| stats |  | User | Displays stats about the specified user or self | @ClientId or Name (Optional) |
 | token |  | User | Displays a 6 character token that can be used to log in the webfront | |
 | rcon |  | Owner | Executes an rcon command | ServerId (if on command line), Command |
-| tp |  | Admin | Teleports to specified user (Requires server-side script) | ClientId |
-| tphere |  | Admin | Teleports user to self (Requires server-side script) | ClientId |
-| setrole | sr | Admin | Sets a user's role | ClientId, Role |
+| tp |  | Admin | Teleports to specified user (Requires server-side script) | @ClientId or Name |
+| tphere |  | Admin | Teleports user to self (Requires server-side script) | @ClientId or Name |
+| setrole | sr | Admin | Sets a user's role | @ClientId or Name, Role |
 | owner |  | User | Claims ownership of a server | | 
-| kick |  | Moderator | Kicks a player | ClientId, Reason |
-| unban | ub | Moderator | Unbans a player | ClientId, Reason |
-| tempban | tb | Moderator | Temp bans a player | ClientId, Duration, Reason |
-| ban | b | Moderator | Bans a player | ClientId, Reason |
-| find | f | User | Displays information about a user | Name |
+| kick |  | Moderator | Kicks a player | @ClientId or Name, Reason |
+| unban | ub | Moderator | Unbans a player | @ClientId or Name, Reason |
+| tempban | tb | Moderator | Temp bans a player | @ClientId or Name, Duration, Reason |
+| ban | b | Moderator | Bans a player | @ClientId or Name, Reason |
+| find | f | User | Displays all users matching that name | Name |
 
 # Account Settings
 
@@ -156,3 +156,41 @@ In your manager configuration add (`ws` or `wss` if you have ssl enabled):
 "LOGSERVERURI" : "ws://ip:port/&key=key"
 ```
 to the server
+
+# Default Plugins
+| Plugin | Description |
+| --- | --- |
+| AutoMessages | Prints welcome messages to players and random messages from the config |
+| DiscordWebhook | Sends events (connections, disconnections, messages, penalties) to the discord webhook in the config |
+| NativeCommands | Adds basic commands |
+| Penalties | Manages all penalties |
+| PlutoT6Rcon | Rcon settings for T6 |
+| StatLogger | Logs player kills, death, playtime... |
+| ZombiesBank | (requires server-side gsc script) Adds a bank system to zombies (you can withdraw, desposit and even transfer money to other players) |
+
+# Zombies Bank
+To make this plugin work simply add this gsc code to any gsc script:
+```gsc
+
+init() {
+  level thread playerBank();
+}
+
+playerBank() {
+	for (;;) {
+		if (getDvar("bank_withdraw") != "") {
+			withdraw = strTok(getDvar("bank_withdraw"), ";");
+			setDvar("bank_withdraw", "");
+			getPlayerByGuid(withdraw[0]).score += int(withdraw[1]);
+			getPlayerByGuid(withdraw[0]) iPrintLn("Withdrew ^2$" + int(withdraw[1]) + "^7 from your bank account!");
+		}
+		if (getDvar("bank_deposit") != "") {
+			deposit = strTok(getDvar("bank_deposit"), ";");
+			setDvar("bank_deposit", "");
+			getPlayerByGuid(deposit[0]).score -= int(deposit[1]);
+			getPlayerByGuid(deposit[0]) iPrintLn("Deposited ^2$" + int(deposit[1]) + "^7 into your bank account!");
+		}
+		wait 0.05;
+	}
+}
+```
