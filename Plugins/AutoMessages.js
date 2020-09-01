@@ -18,7 +18,7 @@ class Plugin {
             'WELCOME_PLAYER_BROADCAST': '^%LEVEL%%ROLE%^7 ^5%PLAYER%^7 joined from ^5%LOCATION%^7'
         }
 
-        this.Server.on('connect', async (Player) => {
+        /*this.Server.on('connect', async (Player) => {
             var connections = await this.Server.DB.getAllConnections(Player.ClientId)
             Player.Tell(lookup.WELCOME_PLAYER
                         .replace('%PLAYER%', Player.Name)
@@ -34,7 +34,7 @@ class Plugin {
                                       .replace('%LEVEL%', Player.PermissionLevel)
                                       .replace('%ROLE%', Utils.getRoleFrom(Player.PermissionLevel, 1).Name))
             }
-        })
+        })*/
     }
     autoMessages() {
         setInterval(async () => {

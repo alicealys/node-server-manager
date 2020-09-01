@@ -4,7 +4,7 @@ const EventEmitter    = require('events')
 const ip              = require('public-ip')
 
 class _Server extends EventEmitter {
-    constructor(IP, PORT, RCON, DATABASE, sessionStore) {
+    constructor(IP, PORT, RCON, DATABASE, sessionStore, Managers) {
       super()
       this.Clients = new Array(18).fill(null)
       this.Rcon = RCON
@@ -17,6 +17,7 @@ class _Server extends EventEmitter {
       this.Mapname = null
       this.HostnameRaw = `[${this.IP}:${this.PORT}]`
       this.uptime = 0
+      this.Managers = Managers
       this.previousUptime = 0
       this.previousStatus = null
       this.setMaxListeners(18)
@@ -43,6 +44,21 @@ class _Server extends EventEmitter {
       }
       catch (e) {}
     }
+    async getClient(name) {
+      var clientIdRegex = /\@([0-9]+)/g
+      var Clients = name.match(clientIdRegex) ? [await this.DB.getClient(clientIdRegex.exec(name)[1])] : ((name.length >= 3 && !name.match('%')) ? (await this.DB.getClientByName(name)) : false)
+      var Client = Clients ? (Clients.length > 1 ? Clients.filter((Client) => { return this.findClient(Client.ClientId)})[0] : Clients[0]) : false
+      return Client
+       
+    }
+    findClient(ClientId) {
+      var Client = null
+      this.Managers.forEach(Manager => {
+        if (Client) return
+        Client = Manager.Server.Clients.find(x => x && x.ClientId == ClientId)
+      })
+      return Client
+    } 
     async Heartbeat() {
       try {
         var status = await this.Rcon.executeCommandAsync(this.Rcon.commandPrefixes.Rcon.status)

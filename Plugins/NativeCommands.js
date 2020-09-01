@@ -85,7 +85,7 @@ class Plugin {
         Permission: Permissions.Commands.COMMAND_USER_CMDS,
         inGame: false,
         callback: async (Player, args = null, delay) => {
-          var Client = await this.getClient(args[1])
+          var Client = await this.Server.getClient(args[1])
           switch (true) {
             case (!Client):
               Player.Tell(localization.COMMAND_CLIENT_NOT_FOUND)
@@ -164,7 +164,7 @@ class Plugin {
         Permission: Permissions.Commands.COMMAND_USER_CMDS,
         inGame: false,
         callback: async (Player, args) => {
-          var ClientId = !args[1] ? Player.ClientId : (await this.getClient(args[1])).ClientId
+          var ClientId = !args[1] ? Player.ClientId : (await this.Server.getClient(args[1])).ClientId
           var Stats = await this.Server.DB.getPlayerStatsTotal(ClientId)
           var OtherStats = await this.Server.DB.getPlayerStats(ClientId)
           if (Stats)
@@ -237,7 +237,7 @@ class Plugin {
         Permission: Permissions.Commands.COMMAND_TP,
         inGame: true,
         callback: async (Player, args) => {
-          var Client = await this.getClient(args[1])
+          var Client = await this.Server.getClient(args[1])
           var Target = await this.Server.Rcon.getClientByGuid(Client.Guid)
           switch (true) {
             case !Client:
@@ -255,7 +255,7 @@ class Plugin {
         Permission: Permissions.Commands.COMMAND_TP,
         inGame: true,
         callback: async (Player, args) => {
-          var Client = await this.getClient(args[1])
+          var Client = await this.Server.getClient(args[1])
           var Target = await this.Server.Rcon.getClientByGuid(Client.Guid)
           switch (true) {
             case !Client:
@@ -275,7 +275,7 @@ class Plugin {
         Alias: 'sr',
         callback: async (Player, args) => {
             var Role = args.slice(2).join(' ')
-            var Client = await this.getClient(args[1])
+            var Client = await this.Server.getClient(args[1])
             
             var Permission = this.getRoleFrom(Role, 0)
             switch (true) {
@@ -326,7 +326,7 @@ class Plugin {
         Permission: Permissions.Commands.COMMAND_KICK,
         inGame: false,
         callback: async (Player, args) => {
-          var Client = await this.getClient(args[1])
+          var Client = await this.Server.getClient(args[1])
 
           switch (true) {
             case (!Client):
@@ -346,7 +346,7 @@ class Plugin {
         Permission: Permissions.Commands.COMMAND_KICK,
         inGame: false,
         callback: async (Player, args) => {
-          var Client = await this.getClient(args[1])
+          var Client = await this.Server.getClient(args[1])
           var Reason = args.slice(2).join(' ')
 
           switch (true) {
@@ -382,7 +382,7 @@ class Plugin {
             's': 1,
           }
 
-          var Client = await this.getClient(args[1])
+          var Client = await this.Server.getClient(args[1])
 
           var parts = Array.from(args[2].match(/([0-9]+)([A-Za-z]+)/)).slice(1)
 
@@ -424,7 +424,7 @@ class Plugin {
         Permission: Permissions.Commands.COMMAND_BAN,
         inGame: false,
         callback: async (Player, args) => {
-          var Client = await this.getClient(args[1])
+          var Client = await this.Server.getClient(args[1])
 
           switch (true) {
             case (!Client):

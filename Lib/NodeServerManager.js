@@ -52,7 +52,7 @@ class NSM {
 
     // Connect to the server's rcon
     this.RconConnection = new RconConnection(this.IP, this.PORT, this.PASSWORD)
-    this.Server = new Server(this.IP, this.PORT, this.RconConnection, new _Database(), sessionStore)
+    this.Server = new Server(this.IP, this.PORT, this.RconConnection, new _Database(), sessionStore, Managers)
     this._EventLogWatcher = this.LOGFILE ? new EventLogWatcher(this.LOGFILE, this.Server, this) : new ServerLogWatcher(this.LOGSERVERURI, this.Server, this)
 
     // Load plugins before initializing Server.Clients
