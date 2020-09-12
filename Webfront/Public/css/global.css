@@ -3191,6 +3191,9 @@ body {
   text-align:center;
   font-family:codefb!important;
 }
+.wf-message-message {
+  white-space: pre-wrap;
+}
 .wf-client-wrap:hover {
   background-color: var(--color-4);
 }
@@ -3370,6 +3373,84 @@ body {
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 }
+@media only screen and (max-width: 800px) {
+  .wf-table-row {
+    margin: 15px 0px!important;
+    display:block!important;
+    -webkit-box-shadow: 0px 0px 3px -1px var(--color-text);
+    -moz-box-shadow: 0px 0px 3px -1px var(--color-text);
+    box-shadow: 0px 0px 3px -1px var(--color-text);
+    border-radius:5px;
+  }
+  .wf-table-row * {
+    display:block!important;
+    border-radius:0px!important;
+  }
+  .wf-table-row *:first-child {
+    border-top-left-radius: 5px!important;
+    border-top-right-radius: 5px!important;
+  }
+  .wf-table-row *:last-child {
+    border-bottom-left-radius: 5px!important;
+    border-bottom-right-radius: 5px!important;
+  }
+}
+
+.wf-table-row-expanded {
+  margin: 15px 0px!important;
+  display:block!important;
+  text-align:center;
+  -webkit-box-shadow: 0px 0px 3px -1px var(--color-text);
+  -moz-box-shadow: 0px 0px 3px -1px var(--color-text);
+  box-shadow: 0px 0px 3px -1px var(--color-text);
+  border-radius:5px;
+}
+.wf-table-row-expanded * {
+  padding:5px!important;
+  display:block!important;
+  border-radius:0px!important;
+}
+.wf-table-row-expanded *:first-child {
+  border-top-left-radius: 5px!important;
+  border-top-right-radius: 5px!important;
+}
+.wf-table-row-expanded *:last-child {
+  border-bottom-left-radius: 5px!important;
+  border-bottom-right-radius: 5px!important;
+}
+
+.wf-table-row-expanded *:nth-child(even) {
+  background-color: var(--color-2);
+}
+.wf-table-row-expanded *:nth-child(odd) {
+  background-color: var(--color-3);
+}
+
+.wf-table-row {
+  margin: 5px 0px;
+  display:flex;
+  text-align:center;
+}
+.wf-table-row * {
+  padding:5px!important;
+  flex-grow: 1;
+  flex-basis: 1px;
+}
+.wf-table-row *:nth-child(even) {
+  background-color: var(--color-2);
+}
+.wf-table-row *:nth-child(odd) {
+  background-color: var(--color-3);
+}
+.wf-table-row *:first-child {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+.wf-table-row *:last-child {
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
 .wf-client-search {
   margin:auto;
   color: var(--color-text);

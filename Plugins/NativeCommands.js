@@ -3,7 +3,7 @@ const path              = require('path')
 const crypto            = require('crypto')
 const wait              = require('delay')
 const Permissions       = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
-const localization      = require(path.join(__dirname, `../Configuration/Localization.json`)).lookup
+const Localization      = require(path.join(__dirname, `../Configuration/Localization.json`)).lookup
 const _utils            = require(path.join(__dirname, '../Utils/Utils.js'))
 const Utils             = new _utils()
 
@@ -57,7 +57,7 @@ class Plugin {
         callback: async (Player, args = null, delay) => {
           var commandsArray = Object.entries(this.Manager.commands);
           for (var i = 0; i < commandsArray.length; i++) {
-            Player.Tell(`^7[^6${commandsArray[i][0]}^7] ${localization[`COMMAND_${commandsArray[i][0].toLocaleUpperCase()}`]}`)
+            Player.Tell(`^7[^6${commandsArray[i][0]}^7] ${Localization[`COMMAND_${commandsArray[i][0].toLocaleUpperCase()}`]}`)
             delay && await wait(500)
           }
         }
@@ -88,13 +88,13 @@ class Plugin {
           var Client = await this.Server.getClient(args[1])
           switch (true) {
             case (!Client):
-              Player.Tell(localization.COMMAND_CLIENT_NOT_FOUND)
+              Player.Tell(Localization.COMMAND_CLIENT_NOT_FOUND)
             return
           }
           var Target = this.findClient(Client.ClientId)
           switch (true) {
             case (!Target):
-              Player.Tell(localization.COMMAND_CLIENT_NOT_INGAME)
+              Player.Tell(Localization.COMMAND_CLIENT_NOT_INGAME)
             return
           }
 
@@ -168,14 +168,14 @@ class Plugin {
           var Stats = await this.Server.DB.getPlayerStatsTotal(ClientId)
           var OtherStats = await this.Server.DB.getPlayerStats(ClientId)
           if (Stats)
-            Player.Tell(localization.COMMAND_STATS_FORMAT
+            Player.Tell(Localization.COMMAND_STATS_FORMAT
             .replace('%PLAYEDTIME%', this.timeConvert(Stats.PlayedTime))
             .replace('%PERFORMANCE%', Stats.Performance.toFixed(2))
             .replace('%NAME%', OtherStats.Player.Name)
             .replace('%KILLS%', Stats.Kills)
             .replace('%DEATHS%', Stats.Deaths)
             .replace('%KDR%',(Stats.Kills / Math.max(Stats.Deaths, 1)).toFixed(2)))
-          else Player.Tell(localization.COMMAND_CLIENT_NOT_FOUND)
+          else Player.Tell(Localization.COMMAND_CLIENT_NOT_FOUND)
         }
       },
       'token': {
@@ -186,7 +186,7 @@ class Plugin {
           var Client = await this.Server.DB.getClient(Player.ClientId)
 
           if (!Client.Settings.TokenLogin) {
-            Player.Tell(localization.TOKEN_LOGIN_DISABLED)
+            Player.Tell(Localization.TOKEN_LOGIN_DISABLED)
             return
           }
 
@@ -200,7 +200,7 @@ class Plugin {
               formattedToken.push(`^3${char}^7`)
             }
           })
-          Player.Tell(localization.COMMAND_TOKEN_FORMAT
+          Player.Tell(Localization.COMMAND_TOKEN_FORMAT
             .replace('%CLIENTID%', Player.ClientId)
             .replace('%TOKEN%', formattedToken.join('')))
           await this.Server.DB.createToken(Player.ClientId, rawToken.join(''))
@@ -215,17 +215,17 @@ class Plugin {
           if (!Player.inGame) {
             switch (true) {
               case (args.length < 2):
-                Player.Tell(localization.RCON_SERVER_NOT_SPECIFIED)
+                Player.Tell(Localization.RCON_SERVER_NOT_SPECIFIED)
               return
               case (!this.Managers[parseInt(args[1])] || !this.Managers[parseInt(args[1])].Server.Mapname || !this.Managers[parseInt(args[1])].Server.Rcon.isRunning):
-                Player.Tell(localization.SERVER_NOT_EXIST)
+                Player.Tell(Localization.SERVER_NOT_EXIST)
               return
             }
             result = (await this.Managers[parseInt(args[1])].Server.Rcon.executeCommandAsync(args.slice(2).join(' '))).trim().split('\n')
           } else {
             result = (await this.Server.Rcon.executeCommandAsync(args.slice(1).join(' '))).trim().split('\n')
           }
-          result[0] = localization.COMMAND_EXECUTE_SUCCESS
+          result[0] = Localization.COMMAND_EXECUTE_SUCCESS
           for (var i = 0; i < result.length; i++) {
             Player.Tell(result[i])
             delay && await wait(300)
@@ -242,7 +242,7 @@ class Plugin {
           switch (true) {
             case !Client:
             case !Target:
-              Player.Tell(localization.COMMAND_CLIENT_NOT_FOUND)
+              Player.Tell(Localization.COMMAND_CLIENT_NOT_FOUND)
             return;
           }
           await this.Server.Rcon.executeCommandAsync(`seta tp_src ${Player.Clientslot}`)
@@ -260,7 +260,7 @@ class Plugin {
           switch (true) {
             case !Client:
             case !Target:
-              Player.Tell(localization.COMMAND_CLIENT_NOT_FOUND)
+              Player.Tell(Localization.COMMAND_CLIENT_NOT_FOUND)
             return;
           }
           await this.Server.Rcon.executeCommandAsync(`seta tp_src ${Target.num}`)
@@ -280,16 +280,16 @@ class Plugin {
             var Permission = this.getRoleFrom(Role, 0)
             switch (true) {
               case (!Client):
-                Player.Tell(localization.COMMAND_CLIENT_NOT_FOUND)
+                Player.Tell(Localization.COMMAND_CLIENT_NOT_FOUND)
                 return;
               case (!Permission):
-                Player.Tell(localization.ROLE_NOT_EXIST)
+                Player.Tell(Localization.ROLE_NOT_EXIST)
                 return;
               case (Permission.Level > Player.PermissionLevel || Permission.Level >= Permissions.Levels.ROLE_OWNER):
-                Player.Tell(localization.ROLE_HIERARCHY_ERROR)
+                Player.Tell(Localization.ROLE_HIERARCHY_ERROR)
                 return;
               case (Player.ClientId == Client.ClientId):
-                Player.Tell(localization.ROLE_SELF_ERROR)
+                Player.Tell(Localization.ROLE_SELF_ERROR)
                 return;
             }
             var Target = this.findClient(Client.ClientId)
@@ -330,14 +330,14 @@ class Plugin {
 
           switch (true) {
             case (!Client):
-              Player.Tell(localization.COMMAND_CLIENT_NOT_FOUND)
+              Player.Tell(Localization.COMMAND_CLIENT_NOT_FOUND)
             return
             case (Client.Permission >= Player.PermissionLevel):
-              Player.Tell(localization.CLIENT_HIERARCHY_ERROR)
+              Player.Tell(Localization.CLIENT_HIERARCHY_ERROR)
             return
           }
           var Target = this.findClient(Client.ClientId)
-          Target ? ( Player.Tell(`^5${Target.Name}^7 was kicked`), Target.Kick(`${args.slice(2).join(' ')}`, Player.ClientId)) : Player.Tell(localization.COMMAND_CLIENT_NOT_INGAME)
+          Target ? ( Player.Tell(`^5${Target.Name}^7 was kicked`), Target.Kick(`${args.slice(2).join(' ')}`, Player.ClientId)) : Player.Tell(Localization.COMMAND_CLIENT_NOT_INGAME)
         }
       },
       'unban': {
@@ -351,7 +351,7 @@ class Plugin {
 
           switch (true) {
             case (Client.Permission >= Player.PermissionLevel):
-              Player.Tell(localization.CLIENT_HIERARCHY_ERROR)
+              Player.Tell(Localization.CLIENT_HIERARCHY_ERROR)
             return
           }
 
@@ -388,13 +388,13 @@ class Plugin {
 
           switch (true) {
             case (!Client):
-              Player.Tell(localization.COMMAND_CLIENT_NOT_FOUND)
+              Player.Tell(Localization.COMMAND_CLIENT_NOT_FOUND)
             return
             case (Client.Permission >= Player.PermissionLevel):
-              Player.Tell(localization.CLIENT_HIERARCHY_ERROR)
+              Player.Tell(Localization.CLIENT_HIERARCHY_ERROR)
             return
             case (!parts || parts.length < 2 || !timeVars[parts[1]] || !Number.isInteger(parseInt(parts[0]))):
-              Player.Tell(localization.COMMAND_PARSE_TIME_ERROR)
+              Player.Tell(Localization.COMMAND_PARSE_TIME_ERROR)
             return
           }
 
@@ -428,10 +428,10 @@ class Plugin {
 
           switch (true) {
             case (!Client):
-              Player.Tell(localization.COMMAND_CLIENT_NOT_FOUND)
+              Player.Tell(Localization.COMMAND_CLIENT_NOT_FOUND)
               return
             case (Client.Permission >= Player.PermissionLevel):
-              Player.Tell(localization.CLIENT_HIERARCHY_ERROR)
+              Player.Tell(Localization.CLIENT_HIERARCHY_ERROR)
             return
           }
 
@@ -494,18 +494,19 @@ class Plugin {
       var command = Utils.getCommand(this.Manager.commands, args[0])
       switch (true) {
         case (!this.Manager.commands[command]):
-          Player.Tell(localization.COMMAND_NOT_FOUND)
+          Player.Tell(Localization.COMMAND_NOT_FOUND)
           return
         case (Client.Settings.InGameLogin && !Player.Session.Data.Authorized):
-          Player.Tell(localization.CLIENT_NOT_AUTHORIZED)
+          Player.Tell(Localization.CLIENT_NOT_AUTHORIZED)
           return
         case (Player.PermissionLevel < Permissions.Levels[this.Manager.commands[command].Permission]):
-          Player.Tell(localization.COMMAND_FORBIDDEN)
+          Player.Tell(Localization.COMMAND_FORBIDDEN)
           return
         case (args.length - 1 < this.Manager.commands[command].ArgumentLength):
-          Player.Tell(localization.COMMAND_ARGUMENT_ERROR)
+          Player.Tell(Localization.COMMAND_ARGUMENT_ERROR)
           return
       }
+      this.Server.DB.logActivity(`@${Player.ClientId}`, Localization['AUDIT_CMD_EXEC'].replace('%NAME%', command), args.join(' '))
       this.Manager.commands[command].callback(Player, args, true)
   }
   timeConvert (n) {

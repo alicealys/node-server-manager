@@ -44,6 +44,7 @@ class CLICommands {
             return
 
         }
+        this.Manager.Server.DB.logActivity(`@${this.Player.ClientId}`, Localization['AUDIT_CMD_EXEC'].replace('%NAME%', command), args.join(' '))
         this.Manager.commands[command].callback(this.Player, args)
     }
 }

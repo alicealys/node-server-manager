@@ -12,6 +12,7 @@ const ws        = require('ws')
 const Permissions = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
 const configName = path.join(__dirname, `../Configuration/NSMConfiguration.json`)
 const config = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`))
+const Localization = require(path.join(__dirname, `../Configuration/Localization.json`))
 const https     = require('https')
 const http = require('http')
 const rateLimit = require("express-rate-limit")
@@ -224,6 +225,28 @@ class Webfront {
             })
         })
 
+        this.app.get('/audit', async (req, res, next) => {
+            res.setHeader('Content-type', 'text/html')
+            if (!req.session.ClientId) {
+                res.status(401)
+                ejs.renderFile(path.join(__dirname, '/html/error.ejs'), {header: header, error: {Code: 401, Description: 'You must be logged in to do that'}}, (err, str) => {
+                    res.end(str)
+                });
+                return
+            }
+            var Client = await db.getClient(req.session.ClientId)
+            if (Client.PermissionLevel < Permissions.Levels.ROLE_ADMIN) {
+                res.status(401)
+                ejs.renderFile(path.join(__dirname, '/html/error.ejs'), {header: header, error: {Code: 401, Description: 'You don\'t have sufficient permissions for this'}}, (err, str) => {
+                    res.end(str)
+                });
+            }
+            var Audit = await db.getAudit(0, 40)
+            ejs.renderFile(path.join(__dirname, '/html/audit.ejs'), {header, Audit}, (err, str) => {
+                res.end(str)
+            });
+        })
+
         this.app.post('/auth/changesetting', async (req, res, next) => {
             var settings = ['InGameLogin', 'TokenLogin']
             switch (true) {
@@ -391,15 +414,17 @@ class Webfront {
 
             var passwordResult  = await Auth.Password(req.body.ClientId, req.body.Token)
             var tokenResult     = await Auth.Token(req.body.ClientId, req.body.Token)
-
+            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
             switch (true) {
                 case (!passwordResult && !tokenResult):
+                    await db.logActivity(ip, Localization.lookup['AUDIT_LOGIN_ATTEMPT'].replace('%CLIENTID%', req.body.ClientId), Localization.lookup['AUDIT_LOGIN_CRED_FAIL'])
                     res.end(JSON.stringify({
                         success: false,
                         error: 'Invalid credentials'
                     }))
                 return
                 case (!twoFactorResult):
+                    await db.logActivity(ip, Localization.lookup['AUDIT_LOGIN_ATTEMPT'].replace('%CLIENTID%', req.body.ClientId), Localization.lookup['AUDIT_LOGIN_2FA_FAIL'])
                     res.end(JSON.stringify({
                         success: false,
                         error: 'Invalid 2FA code'
@@ -407,6 +432,7 @@ class Webfront {
                 return
             }
 
+            await db.logActivity(ip, Localization.lookup['AUDIT_LOGIN_ATTEMPT'].replace('%CLIENTID%', req.body.ClientId), Localization.lookup['AUDIT_LOGIN_SUCCESS'])
             req.session.ClientId = req.body.ClientId
             res.end(JSON.stringify({
                 success: true
@@ -632,33 +658,6 @@ class Webfront {
             }
             var inGame = req.query.target ? findClient(req.query.target) : null
             switch (req.query.command.toLocaleUpperCase()) {
-                case 'COMMAND_BAN':
-                    switch (true) {
-                        case (!req.query.target || !req.query.reason):
-                            res.end(JSON.stringify({
-                                success: false,
-                                error: 'Parameters missing'
-                            }))
-                        return
-                        case (Client.PermissionLevel < inGame.PermissionLevel):
-                            res.end(JSON.stringify({
-                                success: false,
-                                error: 'Forbidden'
-                            }))
-                        return
-                    }
-                    inGame ? inGame.Ban(req.query.reason, req.session.ClientId) : this.Server.DB.addPenalty({
-                        TargetId: req.query.target,
-                        OriginId: req.session.ClientId,
-                        PenaltyType: 'PENALTY_PERMA_BAN',
-                        Duration: 0,
-                        Reason: req.query.reason
-                    })
-                    res.end(JSON.stringify({
-                        success: true,
-                        error: ''
-                    }))
-                break
                 case 'COMMAND_CHANGE_INFO':
                     switch (true) {
                         case (!req.query.value):
@@ -695,36 +694,6 @@ class Webfront {
                         }))
                     })
                 break
-                case 'COMMAND_SETROLE':
-
-                break
-                case 'COMMAND_KICK':
-                    switch (true) {
-                        case (!req.query.target || !req.query.reason):
-                            res.end(JSON.stringify({
-                                success: false,
-                                error: 'Parameters missing'
-                            }))
-                        return
-                        case (Client.PermissionLevel < inGame.PermissionLevel):
-                            res.end(JSON.stringify({
-                                success: false,
-                                error: 'Forbidden'
-                            }))
-                        return
-                        case (!inGame):
-                            res.end(JSON.stringify({
-                                success: false,
-                                error: 'Client not found'
-                            }))
-                        return
-                    }
-                    inGame && inGame.Kick(req.query.reason, req.session.ClientId)
-                    res.end(JSON.stringify({
-                        success: true,
-                        error: ''
-                    }))
-                return
             }
         })
         this.app.get('/api/mod', async (req, res, next) => {
@@ -798,6 +767,7 @@ class Webfront {
                     return
         
                 }
+                db.logActivity(`@${req.session.ClientId}`, Localization.lookup['AUDIT_CMD_EXEC'].replace('%NAME%', command), args.join(' '))
                 await this.Managers[0].commands[command].callback(Player, args, false)
                 end()
             } else {

@@ -154,6 +154,27 @@ class Database {
         }
         return Clients
     }
+
+    async logActivity(Origin, Type, Description) {
+        var Audit = await Models.NSMAudit.build({
+            Origin,
+            Type,
+            Description
+        }).save()
+    }
+
+    async getAudit(pageNumber, limit) {
+        var Audit = await Models.NSMAudit.findAll({
+            order: [
+                ['Date', 'desc']
+            ],
+            limit: limit,
+            offset: pageNumber * limit,
+        })
+        Audit.map(x => x = x.dataValues)
+        return Audit
+    }
+
     async getClientLevel(ClientId) {
 
         var Level = await Models.NSMClients.findAll({
