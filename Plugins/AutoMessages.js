@@ -19,7 +19,8 @@ class Plugin {
         }
 
         this.Server.on('connect', async (Player) => {
-            /*var connections = await this.Server.DB.getAllConnections(Player.ClientId)
+            if (process.env.NODE_ENV && process.env.NODE_ENV.toLocaleLowerCase() == 'dev') return
+            var connections = await this.Server.DB.getAllConnections(Player.ClientId)
             Player.Tell(lookup.WELCOME_PLAYER
                         .replace('%PLAYER%', Player.Name)
                         .replace('%CONNECTIONS%', this.ordinalSuffix(connections.length)))
@@ -33,7 +34,7 @@ class Plugin {
                                       .replace('%LOCATION%', info.country)
                                       .replace('%LEVEL%', Player.PermissionLevel)
                                       .replace('%ROLE%', Utils.getRoleFrom(Player.PermissionLevel, 1).Name))
-            }*/
+            }
         })
     }
     autoMessages() {

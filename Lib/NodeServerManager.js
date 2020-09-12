@@ -106,6 +106,8 @@ if (fs.existsSync(path.join(__dirname, `../Configuration/NSMConfiguration.json`)
   console.log(`                         By ${Info.Author}`)
   console.log("============================================================")
 
+  console.log(`Environment: ${process.env.NODE_ENV == 'dev' ? 'Development' : 'Production'}`)
+
 
   configuration.Servers.forEach(config => {
      Managers.push(new NSM(config))
