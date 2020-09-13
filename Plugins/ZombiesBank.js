@@ -96,6 +96,7 @@ class Plugin {
     }
     this.Manager.commands['deposit'] = {
         ArgumentLength: 1,
+        logToAudit: false,
         Permission: Permissions.Commands.COMMAND_USER_CMDS,
         callback: async (Player, args) => {
             var totalMoney = (await this.getZMStats(Player.ClientId)).Money
@@ -121,6 +122,7 @@ class Plugin {
     this.Manager.commands['pay'] = {
         ArgumentLength: 2,
         inGame: false,
+        logToAudit: false,
         Permission: Permissions.Commands.COMMAND_USER_CMDS,
         callback: async (Player, args) => {
             var Target = await this.Server.getClient(args[1])
@@ -150,6 +152,7 @@ class Plugin {
     this.Manager.commands['money'] = {
         ArgumentLength: 0,
         inGame: false,
+        logToAudit: false,
         Permission: Permissions.Commands.COMMAND_USER_CMDS,
         callback: async (Player, args) => {
             if (args[1]) {

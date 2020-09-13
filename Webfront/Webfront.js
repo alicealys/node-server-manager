@@ -224,6 +224,35 @@ class Webfront {
                 }
             })
         })
+        
+        this.app.get('/api/audit', async (req, res, next) => {
+            switch (true) {
+                case (!req.session.ClientId):
+                    res.status(401)
+                    res.end(JSON.stringify({
+                        success: false,
+                        error: 'Unauthorized'
+                    }))
+                return
+            }
+
+            var Client = await db.getClient(req.session.ClientId)
+
+            if (Client.PermissionLevel < Permissions.Levels.ROLE_ADMIN) {
+                res.status(401)
+                res.end(JSON.stringify({
+                    success: false,
+                    error: 'Unauthorized'
+                }))
+                return
+            }
+
+            var limit = req.query.limit ? req.query.limit : 25
+            var page = req.query.page ? req.query.page : 0
+            var Audit = await db.getAudit(page, limit)
+
+            res.end(JSON.stringify(Audit))
+        })
 
         this.app.get('/audit', async (req, res, next) => {
             res.setHeader('Content-type', 'text/html')
@@ -241,7 +270,7 @@ class Webfront {
                     res.end(str)
                 });
             }
-            var Audit = await db.getAudit(0, 40)
+            var Audit = await db.getAudit(0, 25)
             ejs.renderFile(path.join(__dirname, '/html/audit.ejs'), {header, Audit}, (err, str) => {
                 res.end(str)
             });

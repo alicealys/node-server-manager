@@ -6,7 +6,9 @@ const { timeStamp }     = require('console')
 const Models            = require('./DatabaseModels.js')
 
 class Database {
-    constructor () {}
+    constructor () {
+        this.clientCache = []
+    }
     async addClient(Guid) {
 
         if (await this.getClientId(Guid)) return
@@ -172,6 +174,19 @@ class Database {
             offset: pageNumber * limit,
         })
         Audit.map(x => x = x.dataValues)
+        for (var i = 0; i < Audit.length; i++) {
+            try {
+                var Name = this.clientCache[parseInt(Audit[i].Origin.substr(1))] ? this.clientCache[parseInt(Audit[i].Origin.substr(1))].Name : (await this.getClient(Audit[i].Origin.substr(1))).Name
+            }
+            catch (e) {
+                Audit[i] = null
+                continue
+            }
+            Audit[i].Origin = {
+                Name: Audit[i].Origin.match(/\@([0-9]+)/g) ? Name : Audit[i].Origin,
+                ClientId: Audit[i].Origin.match(/\@([0-9]+)/g) ? Audit[i].Origin.substr(1) : null
+            }
+        }
         return Audit
     }
 
@@ -240,6 +255,8 @@ class Database {
         var Client = {...Client[0].dataValues, ...Connection[0].dataValues}
 
         Client.Settings = await this.getClientSettings(ClientId)
+
+        this.clientCache[parseInt(ClientId)] = Client
 
         return Client
     }
@@ -521,8 +538,8 @@ class Database {
         for (var i = 0; i < Penalties.length; i++) {
             Penalties[i] = Penalties[i].dataValues
             Penalties[i].Type = 'Penalty'
-            Penalties[i].Origin = await this.getClient(Penalties[i].OriginId)
-            Penalties[i].Target = await this.getClient(Penalties[i].TargetId)
+            Penalties[i].Origin = this.clientCache[Penalties[i].OriginId] ? Penalties[i].OriginId : await this.getClient(Penalties[i].OriginId)
+            Penalties[i].Target = this.clientCache[Penalties[i].TargetId] ? Penalties[i].TargetId : await this.getClient(Penalties[i].TargetId)
         }
 
         for (var i = 0; i < Messages.length; i++) {

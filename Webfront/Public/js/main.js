@@ -29,6 +29,7 @@ window.addEventListener('load', async () => {
     document.querySelectorAll('*[colorcode]').forEach(c => {
         c.innerHTML = parseCODColorCodes(c.innerHTML, c.getAttribute('colorcode-white')).outerHTML
     })
+    document.querySelectorAll('*[date-moment]').forEach(d => { d.innerHTML = moment(d.innerHTML).calendar() })
 
     document.body.appendChild(createElementFromHTML(`
         <div id='wf-overlay' class='wf-overlay'></div>

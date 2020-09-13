@@ -516,7 +516,7 @@ class Plugin {
           Player.Tell(Localization.COMMAND_ARGUMENT_ERROR)
           return
       }
-      this.Server.DB.logActivity(`@${Player.ClientId}`, Localization['AUDIT_CMD_EXEC'].replace('%NAME%', command), args.join(' '))
+      this.Manager.commands[command].logToAudit != false && this.Server.DB.logActivity(`@${Player.ClientId}`, Localization['AUDIT_CMD_EXEC'].replace('%NAME%', command), args.join(' '))
       this.Manager.commands[command].callback(Player, args, true)
   }
   timeConvert (n) {

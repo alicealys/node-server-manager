@@ -14,7 +14,8 @@ window.addEventListener('load', () => {
     })
 
     document.getElementById('message-log') && document.getElementById('message-log').addEventListener('scroll', async (e) => {
-        if (parseInt(document.getElementById('message-log').offsetHeight + document.getElementById('message-log').scrollTop) >= document.body.offsetHeight && pageLoaded && !maxPage) {
+        var log = document.getElementById('message-log')
+        if (log.scrollTop + 50 >= (log.scrollHeight - log.offsetHeight) && pageLoaded && !maxPage) {
             pageLoaded = false
             var nextMessages = JSON.parse(await makeRequest('GET', `/api/messages?id=${Profile.ClientId}&page=${nextPage}&limit=50`))
             nextMessages.forEach(message => {
