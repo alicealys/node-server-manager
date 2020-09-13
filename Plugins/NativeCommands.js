@@ -3,6 +3,7 @@ const path              = require('path')
 const crypto            = require('crypto')
 const wait              = require('delay')
 const Permissions       = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
+const config            = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`))
 const Localization      = require(path.join(__dirname, `../Configuration/Localization.json`)).lookup
 const _utils            = require(path.join(__dirname, '../Utils/Utils.js'))
 const Utils             = new _utils()
@@ -56,10 +57,19 @@ class Plugin {
         inGame: false,
         callback: async (Player, args = null, delay) => {
           var commandsArray = Object.entries(this.Manager.commands);
-          for (var i = 0; i < commandsArray.length; i++) {
-            Player.Tell(`^7[^6${commandsArray[i][0]}^7] ${Localization[`COMMAND_${commandsArray[i][0].toLocaleUpperCase()}`]}`)
-            delay && await wait(500)
+          if (!args[1]) {
+            for (var i = 0; i < commandsArray.length; i++) {
+              Player.Tell(`^7[^6${commandsArray[i][0]}^7] ${Localization[`COMMAND_${commandsArray[i][0].toLocaleUpperCase()}`]}`)
+              delay && await wait(500)
+            }
+          } else {
+            if (!this.Manager.commands[args[1].toLocaleLowerCase()]) {
+              Player.Tell(Localization['COMMAND_NOT_FOUND'])
+              return
+            }
+            Player.Tell(`Usage: ^6${config.commandPrefix}^7${Localization[`USAGE_${args[1].toLocaleUpperCase()}`]}`)
           }
+
         }
       },
       'ping': {

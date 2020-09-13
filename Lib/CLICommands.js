@@ -5,8 +5,8 @@ const rl = readline.createInterface({
     output: process.stdout,
     terminal: false
 })
-const _utils            = require(path.join(__dirname, '../Utils/Utils.js'))
-const Utils             = new _utils();
+const Utils            = new (require(path.join(__dirname, '../Utils/Utils.js')))()
+const Localization      = require(path.join(__dirname, `../Configuration/Localization.json`)).lookup
 
 class CLICommands {
     constructor(Manager) {
