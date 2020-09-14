@@ -431,7 +431,7 @@ class Webfront {
         })
 
         this.app.post('/auth/login', async (req, res, next) => {
-            if (req.body.ClientId == undefined || req.body.Token == undefined) {
+            if (!req.body.ClientId.length || !req.body.Token.length) {
                 res.end(JSON.stringify({
                     success: false,
                     error: 'Parameters missing'
@@ -900,8 +900,8 @@ class Webfront {
             Client.Meta = await db.getClientMeta(Client.ClientId)
             Client.InGame = await this.getClientStatus(Client.Guid)
             Client.WebStatus = getClientWebStatus(Client.ClientId)
-            Client.Messages = await db.getMessages(Client.ClientId, 0, 50)
-            Client.messageCount = (await db.getAllMessages(Client.ClientId)).length
+            Client.Messages = await db.getMessages(Client.ClientId, 0, 20)
+            Client.messageCount = (await db.getMessageCount(Client.ClientId))
             Client.Ban = await db.isBanned(Client.ClientId)
             Client.Flag = Client.IPAddress ? await getFlag(Client.IPAddress.split(':')[0]) : null
             Client.Status = {}
@@ -928,12 +928,8 @@ class Webfront {
 
         this.app.get('/chat', async (req, res, next) => {
             res.setHeader('Content-type', 'text/html')
-            var Messages = await db.getMessages(undefined, 0, 100)
-            for (var i = 0; i < Messages.length; i++) {
-                var Message = Messages[i]
-                Message.Client = await db.getClient(Message.OriginId)
-            }
-            ejs.renderFile(path.join(__dirname, '/html/chat.ejs'), {header: header, Messages: Messages, moment: moment}, (err, str) => {
+            var Messages = (await db.getAllMessages(undefined, 0, 50))
+            ejs.renderFile(path.join(__dirname, '/html/chat.ejs'), {header: header, Messages: Messages}, (err, str) => {
                 res.end(str)
             });
         })
@@ -991,7 +987,14 @@ class Webfront {
         })
 
         this.app.get('/api/messages', async (req, res, next) => {
-            var Messages = await db.getMessages(req.query.id, req.query.page, req.query.limit)
+            if (!req.query.id) {
+                var page = req.query.page ? req.query.page : 0
+                var limit = Math.min(parseInt(req.query.limit), 50)
+                var Messages = await db.getAllMessages(undefined, page, limit)
+                res.end(JSON.stringify(Messages))
+                return
+            }
+            var Messages = await db.getMessages(req.query.id, req.query.page, Math.min(req.query.limit, 50))
             for (var i = 0; i < Messages.length; i++) {
                 if (Messages[i].Type == 'Message') continue
                 Messages[i].Target = {
@@ -1104,6 +1107,7 @@ class Webfront {
                     event: 'event_client_connect',
                         data: {
                             ServerId: id,
+                            Hostname: Manager.Server.HostnameRaw,
                             Client: {
                                 Name: ePlayer.Name,
                                 ClientId: ePlayer.ClientId
@@ -1117,6 +1121,7 @@ class Webfront {
                     event: 'event_client_disconnect',
                         data: {
                             ServerId: id,
+                            Hostname: Manager.Server.HostnameRaw,
                             Client: {
                                 Name: ePlayer.Name,
                                 ClientId: ePlayer.ClientId
@@ -1130,6 +1135,7 @@ class Webfront {
                     event: 'event_client_message',
                     data: {
                         ServerId: id,
+                        Hostname: Manager.Server.HostnameRaw,
                         Message: Message,
                         Client: {
                             Name: ePlayer.Name,
@@ -1140,6 +1146,7 @@ class Webfront {
                 sendToAction('socket_listen_messages', {
                     event: 'event_client_message',
                     ServerId: id,
+                    Hostname: Manager.Server.HostnameRaw,
                     Message: Message,
                     Client: {
                         Name: ePlayer.Name,

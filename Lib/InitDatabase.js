@@ -417,7 +417,7 @@ class Database {
             attributes: ['ClientId', 'Kills', 'Deaths', [Sequelize.literal('max(Performance, 0)'), 'Performance'], 'TotalPerformance', 'PlayedTime', 'Id', [Sequelize.literal('ROW_NUMBER() over (order by Performance desc)'), 'Rank']],
             where: {
                 [Sequelize.Op.and]: [
-                    Sequelize.literal('Kills+Deaths >= 10')
+                    Sequelize.literal('Kills+Deaths >= 50')
                 ],
                 PlayedTime: {
                     [Sequelize.Op.gte]: 120
@@ -433,7 +433,7 @@ class Database {
             Stats[i].History = (await Models.NSMPlayerStatHistory.findAll({
                 where: {ClientId: Stats[i].ClientId},
                 limit: 100,
-                attributes: ['Performance', 'Date'],
+                attributes: [[Sequelize.literal('max(Performance, 0)'), 'Performance'], 'Date'],
                 order: [
                     ['Date', 'desc']
                 ]
@@ -495,7 +495,7 @@ class Database {
         return Kill.dataValues
     }
 
-    async getAllMessages(From, limit) {
+    async getAllMessages(From, page, limit) {
         if (From) {
             var Messages = await Models.NSMMessages.findAll({
                 where: {
@@ -510,6 +510,8 @@ class Database {
                 order: [
                     ['Date', 'desc']
                 ],
+                limit: limit,
+                offset: page * limit,
             }, {transaction: this.transaction})
         }
         for (var i = 0; i < Messages.length; i++) {
@@ -547,6 +549,10 @@ class Database {
         return {
             Banned: false
         }
+    }
+
+    async getMessageCount(ClientId) {
+        return await Models.NSMMessages.count({where: {OriginId: ClientId}})
     }
 
     async getMessages(From, pageNumber, limit) {
@@ -589,8 +595,8 @@ class Database {
         for (var i = 0; i < Penalties.length; i++) {
             Penalties[i] = Penalties[i].dataValues
             Penalties[i].Type = 'Penalty'
-            Penalties[i].Origin = this.clientCache[Penalties[i].OriginId] ? Penalties[i].OriginId : await this.getClient(Penalties[i].OriginId)
-            Penalties[i].Target = this.clientCache[Penalties[i].TargetId] ? Penalties[i].TargetId : await this.getClient(Penalties[i].TargetId)
+            Penalties[i].Origin = { ClientId: Penalties[i].OriginId, Name: await this.getName(Penalties[i].OriginId) }
+            Penalties[i].Target = { ClientId: Penalties[i].TargetId, Name: await this.getName(Penalties[i].TargetId) }
         }
 
         for (var i = 0; i < Messages.length; i++) {
@@ -607,6 +613,23 @@ class Database {
         return Messages
     }
 
+    async getName(ClientId) {
+        if (this.clientCache.find(x => x && x.ClientId == ClientId))
+            return this.clientCache.find(x => x && x.ClientId == ClientId).Name
+        else {
+            var Name = (await Models.NSMConnections.findAll({
+                where: {
+                    ClientId
+                },
+                attributes: ['Name']
+            }))
+            if (Name.length > 0) {
+                this.clientCache[ClientId] = {ClientId: ClientId, Name: Name[0].dataValues.Name }
+                return Name[0].dataValues.Name
+            }
+        }
+    }
+
     async incrementStat(ClientId, Increment, Stat) {
         Models.NSMPlayerStats.update(
             { [Stat] : Sequelize.literal(`${Stat} + ${Increment}`)},
@@ -621,10 +644,12 @@ class Database {
         // await this.transaction.commit()
     }
 
-    async logMessage(ClientId, Message) {
+    async logMessage(ClientId, Name, Hostname, Message) {
         var Kill = await Models.NSMMessages.build({
             OriginId: ClientId,
-            Message: Message
+            Message,
+            Name,
+            Hostname
         }, {transaction: this.transaction}).save()
         // await this.transaction.commit()
         return Kill.dataValues

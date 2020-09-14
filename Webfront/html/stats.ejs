@@ -27,16 +27,16 @@
             <div class='wf-profile wf-default'>
             <div class='wf-client-search-list' id='stat-list'>
                 <% Stats.forEach(Stat => { %>
-                    <div class='wf-stat'>
+                    <div class='wf-stat wf-stat-rank-<%=Stat.Rank%>'>
                         <div>
                             <div class='wf-stat-name wf-stat-line inline'><span class='api-data-type'>#<%= Stat.Rank %> - </span><a href='/id/<%= Stat.ClientId%>' class='wf-stat-name inline wf-link'><%= Stat.Name %></a></div>
-                            <div class='wf-stat-line'><span class='api-data-type'><%= Stat.Kills %></span> Kill(s)</div>
-                            <div class='wf-stat-line'><span class='api-data-type'><%= Stat.Deaths %></span> Deaths</div>
+                            <div class='wf-stat-line'><span class='api-data-type'><%= Stat.Kills %></span> <%=Stat.Kills == 1 ? 'Kill' : 'Kills'%></div>
+                            <div class='wf-stat-line'><span class='api-data-type'><%= Stat.Deaths %></span> <%=Stat.Deaths == 1 ? 'Death' : 'Deaths'%></div>
                             <div class='wf-stat-line'><span class='api-data-type'><%= (Stat.Kills / Math.max(Stat.Deaths, 1)).toFixed(2) %></span> KDR</div>
                             <div class='wf-stat-line'><span class='api-data-type'><%= Stat.Performance.toFixed(1) %></span> Performance</div>
                             <div class='wf-stat-line'>Played for <span class='api-data-type'><%= Stat.PlayedTimeString %></span></div>
                         </div>
-                        <div><div class='wf-stat-chart' id='<%= Stat.ClientId%>_history' data-canvas='<%= JSON.stringify(Stat.History) %>'></div></div>
+                        <div><div class='wf-stat-chart' id='<%= Stat.ClientId%>_history' data-rank='<%=Stat.Rank%>' data-canvas='<%= JSON.stringify(Stat.History) %>'></div></div>
                     </div>
                 <% }) %>
             </div>

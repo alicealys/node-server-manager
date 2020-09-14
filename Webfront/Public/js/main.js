@@ -27,7 +27,7 @@ window.addEventListener('load', async () => {
     params.q && ( document.getElementById('client-search').innerHTML = params.q )
 
     document.querySelectorAll('*[colorcode]').forEach(c => {
-        c.innerHTML = parseCODColorCodes(c.innerHTML, c.getAttribute('colorcode-white')).outerHTML
+        c.innerHTML = COD2HTML(c.innerHTML, c.getAttribute('colorcode-white'))
     })
     document.querySelectorAll('*[date-moment]').forEach(d => { d.innerHTML = moment(d.innerHTML).calendar() })
 
@@ -212,7 +212,8 @@ var messageBox = (text, params, deny, accept, callback) => {
     }
     messageBox.setText = (text) => {
         messageBox.querySelector('*[data-text-label]').innerHTML = text
-    } 
+    }
+
     var acceptMessagebox = () => {
         var params = {}
         messageBox.querySelector('*[data-form-cont]').querySelectorAll('input').forEach(form => {
@@ -227,7 +228,7 @@ var messageBox = (text, params, deny, accept, callback) => {
     }
     messageBox.querySelector('*[data-cancel-button]').addEventListener('click', closeMessagebox)
     messageBox.querySelector('*[data-upload-button]').addEventListener('click', acceptMessagebox)
-    window.addEventListener('click', windowEnter)
+    window.addEventListener('keydown', windowEnter)
 }
 
 function getParams() {

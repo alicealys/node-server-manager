@@ -1,4 +1,5 @@
-const path = require('path');
+const path = require('path')
+const config            = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`))
 
 class Plugin {
   constructor(Server, Manager) {
@@ -23,7 +24,8 @@ class Plugin {
 
     })
     Player.on('message', async (Message) => {
-      await this.Server.DB.logMessage(Player.ClientId, Message)
+      if (Message.startsWith(config.commandPrefix)) return
+      await this.Server.DB.logMessage(Player.ClientId, Player.Name, Player.Server.HostnameRaw, Message)
     })
   }
   init () {
@@ -38,7 +40,7 @@ class Plugin {
         this.Server.DB.incrementStat(Client.ClientId, (new Date() - Client.lastSeen) / 1000 / 60, 'PlayedTime')
         Client.lastSeen = new Date()
         var Stats = await this.Server.DB.getPlayerStatsTotal(Client.ClientId)
-        this.Server.DB.addStatRecord(Client.ClientId, Stats.TotalPerformance, Stats.Performance)
+        this.Server.DB.addStatRecord(Client.ClientId, Stats.TotalPerformance, Math.max(0, Stats.Performance))
       })
     }, 60000)
   }

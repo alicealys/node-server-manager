@@ -36,8 +36,8 @@ async function notifyMe(ServerId, Client, Message) {
   n.appendChild(notif);
   var elements = notif.children;
   var notifyText = elements[1].children;
-  elements[0].addEventListener("click", function() {
-      showProfile(user, elements[0])
+  notif.addEventListener("click", function() {
+      window.location.href = '/chat'
   })
   var notifTimeout = setTimeout(() => {
     notif.classList.remove("notifFadeIn");

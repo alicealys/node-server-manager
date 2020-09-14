@@ -254,7 +254,7 @@ var logMessage = (msg, append, date = new Date()) => {
             <div class='wf-message-sender'>
                 <a class='wf-link wf-message-sender' href='/id/${msg.Client.ClientId}'>${msg.Client.Name}</a>:</div>
                 <div class='wf-default wf-message-date'>${moment(date).calendar()}</div>
-            <div class='wf-message-message'>${msg.Message}</div>
+            <div class='wf-message-message'>${COD2HTML(msg.Message, '')}</div>
         </div>
         `))
       break

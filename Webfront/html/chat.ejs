@@ -9,6 +9,7 @@
         <meta name="description" content="Node Server Manager is a administration tool for Plutonium IW5">
         <meta name="keywords" content="IW4MAdmin, IW5, Plutonium, T6, NodeJs, server, administration, IW4x, MW2, Modern Warfare 3">
         <script type='text/javascript' src='/js/main.js'></script>
+        <script type='text/javascript' src='/js/chat.js'></script>
         <script src="/js/moment-with-locales.js" type="text/javascript"></script>
         <link rel="stylesheet" type="text/css" href="/css/xbbcode.css">
         <script src="/js/xbbcode.js" type="text/javascript"></script>
@@ -18,45 +19,25 @@
     </head>
     <body>
         <%- header %>
-        <div class='wf-profile wf-default'>
-            <div class='wf-client-search-desc'>
-                Global Server Chat
-            </div>
-            <div class='wf-chatbox' id='message-log'>
-                    <% 
-                        var previousDate = new Date()
-                        var i = 0; Messages.forEach(Message => { %>
-                        <% if (i < Messages.length - 5) { %>
+            <div class='wf-chatbox nice-scrollbar' id='message-log'>
+                <%  var previousDate = new Date()
+                    var i = 0; Messages.forEach(Message => { %>
+                        <% if (i++ < Messages.length - 5) { %>
                             <% if ( ( previousDate - new Date(Message.Date) ) / 1000 / 60 / 30 >= 0.5) { 
                                     previousDate = new Date(Message.Date) %>
                                 <div class='wf-chat-separator-wrap'>
                                     <div class='wf-chat-separator'>
-                                        <span><%= moment(Message.Date).calendar() %></span>
+                                        <span date-moment><%= Message.Date %></span>
                                     </div>
                                 </div>
                     <% } } %>
-                    <% if (Message.Type == 'Message') {%>
                             <div class='wf-message'>
                                 <div class='wf-message-sender'>
-                                    <a class='wf-link wf-message-sender' href='/id/<%= Message.Client.ClientId %>'><%= Message.Client.Name %></a>:</div>
+                                    <a class='wf-link wf-message-sender' href='/id/<%= Message.OriginId %>' colorcode><%= Message.Name %></a> @ <span class='api-data-type' colorcode> <%=Message.Hostname%> </span>:</div>
                                 <div class='wf-message-message'><%= Message.Message %></div>
-                                <div class='wf-default wf-message-date'><%= moment(Message.Date).calendar() %></div>
+                                <div class='wf-default wf-message-date' date-moment><%= Message.Date %></div>
                             </div>
-                            <% } else {%>
-                                <% var penalties = {
-                                    'PENALTY_TEMP_BAN' : 'Temp banned',
-                                    'PENALTY_PERMA_BAN' : 'Perma banned',
-                                    'PENALTY_KICK' : 'Kicked',
-                                    'PENALTY_UNBAN' : 'Unbanned'
-                                } %>
-                                <div class='wf-message'>
-                                    <div class='wf-message-message'><a class='iw-yellow wf-link' href='/id/<%= Message.Origin.ClientId %>'><%= Message.Origin.Name %></a> <span class='iw-red'><%= penalties[Message.PenaltyType] %></span> <a class='iw-yellow wf-link' href='/id/<%= Message.Target.ClientId %>'><%= Message.Target.Name %></a> for <span class='iw-cyan'><%= Message.Reason.replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), '') %></div>
-                                    <div class='wf-default wf-message-date'><%= moment(Message.Date).calendar() %></div>
-                                </div>
-                            <% }%>
-                <% i++ %>
                 <% }) %>%>
-            </div>
         </div>
     </body>
 </html>

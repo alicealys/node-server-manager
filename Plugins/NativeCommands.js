@@ -45,7 +45,7 @@ class Plugin {
   onEventAsync (event) {
     switch (event.type) {
         case 'say':
-          if (event.data.Message.startsWith('.')) this.playerCommand(event.data.Origin, event.data.Message.substr(1).split(/\s+/))
+          if (event.data.Message.startsWith(config.commandPrefix)) this.playerCommand(event.data.Origin, event.data.Message.substr(1).split(/\s+/))
         break;
     }
   }

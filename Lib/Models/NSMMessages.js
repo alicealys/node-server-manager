@@ -7,6 +7,10 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             primaryKey: true
         },
+        Name: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
         OriginId: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -16,6 +20,10 @@ module.exports = (sequelize, DataTypes) => {
             }
         },
         Message: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
+        Hostname: {
             type: DataTypes.TEXT,
             allowNull: true,
         },
