@@ -614,6 +614,7 @@ class Database {
     }
 
     async getName(ClientId) {
+        if (ClientId == 1) return 'Node Server Manager'
         if (this.clientCache.find(x => x && x.ClientId == ClientId))
             return this.clientCache.find(x => x && x.ClientId == ClientId).Name
         else {
