@@ -174,14 +174,20 @@ class Plugin {
         Permission: Permissions.Commands.COMMAND_USER_CMDS,
         inGame: false,
         callback: async (Player, args) => {
-          var ClientId = !args[1] ? Player.ClientId : (await this.Server.getClient(args[1])).ClientId
+          var Target = !args[1] ? Player : await this.Server.getClient(args[1])
+
+          if (!Target) {
+            Player.Tell(Localization.COMMAND_CLIENT_NOT_FOUND)
+            return
+          }
+          var ClientId = Target.ClientId
           var Stats = await this.Server.DB.getPlayerStatsTotal(ClientId)
-          var OtherStats = await this.Server.DB.getPlayerStats(ClientId)
+          var Client = await this.Server.DB.getClient(ClientId)
           if (Stats)
             Player.Tell(Localization.COMMAND_STATS_FORMAT
-            .replace('%PLAYEDTIME%', this.timeConvert(Stats.PlayedTime))
+            .replace('%PLAYEDTIME%', Utils.time2str(Stats.PlayedTime * 60))
             .replace('%PERFORMANCE%', Stats.Performance.toFixed(2))
-            .replace('%NAME%', OtherStats.Player.Name)
+            .replace('%NAME%', Client.Name)
             .replace('%KILLS%', Stats.Kills)
             .replace('%DEATHS%', Stats.Deaths)
             .replace('%KDR%',(Stats.Kills / Math.max(Stats.Deaths, 1)).toFixed(2)))
@@ -483,13 +489,6 @@ class Plugin {
       }
     };
       this.Server.on('event', this.onEventAsync.bind(this));
-  }
-  async getClient(name) {
-    var clientIdRegex = /\@([0-9]+)/g
-    var Clients = name.match(clientIdRegex) ? [await this.Server.DB.getClient(clientIdRegex.exec(name)[1])] : ((name.length >= 3 && !name.match('%')) ? (await this.Server.DB.getClientByName(name)) : false)
-    var Client = Clients ? (Clients.length > 1 ? Clients.filter((Client) => { return this.findClient(Client.ClientId)})[0] : Clients[0]) : false
-    return Client
-     
   }
   findClient(ClientId) {
     var Client = null

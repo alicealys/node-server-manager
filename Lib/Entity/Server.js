@@ -47,7 +47,7 @@ class _Server extends EventEmitter {
     async getClient(name) {
       var clientIdRegex = /\@([0-9]+)/g
       var Clients = name.match(clientIdRegex) ? [await this.DB.getClient(clientIdRegex.exec(name)[1])] : ((name.length >= 3 && !name.match('%')) ? (await this.DB.getClientByName(name)) : false)
-      var Client = Clients ? (Clients.length > 1 ? Clients.filter((Client) => { return this.findClient(Client.ClientId)})[0] : Clients[0]) : false
+      var Client = Clients ? Clients.reverse()[0] : false
       return Client
        
     }
@@ -63,12 +63,13 @@ class _Server extends EventEmitter {
       try {
         var status = await this.Rcon.executeCommandAsync(this.Rcon.commandPrefixes.Rcon.status)
         if (!status) {
-          this.heartbeatRetry > 0 && this.heartbeatRetry--
           if (this.heartbeatRetry <= 0) {
             this.Rcon.isRunning = false
             console.log(`${this.IP}:${this.PORT} is not responding`)
           }
-        }
+          this.heartbeatRetry > 0 && this.heartbeatRetry--
+        } else 
+          this.heartbeatRetry = 2
         if (!this.Rcon.isRunning && status != false) {
           this.heartbeatRetry = 1
           this.Rcon.isRunning = true

@@ -15,8 +15,11 @@ class Plugin {
       var PlayerStats = await this.Server.DB.getPlayerStatsTotal(Player.ClientId)
       var AttackerStats = await this.Server.DB.getPlayerStatsTotal(Attacker.ClientId)
 
-      this.Server.DB.incrementStat(Player.ClientId, (AttackerStats.Performance - 400) / (PlayerStats.Kills + AttackerStats.Deaths), 'Performance')
-      this.Server.DB.incrementStat(Attacker.ClientId, (PlayerStats.Performance + 400) / (AttackerStats.Kills + AttackerStats.Deaths), 'Performance')
+      this.Server.DB.incrementStat(Player.ClientId, (AttackerStats.Performance - 400), 'TotalPerformance')
+      this.Server.DB.incrementStat(Attacker.ClientId, (PlayerStats.Performance + 400), 'TotalPerformance')
+
+      this.Server.DB.editStat(Player.ClientId, (PlayerStats.TotalPerformance + (AttackerStats.Performance - 400)) / (PlayerStats.Kills + PlayerStats.Deaths), 'Performance')
+      this.Server.DB.editStat(Attacker.ClientId, (AttackerStats.TotalPerformance + (PlayerStats.Performance + 400)) / (AttackerStats.Kills + AttackerStats.Deaths), 'Performance')
 
     })
     Player.on('message', async (Message) => {

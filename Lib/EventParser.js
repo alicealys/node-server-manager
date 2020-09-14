@@ -48,7 +48,6 @@ class EventParser {
                 }
             break;
             case 'kill':
-            case 'damage':
                 var Weapon = eventData.vars[10]
                 var BaseWeapon = Weapon
                 if (Weapon.indexOf('_mp') > 0) {

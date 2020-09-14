@@ -1,16 +1,19 @@
-const sqlite3           = require('sqlite3').verbose()
 const Sequelize         = require('sequelize')
-const path              = require('path');
 const bcrypt            = require('bcrypt')
-const { timeStamp }     = require('console')
 const Models            = require('./DatabaseModels.js')
 
 class Database {
     constructor () {
         this.clientCache = []
     }
-    async addClient(Guid) {
 
+    async startTransaction() {
+        if (this.transaction) return
+        this.transaction = await Models.DB.transaction()
+    }
+
+    async addClient(Guid) {
+        await this.startTransaction()
         if (await this.getClientId(Guid)) return
 
         if (!(await this.getClientId('Node'))) {
@@ -18,14 +21,16 @@ class Database {
                 await Models.NSMClients.build({
                     Guid: 'Node',
                     PermissionLevel: 6
-                }).save()
+                }, {transaction: this.transaction}, {transaction: this.transaction}).save()
             }
             catch (e) { }
         }
 
         var Client = await Models.NSMClients.build({
             Guid: Guid
-        }).save()
+        }, {transaction: this.transaction}, {transaction: this.transaction}).save()
+
+        // await this.transaction.commit()
 
         return Client.dataValues.ClientId
     }
@@ -34,19 +39,21 @@ class Database {
         if (!(await this.getPlayerStatsTotal(ClientId))) {
             await Models.NSMPlayerStats.build({
                 ClientId: ClientId
-            }).save()
+            }, {transaction: this.transaction}).save()
         }
         if (!(await this.getClientSettings(ClientId))) {
             await Models.NSMSettings.build({
                 ClientId
-            }).save()
+            }, {transaction: this.transaction}).save()
         }
+        // await this.transaction.commit()
     }
 
     async setClientSetting(ClientId, Setting, Value) {
-        return await Models.NSMSettings.update(
+        await Models.NSMSettings.update(
             { [Setting]: Value },
-            { where: { ClientId: ClientId } })
+            { where: { ClientId: ClientId } }, {transaction: this.transaction})
+        // await this.transaction.commit()
     }
 
     async getClientSettings(ClientId) {
@@ -55,7 +62,7 @@ class Database {
             where: {
                 ClientId
             }
-        })
+        }, {transaction: this.transaction})
         return Settings.length > 0 ? Settings[0].dataValues : false
     }
 
@@ -70,7 +77,7 @@ class Database {
                 [Sequelize.literal('occurrence'), 'desc']
             ],
             group: ['BaseWeapon']
-        })
+        }, {transaction: this.transaction})
         
         return Weapon.length > 0 ? Weapon[0].dataValues.BaseWeapon : false
     }
@@ -86,7 +93,7 @@ class Database {
                 [Sequelize.literal('occurrence'), 'desc']
             ],
             group: ['HitLoc']
-        })
+        }, {transaction: this.transaction})
         
         return HitLoc.length > 0 ? HitLoc[0].dataValues.HitLoc : false
     }
@@ -98,7 +105,7 @@ class Database {
                 TargetId: ClientId
             },
             group: ['BaseWeapon']
-        })
+        }, {transaction: this.transaction})
         
         return Damage.length > 0 ? Damage[0].dataValues.totalDamage : false
     }
@@ -109,7 +116,7 @@ class Database {
             where: {
                 ClientId: ClientId
             }
-        })
+        }, {transaction: this.transaction})
 
         return Kills.length
     }
@@ -119,7 +126,7 @@ class Database {
             where: {
                 TargetId: ClientId
             }
-        })
+        }, {transaction: this.transaction})
 
         return Deaths.length
     }
@@ -130,7 +137,7 @@ class Database {
             where: {
                 PermissionLevel: 5
             }
-        })
+        }, {transaction: this.transaction})
         
         return Owner.length > 0 ? Owner[0].dataValues : false
     }
@@ -145,7 +152,7 @@ class Database {
                     [Sequelize.Op.like]: `%${Name.toLocaleLowerCase()}%`
                 }
             }
-        })
+        }, {transaction: this.transaction})
         var Clients = []
         for (var i = 0; i < _Clients.length; i++) {
             var Client = await this.getClient(_Clients[i].dataValues.ClientId)
@@ -158,11 +165,12 @@ class Database {
     }
 
     async logActivity(Origin, Type, Description) {
-        var Audit = await Models.NSMAudit.build({
+        await Models.NSMAudit.build({
             Origin,
             Type,
             Description
-        }).save()
+        }, {transaction: this.transaction}).save()
+        // await this.transaction.commit()
     }
 
     async getAudit(pageNumber, limit) {
@@ -172,7 +180,7 @@ class Database {
             ],
             limit: limit,
             offset: pageNumber * limit,
-        })
+        }, {transaction: this.transaction})
         Audit.map(x => x = x.dataValues)
         for (var i = 0; i < Audit.length; i++) {
             try {
@@ -197,7 +205,7 @@ class Database {
             where: {
                 ClientId: ClientId
             }
-        })
+        }, {transaction: this.transaction})
 
         return Level[0].dataValues.PermissionLevel
     }
@@ -205,7 +213,7 @@ class Database {
     async unbanClient(TargetId, OriginId, Reason) {
         var Penalties = await Models.NSMPenalties.update(
             { Active: false },
-            { where: { TargetId: TargetId, Active: true } }
+            { where: { TargetId: TargetId, Active: true } }, {transaction: this.transaction}
         )
 
         Penalties.length > 0 && await Models.NSMPenalties.build({
@@ -214,8 +222,8 @@ class Database {
             PenaltyType: 'PENALTY_UNBAN',
             Duration: 0,
             Reason: Reason
-        })
-
+        }, {transaction: this.transaction})
+        // await this.transaction.commit()
         return Penalties[0]
     }
 
@@ -234,7 +242,7 @@ class Database {
             where: {
                 ClientId: ClientId
             }
-        })
+        }, {transaction: this.transaction})
 
         var Connection = await Models.NSMConnections.findAll({
             order: [
@@ -244,7 +252,7 @@ class Database {
             where: {
                 ClientId: ClientId
             }
-        })
+        }, {transaction: this.transaction})
 
         if (Connection.length == 0) return false
 
@@ -262,7 +270,8 @@ class Database {
     }
 
     async addPenalty(PenaltyMeta) {
-        var Penalty = await Models.NSMPenalties.build(PenaltyMeta).save()
+        var Penalty = await Models.NSMPenalties.build(PenaltyMeta, {transaction: this.transaction}).save()
+        // await this.transaction.commit()
         return Penalty.dataValues
     }
 
@@ -270,7 +279,8 @@ class Database {
         Models.NSMClients.update(
             { PermissionLevel: Level },
             { where: { ClientId: Player.ClientId } }
-        )
+            , {transaction: this.transaction})
+        // await this.transaction.commit()
     }
 
     async getAllPenalties(ClientId = null) {
@@ -279,7 +289,7 @@ class Database {
                 TargetId: ClientId,
             }
         } : null
-        var Penalties = await Models.NSMPenalties.findAll(where)
+        var Penalties = await Models.NSMPenalties.findAll(where, {transaction: this.transaction})
 
         for (var i = 0; i < Penalties.length; i++) {
             Penalties[i] = Penalties[i].dataValues
@@ -296,7 +306,7 @@ class Database {
                     [sort, 'desc']
                 ],
                 offset: limit * pageNumber
-            })
+            }, {transaction: this.transaction})
         }
         catch (e) {
             var Stats = await Models.NSMPlayerStats.findAll({
@@ -305,7 +315,7 @@ class Database {
                     ['Kills', 'desc']
                 ],
                 offset: limit * pageNumber
-            })
+            }, {transaction: this.transaction})
         }
 
         for (var i = 0;  i < Stats.length; i++) {
@@ -329,7 +339,7 @@ class Database {
             where: {
                 ClientId: ClientId
             }
-        })
+        }, {transaction: this.transaction})
 
         return Fields.length > 0 ? Fields[0].dataValues[Field] : false
     }
@@ -337,7 +347,8 @@ class Database {
     async setClientField(ClientId, Field, Value) {
         Models.NSMClients.update(
             { [Field] : Value},
-            {where: {ClientId: ClientId}})
+            {where: {ClientId: ClientId}}, {transaction: this.transaction})
+        // await this.transaction.commit()
     }
 
     async getTokenHash(ClientId) {
@@ -345,7 +356,7 @@ class Database {
             where: {
                 ClientId: ClientId
             }
-        })
+        }, {transaction: this.transaction})
         return Token.length > 0 ? Token[0].dataValues : false
     }
 
@@ -355,12 +366,13 @@ class Database {
                 where: {
                     ClientId: ClientId
                 }
-            })
+            }, {transaction: this.transaction})
             await Models.NSMTokens.build({
                 ClientId: ClientId,
                 Token: hash
-            }).save()
-        });
+            }, {transaction: this.transaction}).save()
+            // await this.transaction.commit()
+        })
     }
 
     async getPlayerStatsTotal(ClientId) {
@@ -368,12 +380,12 @@ class Database {
             where: {
                 ClientId: ClientId
             }
-        })
+        }, {transaction: this.transaction})
         return Stats.length > 0 ? Stats[0].dataValues : false
     }
 
     async getGlobalStats() {
-        var totalKills = (await Models.NSMKills.count({}))
+        var totalKills = (await Models.NSMKills.count({}, {transaction: this.transaction}))
 
         var totalPlayedTime = (await Models.NSMPlayerStats.findAll({
             attributes: [[Sequelize.fn('sum', Sequelize.col('PlayedTime')), 'totalPlayedTime']],
@@ -400,13 +412,13 @@ class Database {
             where: {
                 Guid: Guid
             }
-        })
+        }, {transaction: this.transaction})
 
         return result.length > 0 ? result[0].dataValues.ClientId : false
     }
 
     async getAllClients() {
-        return await Models.NSMClients.findAll({})
+        return await Models.NSMClients.findAll({}, {transaction: this.transaction})
     }
 
     async getAllConnections(ClientId) {
@@ -414,7 +426,7 @@ class Database {
             where: {
                 ClientId
             }
-        })
+        }, {transaction: this.transaction})
         return Connections.length > 0 ? Connections : false
     }
 
@@ -426,7 +438,8 @@ class Database {
             IPAddress: ePlayer.IPAddress,
             Guid: ePlayer.Guid,
             Name: ePlayer.Name
-        }).save()
+        }, {transaction: this.transaction}).save()
+        // await this.transaction.commit()
 
         return Connection.dataValues
     }
@@ -439,8 +452,8 @@ class Database {
             HitLoc: Attack.HitLoc,
             Damage: Attack.Damage,
             BaseWeapon: Attack.BaseWeapon
-        }).save()
-
+        }, {transaction: this.transaction}).save()
+        // await this.transaction.commit()
         return Kill.dataValues
     }
 
@@ -453,13 +466,13 @@ class Database {
                 order: [
                     ['Date', 'desc']
                 ],
-            })
+            }, {transaction: this.transaction})
         } else {
             var Messages = await Models.NSMMessages.findAll({
                 order: [
                     ['Date', 'desc']
                 ],
-            })
+            }, {transaction: this.transaction})
         }
         for (var i = 0; i < Messages.length; i++) {
             Messages[i] = Messages[i].dataValues
@@ -509,7 +522,7 @@ class Database {
                 ],
                 limit: limit,
                 offset: pageNumber * limit,
-            })
+            }, {transaction: this.transaction})
             var Penalties = await Models.NSMPenalties.findAll({
                 where: Sequelize.or({ TargetId: From}, {OriginId: From}),
                 order: [
@@ -517,7 +530,7 @@ class Database {
                 ],
                 limit: limit,
                 offset: pageNumber * limit,
-            })
+            }, {transaction: this.transaction})
         } else {
             var Messages = await Models.NSMMessages.findAll({
                 order: [
@@ -525,14 +538,14 @@ class Database {
                 ],
                 limit: limit,
                 offset: pageNumber * limit,
-            })
+            }, {transaction: this.transaction})
             var Penalties = await Models.NSMPenalties.findAll({
                 order: [
                     ['Date', 'desc']
                 ],
                 limit: limit,
                 offset: pageNumber * limit,
-            })
+            }, {transaction: this.transaction})
         }
         
         for (var i = 0; i < Penalties.length; i++) {
@@ -559,21 +572,23 @@ class Database {
     async incrementStat(ClientId, Increment, Stat) {
         Models.NSMPlayerStats.update(
             { [Stat] : Sequelize.literal(`${Stat} + ${Increment}`)},
-            {where: {ClientId: ClientId}})
+            {where: {ClientId: ClientId}}, {transaction: this.transaction})
+        // await this.transaction.commit()
     }
 
     async editStat(ClientId, Value, Stat) {
         Models.NSMPlayerStats.update(
             { [Stat] : Value},
-            {where: {ClientId: ClientId}})
+            {where: {ClientId: ClientId}}, {transaction: this.transaction})
+        // await this.transaction.commit()
     }
 
     async logMessage(ClientId, Message) {
         var Kill = await Models.NSMMessages.build({
             OriginId: ClientId,
             Message: Message
-        }).save()
-
+        }, {transaction: this.transaction}).save()
+        // await this.transaction.commit()
         return Kill.dataValues
     }
 }

@@ -30,6 +30,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: 0,
         },
+        TotalPerformance: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 100,
+        },
         Performance: {
             type: DataTypes.INTEGER,
             allowNull: false,
