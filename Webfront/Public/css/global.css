@@ -4056,3 +4056,29 @@ select option:hover {
   padding:10px;
   margin:5px;
 }
+
+.wf-stat {
+  padding:10px;
+  font-family:codef;
+  font-size:16px;
+  background-color: var(--color-3);
+  margin: 5px;
+  border-radius:5px;
+  display:flex;
+  color:var(--color-text)
+}
+.wf-stat * {
+  flex-grow: 1;
+  flex-basis: 1px;
+}
+.wf-stat-line {
+  display:block;
+}
+.wf-stat-chart {
+  height:100px;
+  align-items:center;
+}
+.wf-stat-name {
+  font-size:30px;
+  font-family:codefb
+}

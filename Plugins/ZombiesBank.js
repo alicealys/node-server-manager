@@ -74,6 +74,7 @@ class Plugin {
     await this.createTable()
     this.Manager.commands['withdraw'] = {
         ArgumentLength: 1,
+        logToAudit: false,
         Permission: Permissions.Commands.COMMAND_USER_CMDS,
         callback: async (Player, args) => {
             var totalMoney = (await this.getZMStats(Player.ClientId)).Money

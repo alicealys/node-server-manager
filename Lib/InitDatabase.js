@@ -377,6 +377,7 @@ class Database {
 
     async getPlayerStatsTotal(ClientId) {
         var Stats = await Models.NSMPlayerStats.findAll({
+            attributes: ['Kills', 'Deaths', 'PlayedTime', [Sequelize.literal('max(Performance, 0)'), 'Performance'], 'TotalPerformance'],
             where: {
                 ClientId: ClientId
             }
@@ -405,6 +406,43 @@ class Database {
         }
         return Stats
     }
+
+    async addStatRecord(ClientId, TotalPerformance, Performance) {
+        return await Models.NSMPlayerStatHistory.build({ ClientId, TotalPerformance, Performance }, {transaction: this.transaction}).save()
+    }
+
+    async getStatHistory(page, limit) {
+        var Stats = (await Models.NSMPlayerStats.findAll({
+            limit: limit,
+            attributes: ['ClientId', 'Kills', 'Deaths', [Sequelize.literal('max(Performance, 0)'), 'Performance'], 'TotalPerformance', 'PlayedTime', 'Id', [Sequelize.literal('ROW_NUMBER() over (order by Performance desc)'), 'Rank']],
+            where: {
+                [Sequelize.Op.and]: [
+                    Sequelize.literal('Kills+Deaths >= 10')
+                ],
+                PlayedTime: {
+                    [Sequelize.Op.gte]: 120
+                }
+            },
+            order: [
+                ['Performance', 'desc']
+            ],
+            offset: limit * page
+        }, {transaction: this.transaction})).map(x => x = x.dataValues)
+
+        for (var i = 0; i < Stats.length; i++) {
+            Stats[i].History = (await Models.NSMPlayerStatHistory.findAll({
+                where: {ClientId: Stats[i].ClientId},
+                limit: 100,
+                attributes: ['Performance', 'Date'],
+                order: [
+                    ['Date', 'desc']
+                ]
+            })).map(s => s = {x: s.Date, y: s.Performance})
+        }
+
+        return Stats
+    }
+
     async getClientId(Guid) {
 
         var result = await Models.NSMClients.findAll({

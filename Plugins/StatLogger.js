@@ -33,11 +33,12 @@ class Plugin {
   playedTimeLogger() {
     setInterval(async () => {
       if (!this.Server.Rcon.isRunning) return
-      var status = await this.Server.Rcon.getStatus()
-      if (!status) return
-      status.data.clients.forEach(async client => {
-        var ClientId = await this.Server.DB.getClientId(client.guid)
-        this.Server.DB.incrementStat(ClientId, 1, 'PlayedTime')
+      this.Server.Clients.forEach(async Client => {
+        if (!Client) return
+        this.Server.DB.incrementStat(Client.ClientId, (new Date() - Client.lastSeen) / 1000 / 60, 'PlayedTime')
+        Client.lastSeen = new Date()
+        var Stats = await this.Server.DB.getPlayerStatsTotal(Client.ClientId)
+        this.Server.DB.addStatRecord(Client.ClientId, Stats.TotalPerformance, Stats.Performance)
       })
     }, 60000)
   }

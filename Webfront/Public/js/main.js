@@ -490,6 +490,11 @@ window.addEventListener('load', async () => {
             }
         })
     })
+    document.querySelectorAll('*[data-canvas]').forEach(canvas => {
+        var data = JSON.parse(canvas.getAttribute('data-canvas'))
+        data.map(d => d.x = new Date(d.x))
+        renderPerformanceChart(canvas.id, data, true, '#D5D0C7')
+    })
 })
 
 async function replacePlaceholders(text) {
@@ -502,3 +507,55 @@ async function replacePlaceholders(text) {
                .replace('{TOPSERVER-PLAYERS}', statistics.topServer.playerCount)
     return text
 }
+
+function renderPerformanceChart(id, data, animation, color) {
+    var chart = new CanvasJS.Chart(id, {
+        theme: "dark1", // "light1", "light2", "dark1", "dark2"
+        defaultFontFamily: "codef",
+        animationEnabled: animation,
+        backgroundColor: "transparent",
+        zoomEnabled: false,
+        height:150,
+        title: {
+            text: 'Performance History',
+            fontFamily: "codef",
+        },
+        fontFamily: "codef",
+        xValueType: "dateTime",
+        toolTip: {
+            cornerRadius: 5,
+            fontFamily: "codef",
+            contentFormatter: function (e) {
+                const date = moment.utc(e.entries[0].dataPoint.x).calendar()
+                return `${date} - ${e.entries[0].dataPoint.y.toFixed(1)}`
+            }
+        },
+        axisX: {
+            interval: 1,
+            gridThickness: 0,
+            lineThickness: 1,
+            tickThickness: 0,
+            margin: 0,
+            valueFormatString: " "
+        },
+           axisY: {
+            gridThickness: 0,
+            lineThickness: 0,
+            tickThickness: 0,
+            minimum: 0,
+            margin: 0,
+            valueFormatString: " ",
+            labelMaxWidth: 0
+        },
+        fontColor: color,
+        data: [{
+            showInLegend: false,
+            type: "splineArea",
+            color: color,
+            markerSize: 0,
+            dataPoints: data
+        }]
+    });
+    chart.render()
+    document.getElementById(id).offsetWidth;
+} 

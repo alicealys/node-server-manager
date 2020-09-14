@@ -12,32 +12,31 @@
         <link rel="stylesheet" type="text/css" href="/css/xbbcode.css">
         <script src="/js/xbbcode.js" type="text/javascript"></script>
         <script type='text/javascript' src='/js/stats.js'></script>
+        <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
         <script type='text/javascript' src='/js/notifications.js'></script>
         <script type='text/javascript' src='/js/font-awesome.js'></script>
         <link rel='stylesheet' type='text/css' href='css/global.css'></link>
+        <script src="/js/moment-with-locales.js" type="text/javascript"></script>
+        <script src="/js/moment-timezone-with-data-10-year-range.js" type="text/javascript"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-duration-format/1.3.0/moment-duration-format.min.js"></script>
     </head>
     <body class='nice-scrollbar'>
         <%- header %>
         <div class='wf-client-search'>
-            <div class='wf-client-search-desc'>Global Server Stats</div>
+            <div class='wf-client-search-desc'>Top Players</div>
             <div class='wf-profile wf-default'>
             <div class='wf-client-search-list' id='stat-list'>
-                <div class='wf-client-search-client wf-client-search-label'>
-                    <div class='wf-search-date'>Name</div>
-                    <a href='?sort=Kills' class='wf-table-column'>Kills</a>
-                    <a href='?sort=Deaths' class='wf-table-column'>Deaths</a>
-                    <a href='?sort=KDR' class='wf-table-column'>KDR</a>
-                    <a href='?sort=Performance' class='wf-table-column'>Performance</a>
-                    <a href='?sort=PlayedTime' class='wf-search-name'>Time Played</a>
-                </div>
                 <% Stats.forEach(Stat => { %>
-                    <div class='wf-client-search-client'>
-                        <a class='wf-search-name' href='/id/<%= Stat.Client.ClientId %>'><%= Stat.Client.Name %></a>
-                        <div class='wf-search-level' data-value='<%=Stat.Kills %>'><%= Stat.Kills %></div>
-                        <div class='wf-search-level' data-value='<%=Stat.Deaths %>'><%= Stat.Deaths %></div>
-                        <div class='wf-search-level' data-value='<%= Stat.KDR %>'><%= Stat.KDR %></div>
-                        <div class='wf-search-level' data-value='<%=Stat.Performance %>'><%= Stat.Performance %></div>
-                        <div class='wf-search-level' data-value='<%=Stat.PlayedTime %>'><%= Stat.PlayedTimeString %></div>
+                    <div class='wf-stat'>
+                        <div>
+                            <div class='wf-stat-name wf-stat-line inline'><span class='api-data-type'>#<%= Stat.Rank %> - </span><a href='/id/<%= Stat.ClientId%>' class='wf-stat-name inline wf-link'><%= Stat.Name %></a></div>
+                            <div class='wf-stat-line'><span class='api-data-type'><%= Stat.Kills %></span> Kill(s)</div>
+                            <div class='wf-stat-line'><span class='api-data-type'><%= Stat.Deaths %></span> Deaths</div>
+                            <div class='wf-stat-line'><span class='api-data-type'><%= (Stat.Kills / Math.max(Stat.Deaths, 1)).toFixed(2) %></span> KDR</div>
+                            <div class='wf-stat-line'><span class='api-data-type'><%= Stat.Performance.toFixed(1) %></span> Performance</div>
+                            <div class='wf-stat-line'>Played for <span class='api-data-type'><%= Stat.PlayedTimeString %></span></div>
+                        </div>
+                        <div><div class='wf-stat-chart' id='<%= Stat.ClientId%>_history' data-canvas='<%= JSON.stringify(Stat.History) %>'></div></div>
                     </div>
                 <% }) %>
             </div>

@@ -1,19 +1,12 @@
 window.onscroll = async (ev) => {
     if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight && !maxPage && pageLoaded) {
         pageLoaded = false
-        var sort = getParams().sort
-        var nextStats = JSON.parse(await makeRequest('GET', `/api/stats?&page=${nextPage}&limit=50&sort=${sort}`))
+        var nextStats = JSON.parse(await makeRequest('GET', `/api/stats?&page=${nextPage}`))
         appendStats(nextStats)
         pageLoaded = true
         nextPage++
-        maxPage = (nextStats.length + 1 < 50)
+        maxPage = (nextStats.length + 1 < 10)
     }
-};
-
-function getParams() {
-    var queryDict = {}
-    location.search.substr(1).split("&").forEach(function(item) {queryDict[item.split("=")[0]] = item.split("=")[1]})
-    return queryDict;
 }
 
 var nextPage = 1
@@ -47,15 +40,19 @@ function makeRequest (method, url, data) {
 var appendStats = (Stats) => {
     Stats.forEach(Stat => {
         document.getElementById('stat-list').appendChild((parseHTML(`
-        <div class='wf-client-search-client'>
-            <a class='wf-search-name' href='/id/${Stat.ClientId}'>${Stat.Name}</a>
-            <div class='wf-search-level' data-value='${Stat.Kills}'>${Stat.Kills}</div>
-            <div class='wf-search-level' data-value='${Stat.Deaths}'>${Stat.Deaths}</div>
-            <div class='wf-search-level' data-value='${Stat.KDR}'>${Stat.KDR}</div>
-            <div class='wf-search-level' data-value='${Stat.Performance}'>${Stat.Performance}</div>
-            <div class='wf-search-level' data-value='${Stat.PlayedTime}'>${Stat.PlayedTimeString}</div>
+        <div class='wf-stat'>
+          <div>
+            <div class='wf-stat-name wf-stat-line'><span class='api-data-type'>#${Stat.Rank} - </span><a href='/id/${Stat.ClientId}' class='wf-stat-name wf-link'>${Stat.Name}</a></div>
+            <div class='wf-stat-line'><span class='api-data-type'>${Stat.Kills}</span> Kills</div>
+            <div class='wf-stat-line'><span class='api-data-type'>${Stat.Deaths}</span> Deaths</div>
+            <div class='wf-stat-line'><span class='api-data-type'>${(Stat.Kills / Math.max(Stat.Deaths, 1)).toFixed(2)}</span> KDR</div>
+            <div class='wf-stat-line'><span class='api-data-type'>${Stat.Performance.toFixed(1)}</span> Performance</div>
+            <div class='wf-stat-line'>Played for <span class='api-data-type'>${Stat.PlayedTimeString}</span></div>
+        </div>
+        <div><div class='wf-stat-chart' id='${Stat.ClientId}_history'></div></div>
         </div>
         `)))
+        renderPerformanceChart(`${Stat.ClientId}_history`, Stat.History, true, '#D5D0C7')
     })
 }
 

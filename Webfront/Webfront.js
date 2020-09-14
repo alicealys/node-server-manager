@@ -584,16 +584,26 @@ class Webfront {
             });
         })
 
+        this.app.get('/api/stats', async (req, res, next) => {
+            var page = req.query.page ? req.query.page : 0
+            var limit = 10
+            var Stats = await db.getStatHistory(page, limit)
+            for (var i = 0; i < Stats.length; i++) {
+                delete Stats[i].Id
+                Stats[i].Name = (await db.getClient(Stats[i].ClientId)).Name
+                Stats[i].PlayedTimeString = Utils.time2str(Stats[i].PlayedTime * 60)
+            }
+            res.end(JSON.stringify(Stats))
+        })
+
         this.app.get('/stats', async (req, res, next) => {
-            var sort = req.query.sort ? req.query.sort : 'Kills'
-            var Stats = await db.getStats(0, 50, sort)
-            Stats.forEach(Stat => {
-                Stat.PlayedTimeString = (Stat.PlayedTime / 60).toFixed(1) + ' hrs'
-                Stat.Performance = Stat.Performance.toFixed(1)
-                Stat.KDR = (Stat.Kills / Math.max(1, Stat.Deaths) ).toFixed(2)
-            })
+            var Stats = await db.getStatHistory(0 , 10)
+            for (var i = 0; i < Stats.length; i++) {
+                Stats[i].Name = (await db.getClient(Stats[i].ClientId)).Name
+                Stats[i].PlayedTimeString = Utils.time2str(Stats[i].PlayedTime * 60)
+            }
             res.setHeader('Content-type', 'text/html')
-            ejs.renderFile(path.join(__dirname, '/html/stats.ejs'), {header: header, Stats: Stats, moment: moment}, (err, str) => {
+            ejs.renderFile(path.join(__dirname, '/html/stats.ejs'), {header: header, Stats: Stats}, (err, str) => {
                 res.end(str)
             });
         })
@@ -627,18 +637,7 @@ class Webfront {
             });
         })
 
-        this.app.get('/api/stats', async (req, res, next) => {
-            var sort = req.query.sort ? req.query.sort : 'Kills'
-            var Stats = await db.getStats(req.query.page, req.query.limit, sort)
-            Stats.forEach(Stat => {
-                Stat.PlayedTimeString = (Stat.PlayedTime / 60).toFixed(1) + ' hrs'
-                Stat.Performance = Stat.Performance.toFixed(1)
-                Stat.KDR = (Stat.Kills / Math.max(1, Stat.Deaths) ).toFixed(2)
-                Stat.Name = Stat.Client.Name
-                delete Stat.Client
-            })
-            res.end(JSON.stringify(Stats))
-        })
+
         this.app.get('/api/admin', async (req, res, next) => {
             switch (true) {
                 case (!req.session.ClientId):

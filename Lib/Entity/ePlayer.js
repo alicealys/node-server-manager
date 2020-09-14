@@ -21,6 +21,7 @@ class ePlayer extends EventEmitter {
         this.Guid = Guid
         this.Name = Name
         this.inGame = true
+        this.lastSeen = new Date()
         this.IPAddress = IPAddress
         this.Clientslot = Clientslot
         this.Server = Server
