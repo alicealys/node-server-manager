@@ -9,7 +9,6 @@ class Plugin {
         this.Server = Server
         this.Manager = Manager
         this.Managers = Managers
-        this.autoMessages()
         this.joinMessages()
     }
     async joinMessages() {
@@ -37,62 +36,11 @@ class Plugin {
             }
         })
     }
-    autoMessages() {
-        setInterval(async () => {
-            var index = Utils.getRandomInt(0, config.autoMessages.length)
-            this.Server.Broadcast(await this.replacePlaceholders(config.autoMessages[index]))
-        }, config.autoMessagesInterval * 1000);
-    }
-    async replacePlaceholders(text) {
-        var placeholders = {
-            'TOTALCLIENTS' : {
-                async get() {
-                    return (await placeholders.Server.DB.getAllClients()).length
-                }
-            },
-            'PLAYERCOUNT': {
-                async get() {
-                    var count = 0;
-                    var Managers = placeholders.Managers.concat()
-                    Managers.forEach(Manager => {
-                        count += Manager.Server.Clients.filter((x) => { return x }).length
-                    })
-                    return count
-                }
-            },
-            'SERVERCOUNT': {
-                async get() {
-                    var Managers = placeholders.Managers.concat()
-                    return Managers.filter((Manager) => { return Manager.Server.Mapname} ).length
-                }
-            },
-            'TOTALKILLS': {
-                async get() {
-                    return (await placeholders.Server.DB.getGlobalStats()).totalKills
-                }
-            },
-            'TOTALPLAYEDTIME': {
-                async get() {
-                    return parseInt(((await placeholders.Server.DB.getGlobalStats()).totalPlayedTime) / 60)
-                }
-            }
-        }
-        placeholders.Manager = this.Manager
-        placeholders.Server = this.Server
-        placeholders.Managers = this.Managers
-        var entries = Object.entries(placeholders)
 
-        for (var i = 0; i < entries.length; i++) {
-            if (entries[i][0].match(/(Manager)|(Managers)|(Server)/g)) continue
-            var value = await entries[i][1].get()
-            text = text.replace(new RegExp(`{${entries[i][0]}}`, 'g'), value)
-        }
-
-        return text
-    }
     async getInfo(IPAddress) {
         return (await (await fetch(`https://extreme-ip-lookup.com/json/${IPAddress.split(':')[0]}`)).json())
     }
+
     ordinalSuffix(i) {
         var j = i % 10,
             k = i % 100;

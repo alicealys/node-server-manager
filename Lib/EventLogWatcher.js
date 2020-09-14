@@ -18,15 +18,14 @@ class EventLogWatcher extends EventParser {
             if (filename) {
               var lastLine = await readLastLines.read(this.logfile, 1)
               var event = this.parseEvent(lastLine)
-              var currentMD5 = md5(await readLastLines.read(this.logfile, 4))
+              var currentMD5 = md5(await readLastLines.read(this.logfile, 2))
           
-              if (!event || this.previousMD5 == currentMD5) return;
+              if (!event || this.previousMD5 == currentMD5) return
           
-              this.previousMD5 = currentMD5;
-              
+              this.previousMD5 = currentMD5
               this.EventDispatcher.dispatchCallback(event)
             } 
-        });
+        })
     }
 }
 module.exports = EventLogWatcher

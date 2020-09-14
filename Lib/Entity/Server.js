@@ -22,7 +22,7 @@ class _Server extends EventEmitter {
       this.previousStatus = null
       this.setMaxListeners(18)
       this.Heartbeat()
-      this.heartbeatRetry = 1
+      this.heartbeatRetry = 2
       this.HeartbeatInt = setInterval(this.Heartbeat.bind(this), 15000)
       this.sessionStore = sessionStore
     }

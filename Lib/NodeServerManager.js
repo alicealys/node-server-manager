@@ -83,6 +83,7 @@ class NSM {
           return console.log('Unable to scan directory: ' + err);
       } 
       files.forEach( (file) => {
+          if (!file.match(/.+\.js/g)) return
           this.logger.writeLn(`Loading plugin \x1b[33m${file}\x1b[0m for server ${this.Server.IP}:${this.Server.PORT}`)
           try {
             let plugin = require(path.join(__dirname, `../Plugins/${file}`))
@@ -112,6 +113,29 @@ if (fs.existsSync(path.join(__dirname, `../Configuration/NSMConfiguration.json`)
   configuration.Servers.forEach(config => {
      Managers.push(new NSM(config))
   })
+
+  function loadGlobalPlugins() {
+    const directoryPath = path.join(__dirname, '../Plugins/Global');
+    fs.readdir(directoryPath, (err, files) => {
+      if (err) {
+          return console.log('Unable to scan directory: ' + err);
+      } 
+      files.forEach( (file) => {
+          if (!file.match(/.+\.js/g)) return
+          console.log(`Loading global plugin \x1b[33m${file}\x1b[0m`)
+          try {
+            let plugin = require(path.join(__dirname, `../Plugins/Global/${file}`))
+            new plugin(Managers)
+          }
+          catch (e) {
+            console.log(`Error evaluating plugin \x1b[33m${file}\x1b[0m: \x1b[31m${e.toString()}\x1b[0m`)
+          }
+  
+      });
+    });
+  }
+
+  loadGlobalPlugins()
 
   const _Webfront = require(path.join(__dirname, `../Webfront/Webfront.js`))
 
