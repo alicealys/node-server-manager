@@ -17,6 +17,7 @@ class EventLogWatcher extends EventParser {
         var tail = new Tail(this.logfile)
         tail.watch()
         tail.on('line', (data) => {
+            this.Server.emit('line', data)
             var event = this.parseEvent(data)
             if (!event) return
             this.EventDispatcher.dispatchCallback(event)

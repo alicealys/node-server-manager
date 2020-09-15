@@ -2,7 +2,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=0.7">
-        <title>Multiplayer Stats | Node Server Manager</title>
+        <title>Zombies Stats | Node Server Manager</title>
         <meta property="og:title" content="Server Overview | Node Server Manager">
         <meta property="og:type" content="website">
         <meta property="og:description" content="Node Server Manager is an administration tool for Plutonium IW5">
@@ -11,7 +11,7 @@
         <script type='text/javascript' src='/js/main.js'></script>
         <link rel="stylesheet" type="text/css" href="/css/xbbcode.css">
         <script src="/js/xbbcode.js" type="text/javascript"></script>
-        <script type='text/javascript' src='/js/stats.js'></script>
+        <script type='text/javascript' src='/js/zstats.js'></script>
         <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
         <script type='text/javascript' src='/js/notifications.js'></script>
         <script type='text/javascript' src='/js/font-awesome.js'></script>
@@ -31,12 +31,12 @@
                         <div>
                             <div class='wf-stat-name wf-stat-line inline'><span class='api-data-type'>#<%= Stat.Rank %> - </span><a href='/id/<%= Stat.ClientId%>' class='wf-stat-name inline wf-link'><%= Stat.Name %></a></div>
                             <div class='wf-stat-line'><span class='api-data-type'><%= Stat.Kills %></span> <%=Stat.Kills == 1 ? 'Kill' : 'Kills'%></div>
-                            <div class='wf-stat-line'><span class='api-data-type'><%= Stat.Deaths %></span> <%=Stat.Deaths == 1 ? 'Death' : 'Deaths'%></div>
-                            <div class='wf-stat-line'><span class='api-data-type'><%= (Stat.Kills / Math.max(Stat.Deaths, 1)).toFixed(2) %></span> KDR</div>
-                            <div class='wf-stat-line'><span class='api-data-type'><%= Stat.Performance.toFixed(1) %></span> Performance</div>
-                            <div class='wf-stat-line'>Played for <span class='api-data-type'><%= Stat.PlayedTimeString %></span></div>
+                            <div class='wf-stat-line'><span class='api-data-type'><%= Stat.Downs %></span> <%=Stat.Downs == 1 ? 'Down' : 'Downs'%></div>
+                            <div class='wf-stat-line'><span class='api-data-type'><%= Stat.Revives %></span> <%=Stat.Revives == 1 ? 'Revive' : 'Revives'%></div>
+                            <div class='wf-stat-line'><span class='api-data-type'><%= Stat.Headshots %></span> <%=Stat.Headshots == 1 ? 'Headshot' : 'Headshots'%></div>
+                            <div class='wf-stat-line'><span class='api-data-type'><%= Stat.Score %></span> Score</div>
                         </div>
-                        <div><div class='wf-stat-chart' id='<%= Stat.ClientId%>_history' data-rank='<%=Stat.Rank%>' data-canvas='<%= JSON.stringify(Stat.History) %>'></div></div>
+                        <div class='wf-stat-round'><%= Stat.HighestRound %></div>
                     </div>
                 <% }) %>
             </div>

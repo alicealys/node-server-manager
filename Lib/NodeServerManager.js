@@ -8,6 +8,7 @@ const ServerLogWatcher        = require('./ServerLogWatcher.js')
 const ConfigMaker             = require('./ConfigMaker.js');
 const _CLICommands            = require('./CLICommands.js')
 const sessionStore            = new (require(path.join(__dirname, `../Webfront/SessionStore.js`)))()             
+const EventEmitter            = require('events')
 
 var Info = {
   Author: 'fed',
@@ -34,8 +35,9 @@ class Logger {
   }
 }
 
-class NSM {
+class NSM extends EventEmitter{
   constructor (configuration) {
+    super()
     this.Version = Info.Version
     this.Author = Info.Author
     this.IP = configuration.IP
@@ -75,6 +77,8 @@ class NSM {
 
     // Start watching log
     this._EventLogWatcher.init()
+
+    this.emit('ready')
   }
   LoadPlugins() {
     const directoryPath = path.join(__dirname, '../Plugins');
@@ -145,7 +149,7 @@ if (fs.existsSync(path.join(__dirname, `../Configuration/NSMConfiguration.json`)
     Cert: configuration['WebfrontSSL-Cert'], 
     Port: configuration.WebfrontPort, 
     Hostname: configuration.WebfrontHostname, 
-  }, sessionStore))
+  }, sessionStore, Database))
 } else {
   var configMake = new ConfigMaker()
   configMake.init()

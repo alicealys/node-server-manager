@@ -16,12 +16,12 @@ const Localization = require(path.join(__dirname, `../Configuration/Localization
 const https     = require('https')
 const http = require('http')
 const rateLimit = require("express-rate-limit")
-const Database  = require(path.join(__dirname, '../Lib/InitDatabase.js'))
-const db = new Database()
+const db  = new (require(path.join(__dirname, '../Lib/InitDatabase.js')))()
 const _utils            = require(path.join(__dirname, '../Utils/Utils.js'))
 const Utils             = new _utils()
 const Auth              = new (require('./api/Auth.js'))(db)
 const twoFactor         = require('node-2fa')
+const jsdom            = new require('jsdom')
 
 var lookup = {
     errors: {
@@ -58,13 +58,24 @@ function getRoleFrom (Value, Type) {
 }
 
 class Webfront {
-    constructor(Managers, Config, sessionStore) {
+    constructor(Managers, Config, sessionStore, db) {
         this.Managers = Managers
         this.pollRate = 300000
+        this.db = db
         this.Config = Config
         this.socketClients = []
+        this.headerExtraHtml = []
         this.sessionStore = sessionStore
         this.Start()
+    }
+    addHeaderHtml(html, index) {
+        if (!this.headerExtraHtml.find(x => x.html == html && x.index == index))
+            this.headerExtraHtml.push({ html, index })
+
+        
+            this.app.get('/zstats', async (req, res, next) => {
+                res.end(400)
+            })
     }
     async getClientStatus(Guid) {
         var Status = { Online: false}
@@ -87,7 +98,6 @@ class Webfront {
     }
     Start() {
         this.app = express()
-
         const server = this.Config.SSL ? https.createServer({
             key: fs.readFileSync(this.Config.Key),
             cert: fs.readFileSync(this.Config.Cert),
@@ -140,10 +150,18 @@ class Webfront {
             var Motd = config.MOTD ? config.MOTD.replace('{USERNAME}', Client.Name)
                                                 .replace('{CLIENTID}', Client.ClientId) : null
             ejs.renderFile(path.join(__dirname, '/html/header.ejs'), {session: req.session, Permissions: Permissions, Motd: Motd, Client: Client, config: config}, (err, str) => {
-                header = str
+                var dom = new jsdom.JSDOM(str)
+                for (var i = 0; i < this.headerExtraHtml.length; i++) {
+                    var el = dom.window.document.createElement('div')
+                    el.innerHTML = this.headerExtraHtml[i].html
+                    dom.window.document.getElementById('header-btns').insertBefore(el.firstChild, dom.window.document.getElementById('header-btns').children[this.headerExtraHtml[i].index])
+                }
+                header = dom.window.document.getElementById('wf-header').outerHTML
             });
             next()
         })
+
+        require(path.join(__dirname, `../Plugins/Routes`))(this.app, this.Managers[0].Server.DB, this)
 
         this.app.get('/', async (req, res, next) => {
             res.setHeader('Content-type', 'text/html')
@@ -1015,6 +1033,14 @@ class Webfront {
             ejs.renderFile(path.join(__dirname, '/html/error.ejs'), {header: header, error: {Code: 404, Description: lookup.errors[404]}}, (err, str) => {
                 res.end(str)
             });
+        })
+
+
+        this.Managers.forEach(Manager => {
+            Manager.on('ready', () => {
+
+                Manager.emit('webfront-ready', this)
+            })
         })
 
         setInterval(this.UpdateClientHistory.bind(this), this.pollRate)

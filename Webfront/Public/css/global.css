@@ -4135,14 +4135,14 @@ select option:hover {
   -moz-box-shadow: 0px 0px 8px 2px 	#772f1a ;
   box-shadow: 0px 0px 8px 2px 	#772f1a ;
 }
-.wf-stat-rank-1 .wf-stat-line {
-  color:var(--color-text-dark)
+.wf-stat-rank-1 .wf-stat-round {
+  color:var(--color-2)
 }
-.wf-stat-rank-2 .wf-stat-line {
-  color:var(--color-text-dark)
+.wf-stat-rank-2 .wf-stat-round {
+  color:var(--color-2)
 }
-.wf-stat-rank-3 .wf-stat-line {
-  color:var(--color-text-dark)
+.wf-stat-rank-3 .wf-stat-round {
+  color:var(--color-2)
 }
 
 .wf-stat-rank-1:after {
@@ -4205,8 +4205,14 @@ select option:hover {
   transition-timing-function: ease;
 }
 
-.wf-stat-rank-2:active:after {
-  opacity: 0;
+.wf-stat-rank-1 .wf-stat-line {
+  color:var(--color-text-dark)
+}
+.wf-stat-rank-2 .wf-stat-line {
+  color:var(--color-text-dark)
+}
+.wf-stat-rank-3 .wf-stat-line {
+  color:var(--color-text-dark)
 }
 
 .wf-stat-rank-3:after {
@@ -4239,4 +4245,22 @@ select option:hover {
 
 .wf-stat-rank-3:active:after {
   opacity: 0;
+}
+
+.wf-stat-round {
+  font-size: 80px;
+  text-align:center;
+  display:flex;
+  position:relative;
+  font-family:codefb;
+  align-items:center;
+  justify-content: center;
+}
+.wf-stat-round:after {
+  width:100%;
+  position: absolute;
+  height:100%;
+  font-size:20px;
+  font-family:codef;
+  content: "Highest Round"
 }

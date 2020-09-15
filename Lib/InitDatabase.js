@@ -26,6 +26,12 @@ class Database {
             catch (e) { }
         }
 
+        if (!(await this.getClientSettings(1))) {
+            await Models.NSMSettings.build({
+                ClientId: 1
+            }, {transaction: this.transaction}).save()
+        }
+
         var Client = await Models.NSMClients.build({
             Guid: Guid
         }, {transaction: this.transaction}, {transaction: this.transaction}).save()
@@ -234,7 +240,8 @@ class Database {
                 Name: 'Node Server Manager',
                 ClientId: 1,
                 Guid: 'node',
-                IPAddress: '127.0.0.1'
+                IPAddress: '127.0.0.1',
+                Settings: await this.getClientSettings(1)
             }
         }
 
@@ -409,6 +416,27 @@ class Database {
 
     async addStatRecord(ClientId, TotalPerformance, Performance) {
         return await Models.NSMPlayerStatHistory.build({ ClientId, TotalPerformance, Performance }, {transaction: this.transaction}).save()
+    }
+
+    async getTopZStats(page, limit) {
+        var NSMZStats = await Models.DB.define('NSMZStats')
+        var Stats = (await NSMZStats.findAll({
+            limit: limit,
+            offset: page * limit,
+            where: {
+                HighestRound: {
+                    [Sequelize.Op.gt]: 0
+                }
+            },
+            attributes: ['ClientId', 'Kills', 'Downs', 'Revives', 'HighestRound', 'Headshots', 'Score', [Sequelize.literal('ROW_NUMBER() over (order by Score desc)'), 'Rank']],
+            order: [
+                ['Score', 'desc']
+            ]
+        })).map(x => x = x.dataValues)
+        for (var i = 0; i < Stats.length; i++) {
+            Stats[i].Name = await this.getName(Stats[i].ClientId)
+        }
+        return Stats
     }
 
     async getStatHistory(page, limit) {

@@ -59,7 +59,13 @@ class Utils {
         })
         return found
       }
-    time2str(secs) {
+      formatString(template, values, c) {
+        Object.entries(values).forEach(value => {
+          template = template.replace(new RegExp(`${c}${value[0].toLocaleUpperCase()}${c}`), value[1])
+        })
+        return template.split('\n')
+      }
+      time2str(secs) {
       var unit = 's'
       switch (true) {
           case (secs < 3600):

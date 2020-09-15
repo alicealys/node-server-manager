@@ -69,6 +69,8 @@
         "AUDIT_LOGIN_ATTEMPT": "Attempted to login (ClientId: %CLIENTID%)",
         "AUDIT_LOGIN_SUCCESS": "Successful login",
         "AUDIT_LOGIN_2FA_FAIL": "Failed login (Invalid 2FA Code)",
-        "AUDIT_LOGIN_CRED_FAIL": "Failed login (Invalid credentials)"
+        "AUDIT_LOGIN_CRED_FAIL": "Failed login (Invalid credentials)",
+        "COMMAND_ZSTATS_FORMAT": "^7[ ^5%PLAYER%^7 ] => ^5%SCORE%^7 Score | ^5%KILLS%^7 Kills | ^5%DOWNS%^7 Downs \n ^5%REVIVES%^7 Revives | ^5%HEADSHOTS%^7 Headshots | Highest round ^5%HIGHESTROUND%^7",
+        "STATS_NOT_EXIST": "Player doesn't have stats yet"
     }
 }
