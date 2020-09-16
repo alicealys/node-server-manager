@@ -2,6 +2,7 @@ const moment            = require('moment')
 const path              = require('path')
 const crypto            = require('crypto')
 const wait              = require('delay')
+const { throws } = require('assert')
 const Permissions       = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
 const config            = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`))
 const Localization      = require(path.join(__dirname, `../Configuration/Localization.json`)).lookup
@@ -63,13 +64,98 @@ class Plugin {
               delay && await wait(500)
             }
           } else {
-            if (!this.Manager.commands[args[1].toLocaleLowerCase()]) {
+            var command = Utils.getCommand(this.Manager.commands, args[1])
+            if (!this.Manager.commands[command]) {
               Player.Tell(Localization['COMMAND_NOT_FOUND'])
               return
             }
-            Player.Tell(`Usage: ^6${config.commandPrefix}^7${Localization[`USAGE_${args[1].toLocaleUpperCase()}`]}`)
+            Player.Tell(`${Localization[`COMMAND_${command.toLocaleUpperCase()}`]}`)
+            await wait(300)
+            Player.Tell(`Usage: ^6${config.commandPrefix}^7${Localization[`USAGE_${command.toLocaleUpperCase()}`]}`)
           }
 
+        }
+      },
+      'fastrestart': {
+        ArgumentLength: 0,
+        Alias: 'fr',
+        Permission: Permissions.Commands.COMMAND_MAP,
+        inGame: true,
+        callback: async (Player, args) => {
+          await this.Server.Rcon.executeCommandAsync('fast_restart')
+          this.Server.Broadcast(Utils.formatString(Localization['COMMAND_FASTRESTART_FORMAT'], {Name: Player.Name}, '%'))
+        }
+      },
+      'maprestart': {
+        ArgumentLength: 0,
+        Alias: 'mr',
+        Permission: Permissions.Commands.COMMAND_MAP,
+        inGame: true,
+        callback: async (Player, args) => {
+          await this.Server.Rcon.executeCommandAsync('map_restart')
+        }
+      },
+      'map': {
+        ArgumentLength: 1,
+        Alias: 'm',
+        Permission: Permissions.Commands.COMMAND_MAP,
+        inGame: true,
+        callback: async (Player, args) => {
+          var delay = 3000
+          var Map = this.Server.getMap(args[1]) ? this.Server.getMap(args[1]) : {Name: args[1], Alias: args[1]}
+          this.Server.Broadcast(Utils.formatString(Localization['COMMAND_MAP_FORMAT'], {Name: Map.Alias, Delay: (delay / 1000).toFixed(0)}, '%')[0])
+          await wait(delay)
+          await this.Server.Rcon.executeCommandAsync(`map ${Map.Name}`)
+        }
+      },
+      'globalchat': {
+        ArgumentLength: 0,
+        Alias: 'gc',
+        inGame: true,
+        callback: async (Player) => {
+          Player.Session.Data.globalChat = !Player.Session.Data.globalChat
+          Player.Tell(Localization[`COMMAND_GLOBALCHAT_${Player.Session.Data.globalChat.toString().toLocaleUpperCase()}`])
+        }
+      },
+      'nextmap': {
+        ArgumentLength: 0,
+        Alias: 'nm',
+        inGame: true,
+        callback: async (Player, args) => {
+          var mapIndex = this.Server.mapRotation.indexOf(this.Server.mapRotation.find(Map => Map == this.Server.Mapname))
+          if (!mapIndex) {
+            Player.Tell(Localization['COMMAND_NEXTMAP_NOT_FOUND'])
+            return
+          }
+          var nextMap = mapIndex < this.Server.mapRotation.length - 1 ? this.Server.mapRotation[mapIndex + 1] : this.Server.mapRotation[0]
+          nextMap = this.Server.getMap(nextMap) ? this.Server.getMap(nextMap).Alias : nextMap
+          Player.Tell(Utils.formatString(Localization['COMMAND_NEXTMAP_FORMAT'], {Name: nextMap}, '%'))
+        }
+      },
+      'links': {
+        ArgumentLength: 0,
+        Permission: Permissions.Commands.COMMAND_USER_CMDS,
+        inGame: false,
+        callback: async (Player, args) => {
+          if (!config.links || !config.links.length) {
+            Player.Tell(Localization['COMMAND_LINKS_NOT_CONFIG'])
+          }
+          if (args[1]) {
+            var found = false
+            config.links.forEach(link => {
+              if (found) return
+              if (link.Name.toLocaleLowerCase().startsWith(args[1].toLocaleLowerCase())) {
+                Player.Tell(Utils.formatString(Localization['COMMAND_LINKS_FORMAT'], link, '%')[0])
+                found = true
+              }
+            })
+            !found && Player.Tell(Localization['COMMAND_LINKS_NOT_FOUND'])
+            return
+          }
+          for (var i = 0; i < config.links.length; i++) {
+            Player.Tell(Utils.formatString(Localization['COMMAND_LINKS_FORMAT'], config.links[i], '%')[0])
+            await wait(500)
+          }
         }
       },
       'ping': {

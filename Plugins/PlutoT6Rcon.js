@@ -21,6 +21,8 @@ class Plugin {
                 maxclients: 'com_maxclients',
                 mapname: 'mapname',
                 hostname: 'sv_hostname',
+                gamename: 'gamename',
+                maprotation: 'sv_mapRotation'
             }
         }
     }

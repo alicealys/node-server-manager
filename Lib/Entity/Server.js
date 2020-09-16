@@ -2,13 +2,16 @@ const ePlayer         = require('./ePlayer.js')
 const fs              = require('fs')
 const EventEmitter    = require('events')
 const ip              = require('public-ip')
+const path            = require('path')
+const Maps            = require(path.join(__dirname, `../../Configuration/Localization.json`)).Maps
 
 class _Server extends EventEmitter {
-    constructor(IP, PORT, RCON, DATABASE, sessionStore, Managers) {
+    constructor(IP, PORT, RCON, DATABASE, sessionStore, Managers, Id) {
       super()
       this.Clients = new Array(18).fill(null)
       this.Rcon = RCON
       this.IP = IP
+      this.Id = Id
       this.PORT = PORT
       this.clientHistory = []
       this.clientActivity = []
@@ -17,6 +20,7 @@ class _Server extends EventEmitter {
       this.Mapname = null
       this.HostnameRaw = `[${this.IP}:${this.PORT}]`
       this.uptime = 0
+      this.Gamename = 'UNKNOWN'
       this.Managers = Managers
       this.previousUptime = 0
       this.previousStatus = null
@@ -29,8 +33,18 @@ class _Server extends EventEmitter {
     COD2BashColor(string) {
         return string.replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), `\x1b[3$1m`)
     }
+    getMap(name) {
+      return this.Maps.find(Map => Map.Name.toLocaleLowerCase().startsWith(name) || Map.Alias.toLocaleLowerCase().startsWith(name) )
+    }
     async setDvarsAsync() {
       try {
+
+        this.Gamename = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.gamename)
+
+        this.Maps = this.Gamename != 'UNKNOWN' ? Maps.find(x => x.Game == this.Gamename).Maps : []
+
+        this.mapRotation = (await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.maprotation)).match(/((?:gametype|exec) +(?:([a-z]{1,4})(?:.cfg)?))? *map ([a-z|_|\d]+)/gi).map(x => x.trim().split(/\s+/g)[1])
+
         // Set hostname
         this.Hostname = this.COD2BashColor(await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.hostname))
 

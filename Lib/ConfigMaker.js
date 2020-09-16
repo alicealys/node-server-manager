@@ -60,6 +60,7 @@ class ConfigMaker {
                     'MOTD':  configTemplate[7].value,
                     'Info': 'No info for now...',
                     'commandPrefix': configTemplate[8].value,
+                    'links': [],
                     "autoMessagesInterval": 60,
                     "autoMessages": [
                         "A total of ^5{TOTALCLIENTS}^7 players have played on this server",
@@ -99,7 +100,8 @@ class ConfigMaker {
                             "COMMAND_RCON" : "ROLE_OWNER",
                             "COMMAND_TOKEN" : "ROLE_MODERATOR",
                             "COMMAND_BAN" : "ROLE_MODERATOR",
-                            "COMMAND_CHANGE_INFO" : "ROLE_ADMIN"
+                            "COMMAND_CHANGE_INFO" : "ROLE_ADMIN",
+                            "COMMAND_MAP": "ROLE_ADMIN"
                         },
                         "Roles" : {
                             "ROLE_BANNED" : "Banned",
