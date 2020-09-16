@@ -36,7 +36,7 @@
                             <div class='wf-stat-line'><span class='api-data-type'><%= Stat.Headshots %></span> <%=Stat.Headshots == 1 ? 'Headshot' : 'Headshots'%></div>
                             <div class='wf-stat-line'><span class='api-data-type'><%= Stat.Score %></span> Score</div>
                         </div>
-                        <div class='wf-stat-round'><%= Stat.HighestRound %></div>
+                        <div class='wf-stat-round-wrap'>Highest Round<div class='wf-stat-round'><%= Stat.HighestRound %></div></div>
                     </div>
                 <% }) %>
             </div>

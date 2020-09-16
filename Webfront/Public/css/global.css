@@ -4145,6 +4145,16 @@ select option:hover {
   color:var(--color-2)
 }
 
+.wf-stat-rank-1 .wf-stat-round-wrap {
+  color:var(--color-2)
+}
+.wf-stat-rank-2 .wf-stat-round-wrap {
+  color:var(--color-2)
+}
+.wf-stat-rank-3 .wf-stat-round-wrap {
+  color:var(--color-2)
+}
+
 .wf-stat-rank-1:after {
   content: "";
   position: absolute;
@@ -4256,11 +4266,10 @@ select option:hover {
   align-items:center;
   justify-content: center;
 }
-.wf-stat-round:after {
-  width:100%;
-  position: absolute;
-  height:100%;
+.wf-stat-round-wrap {
+  font-size: 80px;
+  text-align:center;
+  display:flex;
   font-size:20px;
-  font-family:codef;
-  content: "Highest Round"
+  flex-flow:column;
 }

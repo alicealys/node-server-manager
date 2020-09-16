@@ -165,47 +165,21 @@ class Plugin {
             logToAudit: false,
             Permission: Permissions.Commands.COMMAND_USER_CMDS,
             callback: async (Player, args) => {
-                if (args[1]) {
-                    var Client = await this.Server.getClient(args[1])
-                    if (!Client) {
-                        var Stats = this.getZStats(Player.ClientId)
-                        if (!Stats) {
-                            Player.Tell(Localization['STATS_NOT_EXIST'])
-                            return
-                        }
-                        Stats.Player = Player.Name
-                        var formattedStats = Utils.formatString(Localization['COMMAND_ZSTATS_FORMAT'], Stats, '%');
-                        formattedStats.forEach(async line => {
-                            Player.Tell(line)
-                            await wait(100)
-                        })
-                        return
-                    }
-                    var Stats = await this.getZStats(Client.ClientId)
-                    if (!Stats) {
-                        Player.Tell(Localization['STATS_NOT_EXIST'])
-                        return
-                    }
-                    Stats.Player = Client.Name
-                    var formattedStats = Utils.formatString(Localization['COMMAND_ZSTATS_FORMAT'], Stats, '%');
-                    formattedStats.forEach(async line => {
-                        Player.Tell(line)
-                        await wait(100)
-                    })
-                } else {
-                    var Stats = await this.getZStats(Player.ClientId)
-                    if (!Stats) {
-                        Player.Tell(Localization['STATS_NOT_EXIST'])
-                        return
-                    }
-                    Stats.Player = Player.Name
-                    var formattedStats = Utils.formatString(Localization['COMMAND_ZSTATS_FORMAT'], Stats, '%');
-                    formattedStats.forEach(async line => {
-                        await Player.Tell(line)
-                        await wait(100)
-                    })
+                var Client = args[1] ? await this.Server.getClient(args[1]) : Player
+                if (!Client) {
+                    Player.Tell(Localization['COMMAND_CLIENT_NOT_FOUND'])
+                    return
                 }
-    
+                var Stats = await this.getZStats(Client.ClientId)
+                if (!Stats) {
+                    Player.Tell(Localization['STATS_NOT_EXIST'])
+                    return
+                }
+                Stats.Player = Client.Name
+                var formattedStats = Utils.formatString(Localization['COMMAND_ZSTATS_FORMAT'], Stats, '%');
+                formattedStats.forEach(async line => {
+                    await Player.Tell(line)
+                })
             }
         }
         this.Server.on('connect', async (Client) => {
