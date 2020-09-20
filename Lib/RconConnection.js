@@ -23,8 +23,8 @@ class Rcon {
                                       , 'binary')
 
         try {
-          client.on('listening', () => {
-            client.send(message, 0, message.length, this.port, this.ip, (err) => {
+          client.on('listening', async () => {
+            client.send(message, 0, message.length, this.port, this.ip, async (err) => {
               if (err) {
                 client.close()
                 resolved = true
@@ -42,7 +42,6 @@ class Rcon {
 
         var resolved = false;
         var onMessage = (msg) => {
-            client.removeAllListeners()
             resolve(msg.toString())
             client.close()
             resolved = true
@@ -51,7 +50,7 @@ class Rcon {
 
         setTimeout(() => {
           if (!resolved) {
-            client.removeAllListeners()
+            client.close()
             resolve(false)
           }
         }, 5000)

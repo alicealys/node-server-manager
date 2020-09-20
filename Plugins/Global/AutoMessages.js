@@ -1,6 +1,19 @@
 const path              = require('path')
-const Utils            = new (require(path.join(__dirname, '../../Utils/Utils.js')))()
-const config = require(path.join(__dirname, `../../Configuration/NSMConfiguration.json`))
+const fs                = require('fs')
+const Utils             = new (require(path.join(__dirname, '../../Utils/Utils.js')))()
+const configName        = path.join(__dirname, `../../Configuration/NSMConfiguration.json`)
+var config              = require(configName)
+
+fs.watch(path.join(__dirname, `../../Configuration/NSMConfiguration.json`), async (filename) => {
+    if (filename) {
+        try { var newData = require(configName) }
+        catch (e) { 
+            console.log(`Failed to reload config file ${configName}: ${e.toString()}`); return }
+
+        config = newData
+        console.log(`Reloaded config file ${configName}`)
+    }
+})
 
 class Plugin {
     constructor(Managers) {

@@ -2,7 +2,6 @@ const path              = require('path')
 const fetch             = require('node-fetch')
 const _utils            = require(path.join(__dirname, '../Utils/Utils.js'))
 const Utils             = new _utils()
-const config = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`))
 
 class Plugin {
     constructor(Server, Manager, Managers) {

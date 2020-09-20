@@ -618,6 +618,10 @@
           "Game": "IW5",
           "Maps": [
             {
+              "Alias": "Rust",
+              "Name": "mp_rust"
+            },
+            {
               "Alias": "Seatown",
               "Name": "mp_seatown"
             },
