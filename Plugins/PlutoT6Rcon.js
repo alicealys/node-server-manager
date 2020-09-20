@@ -22,7 +22,8 @@ class Plugin {
                 mapname: 'mapname',
                 hostname: 'sv_hostname',
                 gamename: 'gamename',
-                maprotation: 'sv_mapRotation'
+                maprotation: 'sv_mapRotation',
+                messagelength: 104
             }
         }
     }
