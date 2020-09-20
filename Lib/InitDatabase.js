@@ -153,6 +153,7 @@ class Database {
                 ['Date', 'desc']
             ],
             group: ['ClientId'],
+            limit: 50,
             where: {
                 Name: {
                     [Sequelize.Op.like]: `%${Name.toLocaleLowerCase()}%`

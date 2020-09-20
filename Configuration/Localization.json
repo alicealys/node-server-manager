@@ -95,7 +95,8 @@
         "COMMAND_NEXTMAP_FORMAT": "Next map is ^5%NAME%",
         "COMMAND_GLOBALCHAT_TRUE": "Global chat ^2ON",
         "COMMAND_GLOBALCHAT_FALSE": "Global chat ^1OFF",
-        "GLOBALCHAT_FORMAT": "^5%NAME%^7 @ ^3%HOSTNAME%^7: %MESSAGE%"
+        "GLOBALCHAT_FORMAT": "^5%NAME%^7 @ ^3%HOSTNAME%^7: %MESSAGE%",
+        "COMMAND_REPLY_NOT_CONV": "Not in any conversation"
     },
     "Maps": [
         {
