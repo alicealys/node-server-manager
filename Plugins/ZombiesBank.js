@@ -78,7 +78,8 @@ class Plugin {
         Permission: Permissions.Commands.COMMAND_USER_CMDS,
         callback: async (Player, args) => {
             var totalMoney = (await this.getZMStats(Player.ClientId)).Money
-            var withdrawMoney = args[1] == 'all' ? parseInt(totalMoney) : parseInt(args[1])
+            var gameMoney = parseInt(await Player.Server.Rcon.getDvar(`${Player.Clientslot}_money`))
+            var withdrawMoney = args[1] == 'all' ? Math.min(parseInt(totalMoney), 1000000 - gameMoney) : Math.min(parseInt(args[1]), 1000000 - gameMoney)
             switch (true) {
                 case (!this.Server.Mapname.startsWith('zm_')):
                     Player.Tell(`This command is not available in this gamemode`)
