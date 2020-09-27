@@ -96,7 +96,18 @@
         "COMMAND_GLOBALCHAT_TRUE": "Global chat ^2ON",
         "COMMAND_GLOBALCHAT_FALSE": "Global chat ^1OFF",
         "GLOBALCHAT_FORMAT": "^5%NAME%^7 @ ^3%HOSTNAME%^7: %MESSAGE%",
-        "COMMAND_REPLY_NOT_CONV": "Not in any conversation"
+        "COMMAND_REPLY_NOT_CONV": "Not in any conversation",
+        "COMMAND_VOTE_COOLDOWN": "Your previous vote failed, please wait another [^5%TIME%^7] seconds before attempting to start another vote",
+        "COMMAND_VOTE_TYPE_ERR": "Another vote is in progress to ^5%ACTION%^7",
+        "COMMAND_VOTEKICK_KICK_MESSAGE": "You have been votekicked",
+        "COMMAND_VOTE_ALREADY_VOTED": "You already voted",
+        "COMMAND_VOTE_VOTED_TEMPLATE": "^5%NAME%^7 is voting to ^5%ACTION%^7 type ^3%PREFIX%yes^7 to vote too ( ^1%VOTES%^7 / ^2%MINVOTES%^7 )",
+        "COMMAND_VOTEKICK_ACTION": "^1kick^7 ^5%NAME%^7",
+        "COMMAND_VOTEMAP_ACTION": "^5change the map to^7 ^6%NAME%^7",
+        "COMMAND_VOTE_END": "Vote to ^5%ACTION%^7 has ended",
+        "COMMAND_VOTEKICK_HIERARCHY_ERR": "Sorry but you cant kick that user",
+        "COMMAND_VOTE_NO_VOTE": "No vote in progress",
+        "COMMAND_VOTEMAP_NOT_FOUND": "Map not found"
     },
     "Maps": [
         {

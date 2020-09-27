@@ -62,9 +62,12 @@ class _Server extends EventEmitter {
       var clientIdRegex = /\@([0-9]+)/g
       var Clients = name.match(clientIdRegex) ? [await this.DB.getClient(clientIdRegex.exec(name)[1])] : ((name.length >= 3 && !name.match('%')) ? (await this.DB.getClientByName(name)) : false)
       var Client = Clients ? Clients.reverse()[0] : false
-      return Client
-       
+      return Client 
     }
+    getPlayerByName(Name) {
+      var Client = this.Clients.find(x => x && x.Name.startsWith(Name))
+      return Client
+    } 
     findClient(ClientId) {
       var Client = null
       this.Managers.forEach(Manager => {
