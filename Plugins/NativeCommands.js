@@ -269,6 +269,39 @@ class Plugin {
           Player.Tell(`[^5${info.Name}^7]  [@^5${info.ClientId}^7]  [^5${this.getRoleFrom(Math.min(info.PermissionLevel, 5), 1).Name}^7] [^5${info.IPAddress}^7] [^5${info.Guid}^7]`)
         }
       },
+      'whois': {
+        ArgumentLength: 1,
+        Permission: 'ROLE_ADMIN',
+        inGame: false,
+        callback: async (Player, args) => {
+          var Client = await this.Server.getClient(args[1])
+          var info = await this.Server.DB.getClient(Client.ClientId)
+
+          Player.Tell(`[^5${info.Name}^7]  [@^5${info.ClientId}^7]  [^5${this.getRoleFrom(Math.min(info.PermissionLevel, 5), 1).Name}^7] [^5${info.IPAddress}^7] ^7[^5${info.Guid}^7]`)
+        }
+      },
+      'testperm': {
+        ArgumentLength: 1,
+        Permission: -10,
+        inGame: false,
+        callback: async (Player, args) => {
+          var Permission = this.getRoleFrom(args[1], 0)
+          var Client = await this.Server.DB.getClient(Player.ClientId)
+          switch (true) {
+            case (!Permission):
+              Player.Tell(Localization.ROLE_NOT_EXIST)
+            return
+            case (Client.PermissionLevel < Permissions.Levels.ROLE_ADMIN):
+              Player.Tell(Localization.COMMAND_FORBIDDEN)
+            return
+            case (Client.PermissionLevel < Permission.Level):
+              Player.Tell(Localization.ROLE_HIERARCHY_ERROR)
+            return
+          }
+          Player.PermissionLevel = Permission.Level
+          Player.Tell(`Permissions set to [ ^5${Permission.Name}^7 ]`)
+        }
+      },
       'servers': {
         ArgumentLength: 0,
         Permission: Permissions.Commands.COMMAND_USER_CMDS,

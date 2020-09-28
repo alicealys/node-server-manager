@@ -1,6 +1,6 @@
 {
     "lookup": {
-        "COMMAND_NOT_FOUND" : "Command not found, type use ^5help^7 for a list of commands",
+        "COMMAND_NOT_FOUND" : "Command not found, use ^5help^7 for a list of commands",
         "COMMAND_ARGUMENT_ERROR" : "Not enough arguments supplied",
         "COMMAND_CLIENT_NOT_FOUND" : "Player not found",
         "COMMAND_CLIENT_NOT_INGAME" : "Player is not in game",

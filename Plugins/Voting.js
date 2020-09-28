@@ -114,7 +114,7 @@ class Plugin {
 
                 this.Server.Broadcast(Utils.formatString(Localization['COMMAND_VOTE_VOTED_TEMPLATE'], {
                     Name: Player.Name,
-                    Prefix: config.commandPrefix,
+                    Prefix: config.commandPrefixes[0],
                     Action: this.currentVote.actionString,
                     Votes: this.currentVote.Votes.length,
                     minVotes: this.minimumVotes()
@@ -164,7 +164,7 @@ class Plugin {
 
                     this.Server.Broadcast(Utils.formatString(Localization['COMMAND_VOTE_VOTED_TEMPLATE'], {
                         Name: Player.Name,
-                        Prefix: config.commandPrefix,
+                        Prefix: config.commandPrefixes[0],
                         Action: this.currentVote.actionString,
                         Votes: 1,
                         minVotes: this.minimumVotes()
@@ -179,7 +179,7 @@ class Plugin {
 
                 this.Server.Broadcast(Utils.formatString(Localization['COMMAND_VOTE_VOTED_TEMPLATE'], {
                     Name: Player.Name,
-                    Prefix: config.commandPrefix,
+                    Prefix: config.commandPrefixes[0],
                     Action: Utils.formatString(Localization['COMMAND_VOTEKICK_ACTION'], {Name: this.currentVote.Target.Name} , '%')[0],
                     Votes: this.currentVote.Votes.length,
                     minVotes: this.minimumVotes()
@@ -225,7 +225,7 @@ class Plugin {
 
                     this.Server.Broadcast(Utils.formatString(Localization['COMMAND_VOTE_VOTED_TEMPLATE'], {
                         Name: Player.Name,
-                        Prefix: config.commandPrefix,
+                        Prefix: config.commandPrefixes[0],
                         Action: this.currentVote.actionString,
                         Votes: 1,
                         minVotes: this.minimumVotes()
@@ -240,7 +240,7 @@ class Plugin {
 
                 this.Server.Broadcast(Utils.formatString(Localization['COMMAND_VOTE_VOTED_TEMPLATE'], {
                     Name: Player.Name,
-                    Prefix: config.commandPrefix,
+                    Prefix: config.commandPrefixes[0],
                     Action: this.currentVote.actionString,
                     Votes: this.currentVote.Votes.length,
                     minVotes: this.minimumVotes()
