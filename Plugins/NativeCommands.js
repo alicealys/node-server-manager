@@ -2,12 +2,24 @@ const moment            = require('moment')
 const path              = require('path')
 const crypto            = require('crypto')
 const wait              = require('delay')
-const { throws } = require('assert')
+const fs                = require('fs')
 const Permissions       = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
-const config            = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`))
+const configName        = path.join(__dirname, `../Configuration/NSMConfiguration.json`)
+var config              = require(configName)
+
+fs.watch(configName, async (filename) => {
+    if (filename) {
+        try { var newData = require(configName) }
+        catch (e) { 
+            console.log(`Failed to reload config file ${configName}: ${e.toString()}`); return }
+
+        config = newData
+        console.log(`Reloaded config file ${configName}`)
+    }
+})
+
 const Localization      = require(path.join(__dirname, `../Configuration/Localization.json`)).lookup
-const _utils            = require(path.join(__dirname, '../Utils/Utils.js'))
-const Utils             = new _utils()
+const Utils            = new (require(path.join(__dirname, '../Utils/Utils.js')))()
 
 class Plugin {
   constructor(Server, Manager, Managers) {
@@ -46,7 +58,7 @@ class Plugin {
   onEventAsync (event) {
     switch (event.type) {
         case 'say':
-          if (event.data.Message.startsWith(config.commandPrefix)) this.playerCommand(event.data.Origin, event.data.Message.substr(1).split(/\s+/))
+          if (config.commandPrefixes.includes(event.data.Message[0])) this.playerCommand(event.data.Origin, event.data.Message.substr(1).split(/\s+/))
         break;
     }
   }
@@ -70,8 +82,8 @@ class Plugin {
               return
             }
             Player.Tell(`${Localization[`COMMAND_${command.toLocaleUpperCase()}`]}`)
-            await wait(300)
-            Player.Tell(`Usage: ^6${config.commandPrefix}^7${Localization[`USAGE_${command.toLocaleUpperCase()}`]}`)
+            delay && await wait(300)
+            Player.Tell(`Usage: ^6${config.commandPrefixes[0]}^7${Localization[`USAGE_${command.toLocaleUpperCase()}`]}`)
           }
 
         }
@@ -606,6 +618,7 @@ class Plugin {
     return Client
   } 
   async playerCommand (Player, args) {
+      if (!Player) return
       var Client = await this.Server.DB.getClient(Player.ClientId)
       var command = Utils.getCommand(this.Manager.commands, args[0])
       switch (true) {
@@ -620,6 +633,8 @@ class Plugin {
           return
         case (args.length - 1 < this.Manager.commands[command].ArgumentLength):
           Player.Tell(Localization.COMMAND_ARGUMENT_ERROR)
+          await wait(300)
+          Player.Tell(`Usage: ^6${config.commandPrefixes[0]}^7${Localization[`USAGE_${command.toLocaleUpperCase()}`]}`)
           return
       }
       this.Manager.commands[command].logToAudit != false && this.Server.DB.logActivity(`@${Player.ClientId}`, Localization['AUDIT_CMD_EXEC'].replace('%NAME%', command), args.join(' '))

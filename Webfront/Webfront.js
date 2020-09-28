@@ -774,7 +774,7 @@ class Webfront {
 
             var command = Buffer.from(req.query.command, 'base64').toString()
 
-            if (command.startsWith(config.commandPrefix)) {
+            if (config.commandPrefixes.includes(command[0])) {
                 var result = []
 
                 var Player = {
@@ -825,7 +825,7 @@ class Webfront {
                     case ((await db.getClient(req.session.ClientId)).PermissionLevel < Permissions.Levels[Permissions.Commands.COMMAND_RCON]):
                         res.end(JSON.stringify({
                             success: false,
-                            error: `You don't have access to the RCON, please use normal commands with the ^3${config.commandPrefix}^7 prefix`
+                            error: `You don't have access to the RCON, please use normal commands with the ^3${config.commandPrefixes[0]}^7 prefix`
                         }))
                     return
                     case (!this.Managers[req.query.ServerId]):

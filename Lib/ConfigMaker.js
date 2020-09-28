@@ -59,7 +59,7 @@ class ConfigMaker {
                     'discordHookUrl': configTemplate[6].value,
                     'MOTD':  configTemplate[7].value,
                     'Info': 'No info for now...',
-                    'commandPrefix': configTemplate[8].value,
+                    'commandPrefixes': [ configTemplate[8].value ],
                     'links': [],
                     "autoMessagesInterval": 60,
                     "autoMessages": [

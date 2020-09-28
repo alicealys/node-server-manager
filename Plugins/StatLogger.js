@@ -10,6 +10,8 @@ class Plugin {
   async playerConnected (Player) {
     Player.on('death', async (Attacker, Attack) => {
 
+      this.Server.DB.logKill(Attacker.ClientId, Player.ClientId, Attack)
+
       this.Server.DB.incrementStat(Player.ClientId, 1, 'Deaths')
       this.Server.DB.incrementStat(Attacker.ClientId, 1, 'Kills')
 
