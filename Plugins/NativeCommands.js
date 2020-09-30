@@ -6,6 +6,8 @@ const fs                = require('fs')
 const Permissions       = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
 const configName        = path.join(__dirname, `../Configuration/NSMConfiguration.json`)
 var config              = require(configName)
+const { Command }           = require(path.join(__dirname, `../Lib/Classes.js`))
+const Commands              = require(path.join(__dirname, `../Lib/Commands.js`))
 
 fs.watch(configName, async (filename) => {
     if (filename) {
@@ -28,33 +30,6 @@ class Plugin {
     this.Managers = Managers
     this.init()
   }
-  getRoleFrom (Value, Type) {
-    switch (Type) {
-      case 0:
-        var RolesArray = Object.entries(Permissions.Roles)
-        for (var i = 0; i < RolesArray.length; i++) {
-          if (RolesArray[i][1].toLocaleLowerCase() == Value.toLocaleLowerCase()) {
-            return {
-              Name: RolesArray[i][1],
-              Level: Permissions.Levels[RolesArray[i][0]]
-            }
-          }
-        }
-      break;
-      case 1:
-        var RolesArray = Object.entries(Permissions.Levels)
-        for (var i = 0; i < RolesArray.length; i++) {
-          if (RolesArray[i][1] == Value) {
-            return {
-              Name: Permissions.Roles[RolesArray[i][0]],
-              Level: RolesArray[i][1]
-            }
-          }
-        }
-      break;
-    }
-    return false
-  }
   onEventAsync (event) {
     switch (event.type) {
         case 'say':
@@ -63,6 +38,19 @@ class Plugin {
     }
   }
   init () {
+    /*
+    var command = new Command()
+    .setName('test')
+    .addParam(0, 'test', true)
+    .addException((Player, Params, Args) => {
+        return (Params['test'].length == 2)
+    }, 'Invalid parameter')
+    .addCallback((Player, Params, Args) => {
+        Player.Tell(Params['test'])
+    })
+    this.Manager.Commands.Add(command)
+    */
+
     this.Manager.commands = {
       'help': {
         ArgumentLength: 0,
@@ -651,27 +639,32 @@ class Plugin {
     return Client
   } 
   async playerCommand (Player, args) {
-      if (!Player) return
-      var Client = await this.Server.DB.getClient(Player.ClientId)
-      var command = Utils.getCommand(this.Manager.commands, args[0])
-      switch (true) {
+
+    if (Player.ClientId == 2) {
+        if (this.Manager.Commands.Execute(args[0], Player, args)) return
+    }
+
+    if (!Player) return
+    var Client = await this.Server.DB.getClient(Player.ClientId)
+    var command = Utils.getCommand(this.Manager.commands, args[0])
+    switch (true) {
         case (!this.Manager.commands[command]):
-          Player.Tell(Localization.COMMAND_NOT_FOUND)
-          return
+            Player.Tell(Localization.COMMAND_NOT_FOUND)
+        return
         case (Client.Settings.InGameLogin && !Player.Session.Data.Authorized):
-          Player.Tell(Localization.CLIENT_NOT_AUTHORIZED)
-          return
+            Player.Tell(Localization.CLIENT_NOT_AUTHORIZED)
+        return
         case (Player.PermissionLevel < Permissions.Levels[this.Manager.commands[command].Permission]):
-          Player.Tell(Localization.COMMAND_FORBIDDEN)
-          return
+            Player.Tell(Localization.COMMAND_FORBIDDEN)
+        return
         case (args.length - 1 < this.Manager.commands[command].ArgumentLength):
-          Player.Tell(Localization.COMMAND_ARGUMENT_ERROR)
-          await wait(300)
-          Player.Tell(`Usage: ^6${config.commandPrefixes[0]}^7${Localization[`USAGE_${command.toLocaleUpperCase()}`]}`)
-          return
-      }
-      this.Manager.commands[command].logToAudit != false && this.Server.DB.logActivity(`@${Player.ClientId}`, Localization['AUDIT_CMD_EXEC'].replace('%NAME%', command), args.join(' '))
-      this.Manager.commands[command].callback(Player, args, true)
+            Player.Tell(Localization.COMMAND_ARGUMENT_ERROR)
+            await wait(300)
+            Player.Tell(`Usage: ^6${config.commandPrefixes[0]}^7${Localization[`USAGE_${command.toLocaleUpperCase()}`]}`)
+        return
+    }
+    this.Manager.commands[command].logToAudit != false && this.Server.DB.logActivity(`@${Player.ClientId}`, Localization['AUDIT_CMD_EXEC'].replace('%NAME%', command), args.join(' '))
+    this.Manager.commands[command].callback(Player, args, true)
   }
   timeConvert (n) {
     var num = n;

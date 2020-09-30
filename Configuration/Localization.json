@@ -83,6 +83,7 @@
         "USAGE_NEXTMAP": "^5nextmap^7",
         "COMMAND_REPLY": "Reply to the last private message",
         "USAGE_REPLY": "^5reply <message>^7",
+        "COMMAND_NOT_SETUP": "This command doesn't have a callback yet",
         "COMMAND_TOKEN_FORMAT": "Your login token is %TOKEN%, valid for 2 minutes, your ClientID is ^2%CLIENTID%^7 { ^5numbers^7, ^3letters^7 }",
         "COMMAND_PARSE_TIME_ERROR": "Could not parse time, format: 1d (day), 2h (hours), 3m (mins), 10s (secs)",
         "RCON_SERVER_NOT_SPECIFIED": "Please specify the server to execute this command on",
