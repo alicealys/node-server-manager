@@ -639,7 +639,7 @@ class Plugin {
     return Client
   } 
   async playerCommand (Player, args) {
-
+    if (!Player)
     if (Player.ClientId == 2) {
         if (this.Manager.Commands.Execute(args[0], Player, args)) return
     }

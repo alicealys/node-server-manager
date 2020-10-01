@@ -5,7 +5,7 @@ class Plugin {
         this.commandPrefixes()
     }
     async commandPrefixes() {
-        if (await this.Server.Rcon.getDvar(`gamename`) != 'T6') return
+        if (this.Server.Gamename != 'T6') return
         this.Server.Rcon.commandPrefixes = {
             Rcon: {
                 prefix: '\xff\xff\xff\xffrcon %PASSWORD% %COMMAND%',
@@ -21,6 +21,7 @@ class Plugin {
                 maxclients: 'com_maxclients',
                 mapname: 'mapname',
                 hostname: 'sv_hostname',
+                gametype: 'g_gametype',
                 gamename: 'gamename',
                 maprotation: 'sv_mapRotation',
                 messagelength: 104

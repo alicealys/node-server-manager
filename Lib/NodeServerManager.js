@@ -58,11 +58,11 @@ class NSM extends EventEmitter{
     this.Server = new Server(this.IP, this.PORT, this.RconConnection, Database, sessionStore, Managers, Id++, this)
     this._EventLogWatcher = this.LOGFILE ? new EventLogWatcher(this.LOGFILE, this.Server, this) : new ServerLogWatcher(this.LOGSERVERURI, this.Server, this)
 
-    // Load plugins before initializing Server.Clients
-    this.LoadPlugins()
-
     // Load Server Dvars
     await this.Server.setDvarsAsync()
+
+    // Load plugins before initializing Server.Clients
+    this.LoadPlugins()
 
     if (this.Server.Hostname) {
       console.log(`Now watching \x1b[33m${this.Server.Hostname}\x1b[0m at \x1b[35m${this.IP}:${this.PORT}\x1b[0m`)

@@ -18,6 +18,7 @@ class _Server extends EventEmitter {
         this.DB = DATABASE
         this.MaxClients = 18
         this.Mapname = null
+        this.Gametype = 'UNKNOWN'
         this.HostnameRaw = `[${this.IP}:${this.PORT}]`
         this.uptime = 0
         this.Gamename = 'UNKNOWN'
@@ -29,12 +30,7 @@ class _Server extends EventEmitter {
         this.heartbeatRetry = 2
         this.HeartbeatInt = setInterval(this.Heartbeat.bind(this), 15000)
         this.sessionStore = sessionStore
-        try {
-            Manager.Commands = new Commands()
-        }
-        catch (e) {
-            console.log(e)
-        }
+        Manager.Commands = new Commands()
     }
     COD2BashColor(string) {
         return string.replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), `\x1b[3$1m`)
@@ -43,25 +39,18 @@ class _Server extends EventEmitter {
       return this.Maps.find(Map => Map.Name.toLocaleLowerCase().startsWith(name) || Map.Alias.toLocaleLowerCase().startsWith(name) )
     }
     async setDvarsAsync() {
-      try {
-        this.Gamename = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.gamename)
-
-        this.Maps = this.Gamename != 'UNKNOWN' ? Maps.find(x => x.Game == this.Gamename).Maps : []
-
-        this.mapRotation = (await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.maprotation)).match(/((?:gametype|exec) +(?:([a-z]{1,4})(?:.cfg)?))? *map ([a-z|_|\d]+)/gi).map(x => x.trim().split(/\s+/g)[1])
-
-        // Set hostname
-        this.Hostname = this.COD2BashColor(await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.hostname))
-
-        this.HostnameRaw = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.hostname)
-        // Set mapname
-        this.Mapname = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.mapname)
-
-        this.MaxClients = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.maxclients)
-
-        this.externalIP = !this.IP.match(/(^127\.)|(localhost)|(^192\.168\.)|(^10\.)|(^172\.1[6-9]\.)|(^172\.2[0-9]\.)|(^172\.3[0-1]\.)|(^::1$)|(^[fF][cCdD])/g) ? this.IP : await ip.v4()
-      }
-      catch (e) {}
+        try {
+            this.Gametype = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.gametype)
+            this.Gamename = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.gamename)
+            this.Maps = this.Gamename != 'UNKNOWN' ? Maps.find(x => x.Game == this.Gamename).Maps : []
+            this.mapRotation = (await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.maprotation)).match(/((?:gametype|exec) +(?:([a-z]{1,4})(?:.cfg)?))? *map ([a-z|_|\d]+)/gi).map(x => x.trim().split(/\s+/g)[1])
+            this.HostnameRaw = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.hostname)
+            this.Hostname = this.COD2BashColor(this.HostnameRaw)
+            this.Mapname = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.mapname)
+            this.MaxClients = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.maxclients)
+            this.externalIP = !this.IP.match(/(^127\.)|(localhost)|(^192\.168\.)|(^10\.)|(^172\.1[6-9]\.)|(^172\.2[0-9]\.)|(^172\.3[0-1]\.)|(^::1$)|(^[fF][cCdD])/g) ? this.IP : await ip.v4()
+        }
+        catch (e) {}
     }
     async getClient(name) {
         var clientIdRegex = /\@([0-9]+)/g
@@ -102,7 +91,6 @@ class _Server extends EventEmitter {
                     this.emit('reload')
                 }, 10000)
             }
-            this.setDvarsAsync()
         }
         catch (e) {}
     }

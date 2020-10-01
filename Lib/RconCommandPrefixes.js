@@ -15,6 +15,7 @@ var commandPrefixes = {
         hostname: 'sv_hostname',
         gamename: 'gamename',
         maprotation: 'sv_mapRotation',
+        gametype: 'g_gametype',
         messagelength: 999999999
     }
 }

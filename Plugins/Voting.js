@@ -136,7 +136,7 @@ class Plugin {
                     case (!Target):
                         Player.Tell(Localization['COMMAND_CLIENT_NOT_FOUND'])
                     return
-                    case (Target.PermissionLevel >= Player.PermissionLevel):
+                    case (Target.PermissionLevel > Player.PermissionLevel):
                     case (Target.ClientId == Player.ClientId):
                         Player.Tell(Localization['COMMAND_VOTEKICK_HIERARCHY_ERR'])
                     return
@@ -189,6 +189,7 @@ class Plugin {
             }
         }
 
+        if (this.Server.Gametype.match(/(zclassic|zstandard)/g)) return
         this.Manager.commands['votemap'] = {
             ArgumentLength: 1,
             Alias: 'vm',
