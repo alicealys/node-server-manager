@@ -2,10 +2,11 @@ class Plugin {
     constructor(Server, Manager) {
         this.Server = Server
         this.Manager = Manager
+        this.Gamename = 'T6'
         this.commandPrefixes()
     }
     async commandPrefixes() {
-        if (this.Server.Gamename != 'T6') return
+        if (await this.Server.Rcon.getDvar('gamename') != this.Gamename) return
         this.Server.Rcon.commandPrefixes = {
             Rcon: {
                 prefix: '\xff\xff\xff\xffrcon %PASSWORD% %COMMAND%',

@@ -189,10 +189,10 @@ class Plugin {
             }
         }
 
-        if (this.Server.Gametype.match(/(zclassic|zstandard)/g)) return
         this.Manager.commands['votemap'] = {
             ArgumentLength: 1,
             Alias: 'vm',
+            gameTypeExclusions: ['zclassic', 'zstandard'],
             Permission: Permissions.Commands.COMMAND_USER_CMDS,
             inGame: true,
             callback: async (Player, args) => {

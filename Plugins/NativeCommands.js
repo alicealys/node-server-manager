@@ -254,7 +254,7 @@ class Plugin {
         inGame: false,
         callback: async (Player) => {
           var info = await this.Server.DB.getClient(Player.ClientId)
-          Player.Tell(`[^5${info.Name}^7]  [@^5${info.ClientId}^7]  [^5${this.getRoleFrom(Math.min(info.PermissionLevel, 5), 1).Name}^7] [^5${info.IPAddress}^7] [^5${info.Guid}^7]`)
+          Player.Tell(`[^5${info.Name}^7]  [@^5${info.ClientId}^7]  [^5${Utils.getRoleFrom(Math.min(info.PermissionLevel, 5), 1).Name}^7] [^5${info.IPAddress}^7] [^5${info.Guid}^7]`)
         }
       },
       'whois': {
@@ -263,9 +263,14 @@ class Plugin {
         inGame: false,
         callback: async (Player, args) => {
           var Client = await this.Server.getClient(args[1])
+          switch (true) {
+            case (!Client):
+              Player.Tell(Localization['COMMAND_CLIENT_NOT_FOUND'])
+            return
+          }
           var info = await this.Server.DB.getClient(Client.ClientId)
 
-          Player.Tell(`[^5${info.Name}^7]  [@^5${info.ClientId}^7]  [^5${this.getRoleFrom(Math.min(info.PermissionLevel, 5), 1).Name}^7] [^5${info.IPAddress}^7] ^7[^5${info.Guid}^7]`)
+          Player.Tell(`[^5${info.Name}^7]  [@^5${info.ClientId}^7]  [^5${Utils.getRoleFrom(Math.min(info.PermissionLevel, 5), 1).Name}^7] [^5${info.IPAddress}^7] ^7[^5${info.Guid}^7]`)
         }
       },
       'testperm': {
@@ -273,7 +278,7 @@ class Plugin {
         Permission: -10,
         inGame: false,
         callback: async (Player, args) => {
-          var Permission = this.getRoleFrom(args[1], 0)
+          var Permission = Utils.getRoleFrom(args[1], 0)
           var Client = await this.Server.DB.getClient(Player.ClientId)
           switch (true) {
             case (!Permission):
@@ -433,7 +438,7 @@ class Plugin {
             var Role = args.slice(2).join(' ')
             var Client = await this.Server.getClient(args[1])
             
-            var Permission = this.getRoleFrom(Role, 0)
+            var Permission = Utils.getRoleFrom(Role, 0)
             switch (true) {
               case (!Client):
                 Player.Tell(Localization.COMMAND_CLIENT_NOT_FOUND)
@@ -465,7 +470,7 @@ class Plugin {
           switch (true) {
             case !Owner:
               this.Server.DB.setLevel(Player, 5)
-              Player.Tell(`Your role has been set to [ ^5${this.getRoleFrom(5, 1).Name}^7 ]`)
+              Player.Tell(`Your role has been set to [ ^5${Utils.getRoleFrom(5, 1).Name}^7 ]`)
               return
             case (Owner.ClientId == Player.ClientId):
               Player.Tell(`You're already the owner!`)
@@ -622,7 +627,7 @@ class Plugin {
            var MatchedClients = await this.Server.DB.getClientByName(args.slice(1).join(' '))
            if (MatchedClients.length <= 0) {Player.Tell(`Client not found`); return}
            for (var i = 0; i < Math.min(MatchedClients.length, 10); i++) {
-            Player.Tell(`^5${MatchedClients[i].Name} ^7| ^5@${MatchedClients[i].ClientId} ^7| ^5${this.getRoleFrom(MatchedClients[i].PermissionLevel, 1).Name} ^7| Active ${moment(MatchedClients[i].LastConnection).calendar()} | Joined ${moment(MatchedClients[i].FirstConnection).calendar()}`)
+            Player.Tell(`^5${MatchedClients[i].Name} ^7| ^5@${MatchedClients[i].ClientId} ^7| ^5${Utils.getRoleFrom(MatchedClients[i].PermissionLevel, 1).Name} ^7| Active ${moment(MatchedClients[i].LastConnection).calendar()} | Joined ${moment(MatchedClients[i].FirstConnection).calendar()}`)
             delay && await wait(300)
            }
         }
@@ -649,6 +654,7 @@ class Plugin {
     var command = Utils.getCommand(this.Manager.commands, args[0])
     switch (true) {
         case (!this.Manager.commands[command]):
+        case (this.Manager.commands[command].gameTypeExclusions && this.Manager.commands[command].gameTypeExclusions.includes(this.Server.Gametype)):
             Player.Tell(Localization.COMMAND_NOT_FOUND)
         return
         case (Client.Settings.InGameLogin && !Player.Session.Data.Authorized):
