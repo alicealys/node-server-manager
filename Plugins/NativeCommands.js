@@ -33,7 +33,7 @@ class Plugin {
   onEventAsync (event) {
     switch (event.type) {
         case 'say':
-          if (config.commandPrefixes.includes(event.data.Message[0])) this.playerCommand(event.data.Origin, event.data.Message.substr(1).split(/\s+/))
+          if (config.commandPrefixes.includes(event.data.Message[0]) || config.broadcastCommandPrefixes.includes(event.data.Message[0])) this.playerCommand(event.data.Origin, event.data.Message.substr(1).split(/\s+/), event.data.Message[0])
         break;
     }
   }
@@ -278,7 +278,7 @@ class Plugin {
         Permission: -10,
         inGame: false,
         callback: async (Player, args) => {
-          var Permission = Utils.getRoleFrom(args[1], 0)
+          var Permission = Utils.getRoleFrom(args.slice(1).join(' '), 0)
           var Client = await this.Server.DB.getClient(Player.ClientId)
           switch (true) {
             case (!Permission):
@@ -493,12 +493,12 @@ class Plugin {
             case (!Client):
               Player.Tell(Localization.COMMAND_CLIENT_NOT_FOUND)
             return
-            case (Client.Permission >= Player.PermissionLevel):
+            case (Client.PermissionLevel >= Player.PermissionLevel):
               Player.Tell(Localization.CLIENT_HIERARCHY_ERROR)
             return
           }
           var Target = this.findClient(Client.ClientId)
-          Target ? ( Player.Tell(`^5${Target.Name}^7 was kicked`), Target.Kick(`${args.slice(2).join(' ')}`, Player.ClientId)) : Player.Tell(Localization.COMMAND_CLIENT_NOT_INGAME)
+          Target ? ( Player.Tell(`^5${Target.Name}^7 was kicked`), Target.Kick(`${args.slice(2).join(' ')}`, Player)) : Player.Tell(Localization.COMMAND_CLIENT_NOT_INGAME)
         }
       },
       'unban': {
@@ -511,7 +511,7 @@ class Plugin {
           var Reason = args.slice(2).join(' ')
 
           switch (true) {
-            case (Client.Permission >= Player.PermissionLevel):
+            case (Client.PermissionLevel >= Player.PermissionLevel):
               Player.Tell(Localization.CLIENT_HIERARCHY_ERROR)
             return
           }
@@ -522,11 +522,16 @@ class Plugin {
             TargetId: Client.ClientId,
             OriginId: Player.ClientId,
             PenaltyType: 'PENALTY_UNBAN',
+            Active: false,
             Duration: 0,
             Reason: Reason
           })
 
-          count > 0 ? Player.Tell(`Unbanned ^5${Client.Name}^7 for ^5${Reason}^7`) : Player.Tell(`^5${Client.Name}^7 is not banned`)
+          if (count) {
+            Player.Tell(`Unbanned ^5${Client.Name}^7 for ^5${Reason}^7`)
+            this.Server.emit('penalty', 'PENALTY_UNBAN', Client, Reason, Player)
+          } else 
+            Player.Tell(`^5${Client.Name}^7 is not banned`)
         }
       },
       'tempban': {
@@ -551,7 +556,7 @@ class Plugin {
             case (!Client):
               Player.Tell(Localization.COMMAND_CLIENT_NOT_FOUND)
             return
-            case (Client.Permission >= Player.PermissionLevel):
+            case (Client.PermissionLevel >= Player.PermissionLevel):
               Player.Tell(Localization.CLIENT_HIERARCHY_ERROR)
             return
             case (!parts || parts.length < 2 || !timeVars[parts[1]] || !Number.isInteger(parseInt(parts[0]))):
@@ -563,7 +568,7 @@ class Plugin {
           var Duration = parseInt(parts[0] * timeVars[parts[1]])
           var Target = this.findClient(Client.ClientId)
           if (Target) {
-            Target.Tempban(Reason, Player.ClientId, Duration)
+            Target.Tempban(Reason, Player, Duration)
             Player.Tell(`Banned ^5${Client.Name}^7 for ^5${Duration}^7 seconds for ^5${Reason}^7`)
             return
           }
@@ -576,6 +581,8 @@ class Plugin {
             Duration: Duration,
             Reason: Reason
           })
+
+          this.Server.emit('penalty', 'PENALTY_TEMP_BAN', Client, Reason, Player, Duration)
           Player.Tell(`Banned ^5${Client.Name}^7 for ^5${Duration}^7 seconds for ^5${Reason}^7`)
         }
       },
@@ -591,7 +598,7 @@ class Plugin {
             case (!Client):
               Player.Tell(Localization.COMMAND_CLIENT_NOT_FOUND)
               return
-            case (Client.Permission >= Player.PermissionLevel):
+            case (Client.PermissionLevel >= Player.PermissionLevel):
               Player.Tell(Localization.CLIENT_HIERARCHY_ERROR)
             return
           }
@@ -600,12 +607,10 @@ class Plugin {
 
           var Target = this.findClient(Client.ClientId)
           if (Target) {
-            Target.Ban(Reason, Player.ClientId)
+            Target.Ban(Reason, Player)
             Player.Tell(`Banned ${Target.Name} permanently for ${Reason}`)
             return
           }
-
-
 
           this.Server.DB.addPenalty({
             TargetId: Client.ClientId,
@@ -615,6 +620,7 @@ class Plugin {
             Reason: Reason
           })
 
+          this.Server.emit('penalty', 'PENALTY_PERMA_BAN', Client, Reason, Player)
           Player.Tell(`Banned ${Client.Name} permanently for ${Reason}`)
         }
       },
@@ -643,19 +649,21 @@ class Plugin {
     })
     return Client
   } 
-  async playerCommand (Player, args) {
-    if (!Player)
-    if (Player.ClientId == 2) {
-        if (this.Manager.Commands.Execute(args[0], Player, args)) return
-    }
-
+  async playerCommand (Player, args, prefix) {
     if (!Player) return
+
+    var isBroadcast = config.broadcastCommandPrefixes.includes(prefix)
+
+    var executedMiddleware = await this.Manager.Commands.executeMiddleware(args[0], Player, args, { Broadcast: isBroadcast })
+
+    if (this.Manager.Commands.Execute(args[0], Player, args, { Broadcast: isBroadcast } )) return
+
     var Client = await this.Server.DB.getClient(Player.ClientId)
     var command = Utils.getCommand(this.Manager.commands, args[0])
     switch (true) {
         case (!this.Manager.commands[command]):
         case (this.Manager.commands[command].gameTypeExclusions && this.Manager.commands[command].gameTypeExclusions.includes(this.Server.Gametype)):
-            Player.Tell(Localization.COMMAND_NOT_FOUND)
+            !executedMiddleware && Player.Tell(Localization.COMMAND_NOT_FOUND)
         return
         case (Client.Settings.InGameLogin && !Player.Session.Data.Authorized):
             Player.Tell(Localization.CLIENT_NOT_AUTHORIZED)

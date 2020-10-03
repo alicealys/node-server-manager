@@ -1036,8 +1036,8 @@ class Webfront {
         })
 
 
-        this.Managers.forEach(Manager => {
-            Manager.on('ready', () => {
+        this.Managers.forEach(async Manager => {
+            Manager.on('ready', async () => {
 
                 Manager.emit('webfront-ready', this)
             })

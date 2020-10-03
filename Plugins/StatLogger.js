@@ -38,7 +38,7 @@ class Plugin {
     setInterval(async () => {
       if (!this.Server.Rcon.isRunning) return
       this.Server.Clients.forEach(async Client => {
-        if (!Client) return
+        if (!Client || !Client.ClientId) return
         this.Server.DB.incrementStat(Client.ClientId, (new Date() - Client.lastSeen) / 1000 / 60, 'PlayedTime')
         Client.lastSeen = new Date()
         var Stats = await this.Server.DB.getPlayerStatsTotal(Client.ClientId)

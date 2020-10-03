@@ -1,7 +1,7 @@
 const path              = require('path')
 const fetch             = require('node-fetch')
-const _utils            = require(path.join(__dirname, '../Utils/Utils.js'))
-const Utils             = new _utils()
+const Utils            = new (require(path.join(__dirname, '../Utils/Utils.js')))()
+const Localization          = require(path.join(__dirname, `../Configuration/Localization.json`)).lookup
 
 class Plugin {
     constructor(Server, Manager, Managers) {
@@ -11,15 +11,20 @@ class Plugin {
         this.joinMessages()
     }
     async joinMessages() {
-        var lookup = {
-            'WELCOME_PLAYER': 'Welcome ^5%PLAYER%^7, this is the ^5%CONNECTIONS%^7 time you\'ve visited this server!',
-            'WELCOME_PLAYER_BROADCAST': '^%LEVEL%%ROLE%^7 ^5%PLAYER%^7 joined from ^5%LOCATION%^7'
-        }
+        this.Server.on('disconnect', async (Player) => {
+            this.Server.Broadcast(Utils.formatString(Localization['QUIT_PLAYER_BROADCAST'], {Name: Player.Name}, '%')[0])
+        })
+
+        this.Server.on('penalty', async (Type, Target, Reason, Origin, Duration = -1) => {
+            if (Origin == 1) return
+            Duration = Duration > 0 ? Utils.time2str(Duration) : ''
+            this.Server.globalBroadcast(Utils.formatString(Localization[`${Type}_MESSAGE`], {Name: Target.Name, Reason, Origin: Origin.Name, Duration}, '%')[0])
+        })
 
         this.Server.on('connect', async (Player) => {
             if (process.env.NODE_ENV && process.env.NODE_ENV.toLocaleLowerCase() == 'dev') return
             var connections = await this.Server.DB.getAllConnections(Player.ClientId)
-            Player.Tell(lookup.WELCOME_PLAYER
+            Player.Tell(Localization['WELCOME_PLAYER']
                         .replace('%PLAYER%', Player.Name)
                         .replace('%CONNECTIONS%', this.ordinalSuffix(connections.length)))
             if (Player.Session.Data.Authorized) {
@@ -27,7 +32,7 @@ class Plugin {
             }
             if (Player.IPAddress) {
                 var info = await this.getInfo(Player.IPAddress)
-                this.Server.Broadcast(lookup.WELCOME_PLAYER_BROADCAST
+                this.Server.Broadcast(Localization['WELCOME_PLAYER_BROADCAST']
                                       .replace('%PLAYER%', Player.Name)
                                       .replace('%LOCATION%', info.country)
                                       .replace('%LEVEL%', Player.PermissionLevel)

@@ -6,6 +6,7 @@ var commandPrefixes = {
         setDvar: 'set %DVAR% %VALUE%',
         clientKick: `clientkick %CLIENT% "%REASON%"`,
         Tell: `tell %CLIENT% "%MESSAGE%"`,
+        Say: 'say %MESSAGE%'
     },
     getInfo: '\xff\xff\xff\xffgetinfo',
     getStatus: '\xff\xff\xff\xffgetstatus',

@@ -7,6 +7,7 @@
         "ROLE_HIERARCHY_ERROR" : "You can\"t set that role",
         "CLIENT_HIERARCHY_ERROR": "You cannot execute this on that client",
         "COMMAND_EXECUTE_SUCCESS" : "Command executed successfully",
+        "COMMAND_ENV_ERROR": "This command can only be executed in-game",
         "ROLE_SELF_ERROR" : "You can\"t set your own role",
         "COMMAND_STATS_FORMAT" : "[ ^5%NAME% ^7] => ^5%KILLS%^7 Kills | ^5%DEATHS% ^7Deaths | ^5%KDR% ^7KDR | ^5%PERFORMANCE%^7 Performance | ^7Play time ^5%PLAYEDTIME%",
         "COMMAND_FORBIDDEN" : "You don\"t have enough permissions for this",
@@ -87,6 +88,12 @@
         "USAGE_WHOIS": "^5whois^7 <name>",
         "COMMAND_TESTPERM": "Test a role's permissions",
         "USAGE_TESTPERM": "^5testperm^7 <role>",
+        "COMMAND_UPTIME_FORMAT": "This server has been up for: ^5%UPTIME%",
+        "COMMAND_CALC_RESULT": "Result: %RESULT%",
+        "COMMAND_CALC_FAIL": "^1Error^2",
+        "WELCOME_PLAYER": "Welcome ^5%PLAYER%^7, this is the ^5%CONNECTIONS%^7 time you've visited this server!",
+        "WELCOME_PLAYER_BROADCAST": "^%LEVEL%%ROLE%^7 ^5%PLAYER%^7 joined from ^5%LOCATION%^7",
+        "QUIT_PLAYER_BROADCAST": "^1%NAME%^7 left",
         "COMMAND_NOT_SETUP": "This command doesn't have a callback yet",
         "COMMAND_TOKEN_FORMAT": "Your login token is %TOKEN%, valid for 2 minutes, your ClientID is ^2%CLIENTID%^7 { ^5numbers^7, ^3letters^7 }",
         "COMMAND_PARSE_TIME_ERROR": "Could not parse time, format: 1d (day), 2h (hours), 3m (mins), 10s (secs)",
@@ -124,7 +131,15 @@
         "COMMAND_VOTE_END": "Vote to ^5%ACTION%^7 has ended",
         "COMMAND_VOTEKICK_HIERARCHY_ERR": "Sorry but you cant kick that user",
         "COMMAND_VOTE_NO_VOTE": "No vote in progress",
-        "COMMAND_VOTEMAP_NOT_FOUND": "Map not found"
+        "COMMAND_VOTEMAP_NOT_FOUND": "Map not found",
+        "PENALTY_TEMP_BAN_T": "Temp ban",
+        "PENALTY_PERMA_BAN_T": "Perma ban",
+        "PENALTY_KICK_T": "Kick",
+        "PENALTY_UNBAN_T": "Unban",
+        "PENALTY_TEMP_BAN_MESSAGE": "[^1Penalties^7] ^5%NAME%^7 was ^1temp banned^7 by ^5%ORIGIN%^7 for ^3%REASON%^7 for ^5%DURATION%",
+        "PENALTY_PERMA_BAN_MESSAGE": "[^1Penalties^7] ^5%NAME%^7 was ^1perma banned^7 by ^5%ORIGIN%^7 for ^3%REASON%",
+        "PENALTY_KICK_MESSAGE": "[^1Penalties^7] ^5%NAME%^7 was ^3kicked^7 by ^5%ORIGIN%^7 for ^3%REASON%",
+        "PENALTY_UNBAN_MESSAGE": "[^1Penalties^7] ^5%NAME%^7 was ^2unbanned^7 by ^5%ORIGIN%^7 for ^3%REASON% "
     },
     "Maps": [
         {

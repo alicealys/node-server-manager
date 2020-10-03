@@ -60,6 +60,7 @@ class ConfigMaker {
                     'MOTD':  configTemplate[7].value,
                     'Info': 'No info for now...',
                     'commandPrefixes': [ configTemplate[8].value ],
+                    'broadcastCommandPrefixes': ['@'],
                     'links': [],
                     "autoMessagesInterval": 60,
                     "autoMessages": [

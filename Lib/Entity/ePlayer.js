@@ -1,5 +1,6 @@
-const EventEmitter      = require('events')
-const crypto            = require('crypto')
+const EventEmitter          = require('events')
+const path                  = require('path')
+const { NodeServerManager } = require(path.join(__dirname, '../Classes.js'))
 
 function secondsToDhms (seconds) {
   seconds = Number(seconds);
@@ -68,7 +69,7 @@ class ePlayer extends EventEmitter {
                                             .replace('%CLIENT%', this.Clientslot)
                                             .replace('%MESSAGE%', text))
       }
-      Kick (Message, Origin = 1, Log = true, Basemsg = 'You have been kicked: ^5') {
+      Kick (Message, Origin = NodeServerManager, Log = true, Basemsg = 'You have been kicked: ^5') {
         this.Server.DB.addPenalty({
           TargetId: this.ClientId,
           OriginId: Origin,

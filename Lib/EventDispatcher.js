@@ -57,7 +57,7 @@ class EventDispatcher {
                   }
                 }
 
-                this.Server.emit('disconnect', this.Server.Clients[event.data.Origin.Clientslot])
+                this.Server.emit('disconnect', Object.assign({}, this.Server.Clients[event.data.Origin.Clientslot]))
                 this.Server.Clients[event.data.Origin.Clientslot].removeAllListeners()
                 this.Server.Clients[event.data.Origin.Clientslot] = null;
               break;

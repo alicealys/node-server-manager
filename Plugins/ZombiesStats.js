@@ -13,7 +13,6 @@ class Plugin {
         this.Managers = Managers
         this.Server.on('connect', this.onPlayerConnect.bind(this))
         this.zStats()
-        this.webfront()
     }
     async onPlayerConnect(Player) {
         if ((await this.getZStats(Player.ClientId))) return
@@ -22,9 +21,6 @@ class Plugin {
         }).save()
       }
     async createTable() {
-        this.Manager.on('webfront-ready', (Webfront) => {
-            Webfront.addHeaderHtml(`<a href='/zstats' class='wf-header-link'><i class="fas fa-skull"></i></a>`, 3)
-        })
         this.NSMZStats = Models.DB.define('NSMZStats', 
         {
             ClientId: {
@@ -87,37 +83,19 @@ class Plugin {
         }
         return Stats
     }
-    async webfront() {
-        this.Manager.on('webfront-ready', (Webfront) => {
-            Webfront.addHeaderHtml(`<a href='/zstats' class='wf-header-link'><i class="fas fa-skull"></i></a>`, 3)
-
-        })
-    }
     async updateStats(Client, Stats, Round = 0) {
         Object.entries(Stats).forEach(Stat => {
             if (!Client.previousStats) return
             if (Stat[1] < Client.previousStats[Stat[0]]) {
-                Client.previousStats = {
-                    Kills: 0,
-                    Revives: 0,
-                    Downs: 0,
-                    Score: 0,
-                    Headshots: 0,
-                    HighestRound: 0,
-                }
+                Client.previousStats = null
             }
         })
+
         if (!Client.previousStats) {
-            Client.previousStats = {
-                Kills: Stats.Kills,
-                Revives: Stats.Revives,
-                Downs: Stats.Downs,
-                Score: Stats.Score,
-                Headshots: Stats.Headshots,
-                HighestRound: Round
-            }
+            Client.previousStats = {...Stats, Round}
             return
         }
+
         var newStats = {
             Kills: Stats.Kills - Client.previousStats.Kills,
             Revives: Stats.Revives - Client.previousStats.Revives,
@@ -126,14 +104,8 @@ class Plugin {
             Headshots: Stats.Headshots - Client.previousStats.Headshots,
             HighestRound: Round
         }
-        Client.previousStats = {
-            Kills: Stats.Kills,
-            Revives: Stats.Revives,
-            Downs: Stats.Downs,
-            Score: Stats.Score,
-            Headshots: Stats.Headshots,
-            HighestRound: Round
-        }
+        Client.previousStats = {...Stats, Round}
+
         this.NSMZStats.update({
             Kills: Sequelize.literal(`Kills + ${newStats.Kills}`),
             Downs: Sequelize.literal(`Downs + ${newStats.Downs}`),
@@ -158,6 +130,9 @@ class Plugin {
         return Stats.length > 0 ? Stats[0] : false
     }
     async zStats() {
+        this.Manager.on('webfront-ready', (Webfront) => {
+            Webfront.addHeaderHtml(`<a href='/zstats' class='wf-header-link'><i class="fas fa-skull"></i></a>`, 3)
+        })
         await this.createTable()
         this.Manager.commands['zstats'] = {
             ArgumentLength: 0,

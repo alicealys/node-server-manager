@@ -3,6 +3,12 @@ const Localization      = require(path.join(__dirname, `../Configuration/Localiz
 const Utils             = new (require(path.join(__dirname, '../Utils/Utils.js')))()
 const Permissions       = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
 
+var NodeServerManager = {
+    ClientId: 1,
+    Name: 'Node Server Manager',
+    Guid: 'node'
+}
+
 class Command {
     constructor() {
         this.Name = 'testcommand'
@@ -20,16 +26,24 @@ class Command {
         this.Name = Name
         return this
     }
+    setMiddleware(Bool) {
+        this.isMiddleware = Bool
+        return this
+    }
     setAlias(Alias) {
         this.Alias = Alias
+        return this
+    }
+    setInGame(inGame) {
+        this.inGame = inGame
         return this
     }
     addException(Condition, returnString) {
         this.Exceptions.push({ Condition, returnString })
         return this
     }
-    addParam(Index, Name, Join = false) {
-        this.Params.push({ Index, Name, Join })
+    addParam(Index, Name, Options) {
+        this.Params.push({ Index, Name, Options })
         return this
     }
     addCallback(Callback) {
@@ -37,19 +51,9 @@ class Command {
         return this
     }
     setPermission(Perm) {
-        switch (true) {
-            case (Number.isInteger(Perm)):
-                this.PermissionLevel = Level
-            return
-            case (Permissions.Roles[Perm]):
-                this.PermissionLevel = Utils.getRoleFrom(Perm, 0).Level
-            return
-            case (Permissions.Levels[Perm]):
-                this.PermissionLevel = Permissions.Levels[Perm]
-            return
-        }
+        this.PermissionLevel = Permissions.Levels[Perm]
         return this
     }
 }
 
-module.exports = { Command }
+module.exports = { Command, NodeServerManager }

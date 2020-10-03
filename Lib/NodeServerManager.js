@@ -120,7 +120,7 @@ if (fs.existsSync(path.join(__dirname, `../Configuration/NSMConfiguration.json`)
      Managers.push(new NSM(config))
   })
 
-  function loadGlobalPlugins() {
+  async function loadGlobalPlugins() {
     const directoryPath = path.join(__dirname, '../Plugins/Global');
     fs.readdir(directoryPath, (err, files) => {
       if (err) {

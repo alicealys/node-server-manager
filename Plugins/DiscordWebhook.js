@@ -34,7 +34,6 @@ class Plugin {
             'PENALTY_PERMA_BAN': 'Perma ban',
             'PENALTY_KICK': 'Kick'
         }
-        Origin = (await Target.Server.DB.getClient(Origin)).Name
         this.sendHookPenalty(`:hammer: ${Target.Name}`, ' ', `${config.webfrontHostname}/id/${Target.ClientId}`, translation[Type], Reason, Origin, Duration)
     }
     async sendHookPenalty(Title, Description, Url, Type, Reason, Origin, Duration) {
@@ -44,7 +43,7 @@ class Plugin {
         .setURL(Url)
         .setColor('#00b0f4')
         .addField('Type', Type, true)
-        .addField('Origin', Origin, true)
+        .addField('Origin', Origin.Name, true)
         .addField('Reason', `\`${this.stripColorCodes(Reason)}\``, true)
         .setFooter('Node Server Manager')
         .setTimestamp()

@@ -25,22 +25,17 @@ class CLICommands {
         return string.replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), `\x1b[3$1m`)
     }
     processCommand(line) {
-        this.lookup = {
-            'COMMAND_NOT_FOUND' : 'Command not found, use ^3help^7 for a list of commands',
-            'COMMAND_ARGUMENT_ERROR' : 'Not enough arguments supplied',
-            'COMMAND_ENV_ERROR': 'This command can only be executed in-game'
-        }
         var args = line.split(/\s+/)
         var command = Utils.getCommand(this.Manager.commands, args[0])
         switch (true) {
           case (!this.Manager.commands[command]):
-            this.Player.Tell(this.lookup.COMMAND_NOT_FOUND)
+            this.Player.Tell(Localization['COMMAND_NOT_FOUND'])
             return
           case (this.Manager.commands[command].inGame || this.Manager.commands[command].inGame == undefined):
-            this.Player.Tell(this.lookup.COMMAND_ENV_ERROR)
+            this.Player.Tell(Localization['COMMAND_ENV_ERROR'])
             return
           case (args.length - 1 < this.Manager.commands[command].ArgumentLength):
-            this.Player.Tell(this.lookup.COMMAND_ARGUMENT_ERROR)
+            this.Player.Tell(Localization['COMMAND_ARGUMENT_ERROR'])
             return
 
         }

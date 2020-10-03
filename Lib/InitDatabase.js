@@ -220,7 +220,7 @@ class Database {
     async unbanClient(TargetId, OriginId, Reason) {
         var Penalties = await Models.NSMPenalties.update(
             { Active: false },
-            { where: { TargetId: TargetId, Active: true } }, {transaction: this.transaction}
+            { where: { TargetId: TargetId, Active: true, PenaltyType: { [Sequelize.Op.not]: 'PENALTY_UNBAN' } } }, {transaction: this.transaction}
         )
 
         Penalties.length > 0 && await Models.NSMPenalties.build({

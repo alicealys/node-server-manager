@@ -112,6 +112,12 @@ class _Server extends EventEmitter {
             this.emit('connect', this.Clients[c.num])
         })
     }
+    globalBroadcast(Message) {
+        this.Managers.forEach(Manager => {
+            Manager.Server.Broadcast(Message)
+        })
+    }
+
     Broadcast (string) {
         this.Clients.forEach(c => {
             if (c == null) return
