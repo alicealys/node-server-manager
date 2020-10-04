@@ -1,13 +1,9 @@
-const sqlite3           = require('sqlite3').verbose()
 const Sequelize         = require('sequelize')
 const path              = require('path')
 const Models            = require(path.join(__dirname, `../Lib/DatabaseModels.js`))
-const Database  = require(path.join(__dirname, '../Lib/InitDatabase.js'))
-const db = new Database()
-const _utils            = require(path.join(__dirname, '../Utils/Utils.js'))
-const Utils             = new _utils()
-
-const Permissions = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
+const Utils             = new (require(path.join(__dirname, '../Utils/Utils.js')))()
+const Permissions       = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
+const Localization      = require(path.join(__dirname, `../Configuration/Localization.json`)).lookup
 
 class Plugin {
   constructor(Server, Manager, Managers) {
@@ -70,6 +66,11 @@ class Plugin {
         {Money : Money},
         {where: {ClientId: ClientId}})
   }
+  async addPlayerMoney(ClientId, Money) {
+    await this.NSMZombiesStats.update(
+      {Money : Sequelize.literal(`Money + ${Money}`)},
+      {where: {ClientId: ClientId}})
+}
   async init () {
     await this.createTable()
     this.Manager.commands['withdraw'] = {
@@ -130,7 +131,7 @@ class Plugin {
             var Target = await this.Server.getClient(args[1])
             switch (true) {
                 case (!Target):
-                    Player.Tell('Client not found')
+                    Player.Tell(Localization['COMMAND_CLIENT_NOT_FOUND'])
                 return
             }
             var totalMoney = (await this.getZMStats(Player.ClientId)).Money
@@ -143,9 +144,9 @@ class Plugin {
                     Player.Tell(`Insufficient funds`)
                 return
             }
-            Target.totalMoney = (await this.getZMStats(Target.ClientId)).Money
-            await this.setPlayerMoney(Player.ClientId, parseInt(totalMoney) - parseInt(parseInt(moneyToGive) * 1.05))
-            this.setPlayerMoney(Target.ClientId, parseInt(Target.totalMoney) + parseInt(moneyToGive))
+
+            await this.addPlayerMoney(Player.ClientId, -1 * parseInt(parseInt(moneyToGive) * 1.05))
+            this.addPlayerMoney(Target.ClientId, parseInt(moneyToGive))
             Player.Tell(`Successfully transfered ^2$${moneyToGive}^7 to ^5${Target.Name}^7's bank account! You payed a ^1$${parseInt(moneyToGive * 0.05)} ^7fee, Transaction ID: ^6#${Utils.getRandomInt(10000000, 90000000)}`)
             Target.inGame = Utils.findClient(Target.ClientId, this.Managers)
             Target.inGame && Target.inGame.Tell(`Received ^2$${moneyToGive}^7 from ^5${Player.Name}^7!`)

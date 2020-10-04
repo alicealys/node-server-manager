@@ -100,6 +100,7 @@ class Plugin {
         Alias: 'gc',
         inGame: true,
         callback: async (Player) => {
+          if (!Player.Session) return
           Player.Session.Data.globalChat = !Player.Session.Data.globalChat
           Player.Tell(Localization[`COMMAND_GLOBALCHAT_${Player.Session.Data.globalChat.toString().toLocaleUpperCase()}`])
         }
