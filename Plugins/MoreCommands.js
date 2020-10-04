@@ -1,9 +1,12 @@
 const path                  = require('path')
 const { Command }           = require(path.join(__dirname, `../Lib/Classes.js`))
 const Localization          = require(path.join(__dirname, `../Configuration/Localization.json`)).lookup
+const Games                 = require(path.join(__dirname, `../Configuration/Localization.json`)).Games
 const config                = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`))
 const Utils                 = new (require(path.join(__dirname, '../Utils/Utils.js')))()
 const mathjs                = require('mathjs')
+const wait                  = require('delay')
+const { waitForDebugger } = require('inspector')
 
 class Plugin {
     constructor(Server, Manager, Managers) {
@@ -47,20 +50,73 @@ class Plugin {
 
         (() => {
             let command = new Command()
+            .setName('staff')
+            .addCallback(async (Player, Params, Args, Options, Funcs) => {
+                var staff = []
+                this.Managers.forEach(Manager => {
+                    staff = staff.concat(Manager.Server.getStaffMembers())
+                })
+                if (!staff.length) {
+                    Funcs.Tell(Localization['COMMAND_STAFF_NO_RESULT'])
+                    return
+                }
+                for (var i = 0; i < staff.length; i++) {
+                    Funcs.Tell(Utils.formatString(Localization['COMMAND_STAFF_FORMAT'], {
+                            Name: staff[i].Name, 
+                            Level: staff[i].PermissionLevel, 
+                            Role: Utils.getRoleFrom(staff[i].PermissionLevel, 1).Name, 
+                            ClientId: staff[i].ClientId, 
+                            Hostname: staff[i].Server.HostnameRaw
+                    }, '%')[0])
+                    await wait(500)
+                }
+            })
+            this.Manager.Commands.Add(command)
+        })(this);
+
+        (() => {
+            let command = new Command()
+            .setName('whereis')
+            .addParam(0, 'player', true)
+            .addCallback(async (Player, Params, Args, Options, Funcs) => {
+                var Client = await this.Server.getClient(Params.player)
+                if (!Client) {
+                    Funcs.Tell(Localization['COMMAND_CLIENT_NOT_FOUND'])
+                    return
+                }
+
+                var Client = this.Server.findClient(Client.ClientId)
+                if (!Client) {
+                    Funcs.Tell(Localization['COMMAND_CLIENT_NOT_INGAME'])
+                    return
+                }
+
+                Funcs.Tell(Utils.formatString(Localization['COMMAND_WHEREIS_FORMAT'], {
+                    Name: Client.Name, 
+                    ClientId: Client.ClientId,
+                    Game: `^${Games[Client.Server.Gamename]['COLOR']}${Games[Client.Server.Gamename]['CLIENT']}`,
+                    Hostname: Client.Server.HostnameRaw, 
+                    Address: `${Client.Server.externalIP}:${Client.Server.PORT}`
+                }, '%')[0])
+            })
+            this.Manager.Commands.Add(command)
+        })(this);   
+
+        (() => {
+            let command = new Command()
             .setName('eval')
             .addParam(0, 'js', true)
             .setPermission('ROLE_OWNER')
             .addCallback(async (Player, Params, Args, Options, Funcs) => {
                 try {
-                    if (process.env.NODE_ENV == 'dev') {
-                        eval(Params.js)
-                    }
+                    eval(Params.js)
                 }
                 catch (e) {
                     Player.Tell(e.toString())
                 }
             })
-            this.Manager.Commands.Add(command)
+            if (process.env.NODE_ENV == 'dev')
+                this.Manager.Commands.Add(command)
         })(this);
 
         (() => {

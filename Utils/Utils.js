@@ -51,7 +51,7 @@ class Utils {
         return false
       }
       getCommand(commands, name) {
-        var found = name
+        var found = false
         Object.entries(commands).forEach(command => {
           if (command[0].toLocaleLowerCase() == name.toLocaleLowerCase() || (command[1].Alias && command[1].Alias.toLocaleLowerCase() == name.toLocaleLowerCase())) {
             found = command[0]
@@ -59,7 +59,7 @@ class Utils {
         })
         return found
       }
-      formatString(template, values, c) {
+      formatString(template = '', values, c) {
         Object.entries(values).forEach(value => {
           template = template.replace(new RegExp(`${c}${value[0].toLocaleUpperCase()}${c}`), value[1])
         })

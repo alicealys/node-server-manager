@@ -48,6 +48,7 @@ class Commands {
         }
 
         switch (true) {
+            case (!next && Command.isMiddleware):
             case (!Command):
             return
             case (Command.inGame && !Player.inGame):

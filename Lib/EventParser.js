@@ -29,6 +29,11 @@ class EventParser {
         if (eventData.type == null) return;
         var parsedEvent = {type: eventData.type, data: null};
         switch (eventData.type) {
+            case 'init': {
+                parsedEvent.data = {
+                    TimeOffset: eventData.vars[0],
+                }
+            }
             case 'say':
                 parsedEvent.data = {
                     TimeOffset: eventData.vars[0],

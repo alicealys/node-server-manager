@@ -4,6 +4,7 @@ const Commands        = require(path.join(__dirname, `../Commands.js`))
 const EventEmitter    = require('events')
 const ip              = require('public-ip')
 const Maps            = require(path.join(__dirname, `../../Configuration/Localization.json`)).Maps
+const Permissions     = require(path.join(__dirname, `../../Configuration/NSMConfiguration.json`)).Permissions
 
 class _Server extends EventEmitter {
     constructor(IP, PORT, RCON, DATABASE, sessionStore, Managers, Id, Manager) {
@@ -30,6 +31,7 @@ class _Server extends EventEmitter {
         this.heartbeatRetry = 2
         this.HeartbeatInt = setInterval(this.Heartbeat.bind(this), 15000)
         this.sessionStore = sessionStore
+        this.on('init', this.onInitGame.bind(this))
         Manager.Commands = new Commands()
     }
     COD2BashColor(string) {
@@ -37,6 +39,25 @@ class _Server extends EventEmitter {
     }
     getMap(name) {
       return this.Maps.find(Map => Map.Name.toLocaleLowerCase().startsWith(name) || Map.Alias.toLocaleLowerCase().startsWith(name) )
+    }
+    onInitGame() {
+        var onLine = async () => {
+            this.Mapname = await this.Rcon.getDvar('mapname')
+            this.Gametype = await this.Rcon.getDvar('g_gametype')
+            this.removeListener('line', onLine)
+        }
+        this.on('line', onLine)
+    }
+    getStaffMembers() {
+        var staff = []
+        this.Clients.forEach(Client => {
+            if (!Client) return
+            Client.PermissionLevel >= Permissions.Levels['ROLE_MODERATOR'] && staff.push(Client)
+        })
+        staff.sort((a, b) => {
+            return b.PermissionLevel - a.PermissionLevel
+        })
+        return staff
     }
     async setDvarsAsync() {
         try {

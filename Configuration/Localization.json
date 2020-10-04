@@ -88,9 +88,23 @@
         "USAGE_WHOIS": "^5whois^7 <name>",
         "COMMAND_TESTPERM": "Test a role's permissions",
         "USAGE_TESTPERM": "^5testperm^7 <role>",
+        "COMMAND_STAFF_FORMAT": "[^%LEVEL%%ROLE%^7] ^5%NAME%^7 @ ^7%HOSTNAME%",
+        "COMMAND_STAFF_NO_RESULT": "There are no staff members are online",
         "COMMAND_UPTIME_FORMAT": "This server has been up for: ^5%UPTIME%",
+        "COMMAND_WHEREIS_FORMAT": "^5%NAME%^7 is playing %GAME%^7 on %HOSTNAME%^7 (%ADDRESS%)",
         "COMMAND_CALC_RESULT": "Result: %RESULT%",
+        "COMMAND_CALCULATOR": "Calculate some math",
+        "USAGE_CALCULATOR": "^5calculator^7 <expression>",
+        "COMMAND_STAFF": "Displays online staff members",
+        "USAGE_STAFF": "^5staff",
+        "COMMAND_EVAL": "Evaluates javascript (dev only)",
+        "USAGE_EVAL": "^5eval^7 <code>",
+        "COMMAND_WHEREIS": "Finds a specific player in the servers",
+        "USAGE_WHEREIS": "^5whereis^7 <player>",
+        "COMMAND_UPTIME": "Displays server uptime",
+        "USAGE_UPTIME": "^5uptime",
         "COMMAND_CALC_FAIL": "^1Error^2",
+        "COMMAND_LIST_PAGE": "^3--- Page %CURRENT% / %MAX% ---",
         "WELCOME_PLAYER": "Welcome ^5%PLAYER%^7, this is the ^5%CONNECTIONS%^7 time you've visited this server!",
         "WELCOME_PLAYER_BROADCAST": "^%LEVEL%%ROLE%^7 ^5%PLAYER%^7 joined from ^5%LOCATION%^7",
         "QUIT_PLAYER_BROADCAST": "^1%NAME%^7 left",
@@ -139,7 +153,85 @@
         "PENALTY_TEMP_BAN_MESSAGE": "[^1Penalties^7] ^5%NAME%^7 was ^1temp banned^7 by ^5%ORIGIN%^7 for ^3%REASON%^7 for ^5%DURATION%",
         "PENALTY_PERMA_BAN_MESSAGE": "[^1Penalties^7] ^5%NAME%^7 was ^1perma banned^7 by ^5%ORIGIN%^7 for ^3%REASON%",
         "PENALTY_KICK_MESSAGE": "[^1Penalties^7] ^5%NAME%^7 was ^3kicked^7 by ^5%ORIGIN%^7 for ^3%REASON%",
-        "PENALTY_UNBAN_MESSAGE": "[^1Penalties^7] ^5%NAME%^7 was ^2unbanned^7 by ^5%ORIGIN%^7 for ^3%REASON% "
+        "PENALTY_UNBAN_MESSAGE": "[^1Penalties^7] ^5%NAME%^7 was ^2unbanned^7 by ^5%ORIGIN%^7 for ^3%REASON%"
+    },
+    "Games": {
+      "T6": {
+        "CLIENT": "Plutonium T6",
+        "GAMENAME": "Black Ops II",
+        "GAMENAME_FULL": "Call of Duty: Black Ops II",
+        "COLOR": 3,
+        "SUBGAMES": {
+          "ZM": "Zombies",
+          "MP": "Multiplayer"
+        } 
+      },
+      "T5": {
+        "CLIENT": "RektT5",
+        "GAMENAME": "Black Ops I",
+        "GAMENAME_FULL": "Call of Duty: Black Ops I",
+        "COLOR": 3,
+        "SUBGAMES": {
+          "ZM": "Zombies",
+          "MP": "Multiplayer"
+        } 
+      },
+      "T4": {
+        "CLIENT": "World at Wat",
+        "GAMENAME": "World at Wat",
+        "GAMENAME_FULL": "Call of Duty: World at War",
+        "COLOR": 3,
+        "SUBGAMES": {
+          "ZM": "Zombies",
+          "MP": "Multiplayer"
+        } 
+      },
+      "IW6": {
+        "CLIENT": "IW6x",
+        "GAMENAME": "Ghosts",
+        "GAMENAME_FULL": "Call of Duty: Ghosts",
+        "COLOR": 6,
+        "SUBGAMES": {
+          "MP": "Multiplayer",
+          "ALIENS": "Extinction"
+        } 
+      },
+      "IW5": {
+        "CLIENT": "Plutonium IW5",
+        "GAMENAME": "Modern Warfare 3",
+        "GAMENAME_FULL": "Call of Duty: Modern Warfare 3",
+        "COLOR": 2,
+        "SUBGAMES": {
+          "MP": "Multiplayer"
+        } 
+      },
+      "IW4": {
+        "CLIENT": "IW4x",
+        "GAMENAME": "Modern Warfare 2",
+        "GAMENAME_FULL": "Call of Duty: Modern Warfare 2",
+        "COLOR": 2,
+        "SUBGAMES": {
+          "MP": "Multiplayer"
+        } 
+      },
+      "IW3": {
+        "CLIENT": "CoD4x",
+        "GAMENAME": "Modern Warfare",
+        "GAMENAME_FULL": "Call of Duty: Modern Warfare",
+        "COLOR": 2,
+        "SUBGAMES": {
+          "MP": "Multiplayer"
+        } 
+      },
+      "IW2": {
+        "CLIENT": "CoD4x",
+        "GAMENAME": "Call of Duty 2",
+        "GAMENAME_FULL": "Call of Duty 2",
+        "COLOR": 2,
+        "SUBGAMES": {
+          "MP": "Multiplayer"
+        } 
+      }
     },
     "Maps": [
         {
