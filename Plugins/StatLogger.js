@@ -51,7 +51,6 @@ class Plugin {
   }
   init () {
       this.Server.on('connect', this.playerConnected.bind(this))
-      this.Server.on('disconnect', this.playerDisconnected.bind(this))
       this.playedTimeLogger()
   }
   playedTimeLogger() {
