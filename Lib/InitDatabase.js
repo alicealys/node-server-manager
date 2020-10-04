@@ -674,6 +674,12 @@ class Database {
         // await this.transaction.commit()
     }
 
+    async editStats(ClientId, Stats) {
+        Models.NSMPlayerStats.update(
+            { 'Kills': Stats.Kills, 'Deaths': Stats.Deaths, 'Performance': Stats.Performance, 'TotalPerformance': Stats.TotalPerformance},
+            {where: {ClientId: ClientId}}, {transaction: this.transaction})
+    }
+
     async logMessage(ClientId, Name, Hostname, Message) {
         var Kill = await Models.NSMMessages.build({
             OriginId: ClientId,

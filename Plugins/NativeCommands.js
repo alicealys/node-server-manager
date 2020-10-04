@@ -38,19 +38,6 @@ class Plugin {
     }
   }
   init () {
-    /*
-    var command = new Command()
-    .setName('test')
-    .addParam(0, 'test', true)
-    .addException((Player, Params, Args) => {
-        return (Params['test'].length == 2)
-    }, 'Invalid parameter')
-    .addCallback((Player, Params, Args) => {
-        Player.Tell(Params['test'])
-    })
-    this.Manager.Commands.Add(command)
-    */
-
     this.Manager.commands = {
       'help': {
         ArgumentLength: 0,
