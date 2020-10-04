@@ -9,9 +9,6 @@ class Plugin {
     setInterval(this.updateStats.bind(this), 300 * 1000)
     this.init()
   }
-  async playerDisconnected(Player) {
-    this.Buffer.Stats[Player.ClientId] && delete this.Buffer.Stats[Player.ClientId]
-  }
   async playerConnected (Player) {
     Player.on('death', async (Attacker, Attack) => {
 
