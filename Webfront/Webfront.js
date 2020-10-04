@@ -114,16 +114,26 @@ class Webfront {
         this.app.use(bodyParser.urlencoded({ extended: true }))
         this.app.use(bodyParser.json())
 
-        const apiLimiter = rateLimit({
+        const authLimiter = rateLimit({
             windowMs: 15 * 60 * 1000,
             max: 50,
             message: JSON.stringify({
                 success: false,
                 error: 'Too many requests'
             })
-        });
+        })
         
-        //this.app.use('/auth/*', apiLimiter)
+        const apiLimiter = rateLimit({
+            windowMs: 1000,
+            max: 5,
+            message: JSON.stringify({
+                success: false,
+                error: 'Too many requests'
+            })
+        })
+
+        this.app.use('/auth/*', authLimiter)
+        this.app.use('/api/*', apiLimiter)
 
 
         var salt1 = bcrypt.genSaltSync();
