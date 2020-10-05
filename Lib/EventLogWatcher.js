@@ -1,9 +1,8 @@
-const EventParser   = require('./EventParser.js')
-const Tail          = require('tail').Tail
-const md5           = require('md5')
-const fs            = require('fs')
-const readLastLines = require('read-last-lines')
-const _EventDispatcher = require('./EventDispatcher.js')
+const EventParser       = require('./EventParser.js')
+const Tail              = require('tail').Tail
+const path              = require('path')
+const _EventDispatcher  = require('./EventDispatcher.js')
+const spawn             = require('child_process').spawn
 
 class EventLogWatcher extends EventParser {
     constructor (logfile, Server, Manager) {
@@ -14,14 +13,26 @@ class EventLogWatcher extends EventParser {
         this.EventDispatcher = new _EventDispatcher(Server, Manager)
     }
     init () {
-        var tail = new Tail(this.logfile)
+        var filePath = path.resolve(this.logfile)
+
+        if (process.platform == 'win32') {
+            var tail = spawn(`powershell`, ['-command', 'get-content', '-wait', '-Tail 0', `"${filePath}"`])
+            tail.stdout.on('data', (data) => {
+                this.onLine(data.toString())
+            })
+            return
+        }
+        
+        var tail = new Tail(filePath)
         tail.watch()
-        tail.on('line', (data) => {
-            this.Server.emit('line', data)
-            var event = this.parseEvent(data)
-            if (!event) return
-            this.EventDispatcher.dispatchCallback(event)
-        })
+
+        tail.on('line', this.onLine.bind(this))
+    }
+    onLine(line) {
+        this.Server.emit('line', line)
+        var event = this.parseEvent(line)
+        if (!event) return
+        this.EventDispatcher.dispatchCallback(event)
     }
 }
 module.exports = EventLogWatcher

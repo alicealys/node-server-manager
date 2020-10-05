@@ -504,7 +504,8 @@ class Plugin {
     
                     switch (true) {
                         case !Owner:
-                            this.Server.DB.setLevel(Player, 5)
+                            this.Server.DB.setLevel(Player, Permissions.Levels['ROLE_OWNER'])
+                            Player.PermissionLevel = Permissions.Levels['ROLE_OWNER']
                             Player.Tell(`Your role has been set to [ ^5${Utils.getRoleFrom(5, 1).Name}^7 ]`)
                             return
                         case (Owner.ClientId == Player.ClientId):

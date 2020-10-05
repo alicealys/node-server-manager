@@ -1,14 +1,19 @@
-const fs                      = require('fs');
-const RconConnection          = require('./RconConnection.js')
-const path                    = require('path');
-const Server                  = require(path.join(__dirname, '../Lib/Entity/Server.js'))
-const Database                = new (require(path.join(__dirname, '../Lib/InitDatabase.js')))()
-const EventLogWatcher         = require('./EventLogWatcher.js')
-const ServerLogWatcher        = require('./ServerLogWatcher.js')
-const ConfigMaker             = require('./ConfigMaker.js');
-const _CLICommands            = require('./CLICommands.js')
-const sessionStore            = new (require(path.join(__dirname, `../Webfront/SessionStore.js`)))()             
+const fs                      = require('fs')
+const path                    = require('path')
+const configured              = fs.existsSync(path.join(__dirname, `../Configuration/NSMConfiguration.json`))
+
+if (configured) {
+  var RconConnection          = require('./RconConnection.js')
+  var Server                  = require(path.join(__dirname, '../Lib/Entity/Server.js'))
+  var Database                = new (require(path.join(__dirname, '../Lib/InitDatabase.js')))()
+  var EventLogWatcher         = require('./EventLogWatcher.js')
+  var ServerLogWatcher        = require('./ServerLogWatcher.js')
+  var _CLICommands            = require('./CLICommands.js')
+  var sessionStore            = new (require(path.join(__dirname, `../Webfront/SessionStore.js`)))()
+}
+
 const EventEmitter            = require('events')
+const ConfigMaker             = require('./ConfigMaker.js')
 
 var Info = {
   Author: 'fed',
@@ -104,7 +109,7 @@ class NSM extends EventEmitter{
   }
 }
 
-if (fs.existsSync(path.join(__dirname, `../Configuration/NSMConfiguration.json`))) {
+if (configured) {
 
   const configuration = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`).toString())
 
@@ -152,9 +157,10 @@ if (fs.existsSync(path.join(__dirname, `../Configuration/NSMConfiguration.json`)
     Port: configuration.WebfrontPort, 
     Hostname: configuration.WebfrontHostname, 
   }, sessionStore, Database))
+
+  var CLICommands = new _CLICommands(Managers[0])
 } else {
   var configMake = new ConfigMaker()
   configMake.init()
 }
 
-var CLICommands = new _CLICommands(Managers[0])

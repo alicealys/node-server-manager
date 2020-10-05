@@ -7,3 +7,5 @@ node_modules
 *.save
 *.swp
 !Configuration/Localization.json
+Log/*
+Log

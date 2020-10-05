@@ -1,8 +1,7 @@
 const dgram             = require('dgram');
 const path              = require('path')
 const commandPrefixes   = require('./RconCommandPrefixes')
-const _utils            = require(path.join(__dirname, '../Utils/Utils.js'))
-const Utils             = new _utils();
+const Utils            = new (require(path.join(__dirname, '../Utils/Utils.js')))()
 
 class Rcon {
     constructor (ip, port, password) {
@@ -60,7 +59,6 @@ class Rcon {
                                       .replace('%PASSWORD%', this.password)
                                       .replace('%COMMAND%', command)
                                       , 'binary')
-
         try {
           client.on('listening', async () => {
             client.send(message, 0, message.length, this.port, this.ip, async (err) => {
@@ -95,9 +93,9 @@ class Rcon {
         }, 5000)
       })
     }
-    async getDvar(dvar) {
-        var dvar = await this.executeCommandAsync(this.commandPrefixes.Rcon.getDvar.replace('%DVAR%', dvar))
-        if (!dvar) return false
+    async getDvar(dvarName) {
+        var dvar = await this.executeCommandAsync(this.commandPrefixes.Rcon.getDvar.replace('%DVAR%', dvarName))
+        if (!dvar || !dvar.match(/"(.*?)"/g)) return false
         return dvar.match(/"(.*?)"/g)[0].slice(1, -1)
     }
     async getStatus() {

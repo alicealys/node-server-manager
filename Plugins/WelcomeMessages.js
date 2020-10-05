@@ -26,12 +26,15 @@ class Plugin {
             var connections = await this.Server.DB.getAllConnections(Player.ClientId)
             Player.Tell(Localization['WELCOME_PLAYER']
                         .replace('%PLAYER%', Player.Name)
-                        .replace('%CONNECTIONS%', this.ordinalSuffix(connections.length)))
+                        .replace('%CONNECTIONS%', this.ordinalSuffix(connections.length | 1)))
             if (Player.Session.Data.Authorized) {
                 Player.Tell('Logged in through previous session')
             }
+
+
+            
             if (Player.IPAddress) {
-                var info = await this.getInfo(Player.IPAddress)
+                var info = await this.getInfo(Player.IPAddress.match(/(localhost|127\.0\.0\.1)/g) ? this.Server.externalIP : Player.IPAddress)
                 this.Server.Broadcast(Localization['WELCOME_PLAYER_BROADCAST']
                                       .replace('%PLAYER%', Player.Name)
                                       .replace('%LOCATION%', info.country)
