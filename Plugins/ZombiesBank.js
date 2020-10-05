@@ -11,13 +11,63 @@ class Plugin {
     this.Manager = Manager
     this.Managers = Managers
     this.Server.on('connect', this.onPlayerConnect.bind(this))
+    this.Server.on('map_loaded', this.onMapLoaded.bind(this))
+    this.Server.on('line', this.onLine.bind(this))
+    //setInterval(this.updatePlayerBalance.bind(this), 1000)
     this.init()
   }
+  async onMapLoaded() {
+      this.Server.Clients.forEach(Client => {
+          if (!Client) return
+          this.setBalanceDvar(Player)
+      })
+  }
+  async onLine(line) {
+    line = line.trim().replace(new RegExp(/([0-9]+:[0-9]+)\s+/g), '')
+    if (this.isJson(line)) {
+        var bankAction = JSON.parse(line)
+        switch (bankAction.event) {
+            case 'bank_withdraw':
+                console.log(bankAction)
+                var Player = this.Server.Clients.find(Client => Client.Guid == bankAction.player.Guid)
+                //Player.bankActonQueue.push(-1 * bankAction.amount)
+                console.log(await this.addPlayerMoney(Player.ClientId, -1 * bankAction.amount))
+                this.setBalanceDvar(Player)
+            break
+            case 'bank_deposit':
+                console.log(bankAction)
+                var Player = this.Server.Clients.find(Client => Client.Guid == bankAction.player.Guid)
+                //Player.bankActonQueue.push(bankAction.amount)
+                console.log(await this.addPlayerMoney(Player.ClientId, bankAction.amount))
+                this.setBalanceDvar(Player)
+            break
+        }
+    }
+  }
+  isJson(data) {
+    try {
+        JSON.parse(data)
+    }
+    catch (e) {
+        return false
+    }
+    return true
+}
+  async updatePlayerBalance() {
+      this.Server.Clients.forEach(Client => {
+          if (!Client || !Client.bankActionQueue.length) return
+
+          this.addPlayerMoney(Client.ClientId, Utils.arraySum(Client.bankActionQueue))
+      })
+  }
   async onPlayerConnect(Player) {
-    if ((await this.getZMStats(Player.ClientId))) return
-    await this.NSMZombiesStats.build({
-        ClientId: Player.ClientId
-    }).save()
+    if (!(await this.getZMStats(Player.ClientId))) {
+        await this.NSMZombiesStats.build({
+            ClientId: Player.ClientId
+        }).save()
+    }
+    Player.bankActonQueue = []
+    this.setBalanceDvar(Player)
   }
   async createTable() {
     this.NSMZombiesStats = Models.DB.define('NSMZombiesStats', 
@@ -66,8 +116,12 @@ class Plugin {
         {Money : Money},
         {where: {ClientId: ClientId}})
   }
+  async setBalanceDvar(Player) {
+    if (!Player.Server) return
+    Player.Server.Rcon.setDvar(`${Player.Guid}_balance`, (await this.getZMStats(Player.ClientId)).Money)
+  }
   async addPlayerMoney(ClientId, Money) {
-    await this.NSMZombiesStats.update(
+    return await this.NSMZombiesStats.update(
       {Money : Sequelize.literal(`Money + ${Money}`)},
       {where: {ClientId: ClientId}})
 }
@@ -95,6 +149,7 @@ class Plugin {
             this.setPlayerMoney(Player.ClientId, parseInt(totalMoney) - parseInt(withdrawMoney))
             Player.Tell(`Successfully withdrew ^2$${withdrawMoney}^7 from your bank account!`)
             await Player.Server.Rcon.executeCommandAsync(`set bank_withdraw ${Player.Guid};${withdrawMoney}`)
+            this.setBalanceDvar(Player)
         }
     }
     this.Manager.commands['deposit'] = {
@@ -120,6 +175,7 @@ class Plugin {
             Player.Tell(`Successfully deposited ^2$${depositMoney}^7 into your bank account!`)
             this.setPlayerMoney(Player.ClientId, parseInt(totalMoney) + parseInt(depositMoney))
             await Player.Server.Rcon.executeCommandAsync(`set bank_deposit ${Player.Guid};${depositMoney}`)
+            this.setBalanceDvar(Player)
         }
     }
     this.Manager.commands['pay'] = {
@@ -150,6 +206,8 @@ class Plugin {
             Player.Tell(`Successfully transfered ^2$${moneyToGive}^7 to ^5${Target.Name}^7's bank account! You payed a ^1$${parseInt(moneyToGive * 0.05)} ^7fee, Transaction ID: ^6#${Utils.getRandomInt(10000000, 90000000)}`)
             Target.inGame = Utils.findClient(Target.ClientId, this.Managers)
             Target.inGame && Target.inGame.Tell(`Received ^2$${moneyToGive}^7 from ^5${Player.Name}^7!`)
+            this.setBalanceDvar(Player)
+            Target.inGame && this.setBalanceDvar(Target.inGame)
         }
     }
     this.Manager.commands['money'] = {

@@ -44,6 +44,7 @@ class _Server extends EventEmitter {
         var onLine = async () => {
             this.Mapname = await this.Rcon.getDvar('mapname')
             this.Gametype = await this.Rcon.getDvar('g_gametype')
+            this.emit('map_loaded', this.Mapname, this.Gametype)
             this.removeListener('line', onLine)
         }
         this.on('line', onLine)
