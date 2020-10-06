@@ -50,7 +50,7 @@ class Plugin {
                     switch (true) {
                         case (!args[1]):
                         case (Number.isInteger(parseInt(args[1]))):
-                            var chunkedCommands = Utils.chunkArray(commands, 4)
+                            var chunkedCommands = Utils.chunkArray(commands, Player.inGame ? 4 : 15)
                             var page = args[1] ? Math.max(1, Math.min(parseInt(args[1]), chunkedCommands.length)) : 1
         
                             await Player.Tell(Utils.formatString(Localization['COMMAND_LIST_PAGE'], {max: chunkedCommands.length, current: page}, '%')[0])

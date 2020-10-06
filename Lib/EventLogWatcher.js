@@ -1,6 +1,7 @@
 const EventParser       = require('./EventParser.js')
 const Tail              = require('tail').Tail
 const path              = require('path')
+const fs                = require('fs')
 const _EventDispatcher  = require('./EventDispatcher.js')
 const spawn             = require('child_process').spawn
 
