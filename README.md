@@ -173,7 +173,18 @@ To make this plugin work simply add this gsc code to any gsc script:
 ```gsc
 
 init() {
+  setDvar("bank_withdraw", "");
+  setDvar("bank_deposit", "");
   level thread playerBank();
+}
+
+getPlayerByGuid(guid) {
+    for (i = 0; i < level.players.size; i++) {
+        if (isAlive(level.players[i]) && int(level.players[i] getGuid()) == int(guid)) {
+            return level.players[i];
+        } 
+    }
+    return false;
 }
 
 playerBank() {
