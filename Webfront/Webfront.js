@@ -179,7 +179,6 @@ class Webfront {
             if (req.session.ClientId) {
                 Client = await db.getClient(req.session.ClientId)
             }
-            console.log(req.session)
             ejs.renderFile(path.join(__dirname, '/html/index.ejs'), {header: header, session: req.session, Client: Client}, (err, str) => {
                 res.end(str)
             });
