@@ -199,7 +199,7 @@ class Plugin {
                         return
                     }
     
-                    var Target = this.findClient(Client.ClientId)
+                    var Target = this.Server.findClient(Client.ClientId)
                     switch (true) {
                         case (!Target):
                             Player.Tell(Localization.COMMAND_CLIENT_NOT_INGAME)
@@ -223,7 +223,7 @@ class Plugin {
                         case (!Player.Session.Data.lastMsg):
                             Player.Tell(Localization['COMMAND_REPLY_NOT_CONV'])
                         return
-                        case (!this.findClient(Player.Session.Data.lastMsg.ClientId)):
+                        case (!this.Server.findClient(Player.Session.Data.lastMsg.ClientId)):
                             Player.Tell(Localization['COMMAND_CLIENT_NOT_INGAME'])
                         return
                     }
@@ -486,7 +486,7 @@ class Plugin {
                                 return
                         }
     
-                        var Target = this.findClient(Client.ClientId)
+                        var Target = this.Server.findClient(Client.ClientId)
                         if (Target) {
                             Target.PermissionLevel = Permission.Level
                             Target.Tell(`Your role has been set to [ ^5${Permission.Name}^7 ]`)
@@ -534,7 +534,7 @@ class Plugin {
                         return
                     }
     
-                    var Target = this.findClient(Client.ClientId)
+                    var Target = this.Server.findClient(Client.ClientId)
                     Target ? ( Player.Tell(`^5${Target.Name}^7 was kicked`), Target.Kick(`${args.slice(2).join(' ')}`, Player)) : Player.Tell(Localization.COMMAND_CLIENT_NOT_INGAME)
                 }
             },
@@ -603,7 +603,7 @@ class Plugin {
         
                     var Reason = args.slice(3).join(' ')
                     var Duration = parseInt(parts[0] * timeVars[parts[1]])
-                    var Target = this.findClient(Client.ClientId)
+                    var Target = this.Server.findClient(Client.ClientId)
                     if (Target) {
                         Target.Tempban(Reason, Player, Duration)
                         Player.Tell(`Banned ^5${Client.Name}^7 for ^5${Duration}^7 seconds for ^5${Reason}^7`)
@@ -641,7 +641,7 @@ class Plugin {
         
                     var Reason = args.slice(2).join(' ')
         
-                    var Target = this.findClient(Client.ClientId)
+                    var Target = this.Server.findClient(Client.ClientId)
                     if (Target) {
                         Target.Ban(Reason, Player)
                         Player.Tell(`Banned ${Target.Name} permanently for ${Reason}`)
