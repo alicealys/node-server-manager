@@ -53,10 +53,10 @@ class Commands {
             return
             case (Command.inGame && !Player.inGame):
                 Player.Tell(Localization['COMMAND_ENV_ERROR'])
-            return
+            return 1
             case (Player.PermissionLevel < Command.PermissionLevel):
                 Player.Tell(Localization['COMMAND_FORBIDDEN'])
-            return
+            return 1
         }
 
         var Params = {}

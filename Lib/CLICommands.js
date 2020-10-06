@@ -26,12 +26,16 @@ class CLICommands {
     COD2BashColor(string) {
         return string.replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), `\x1b[3$1m`)
     }
-    processCommand(line) {
+    async processCommand(line) {
         var args = line.split(/\s+/)
+
+        var executedMiddleware = await this.Manager.Commands.executeMiddleware(args[0], this.Player, args)
+        if (this.Manager.Commands.Execute(args[0], this.Player, args)) return
+
         var command = Utils.getCommand(this.Manager.commands, args[0])
         switch (true) {
           case (!this.Manager.commands[command]):
-            this.Player.Tell(Localization['COMMAND_NOT_FOUND'])
+            !executedMiddleware && this.Player.Tell(Localization['COMMAND_NOT_FOUND'])
             return
           case (this.Manager.commands[command].inGame || this.Manager.commands[command].inGame == undefined):
             this.Player.Tell(Localization['COMMAND_ENV_ERROR'])

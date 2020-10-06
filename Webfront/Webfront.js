@@ -146,7 +146,7 @@ class Webfront {
             resave: true,
             saveUninitialized: true,
             cookie: {
-                secure: true,
+                secure: this.Config.SSL,
                 maxAge: 7 * 24 * 60 * 60 * 1000,
                 sameSite: 'Strict'
             }
@@ -179,6 +179,7 @@ class Webfront {
             if (req.session.ClientId) {
                 Client = await db.getClient(req.session.ClientId)
             }
+            console.log(req.session)
             ejs.renderFile(path.join(__dirname, '/html/index.ejs'), {header: header, session: req.session, Client: Client}, (err, str) => {
                 res.end(str)
             });
@@ -471,6 +472,7 @@ class Webfront {
 
             var passwordResult  = await Auth.Password(req.body.ClientId, req.body.Token)
             var tokenResult     = await Auth.Token(req.body.ClientId, req.body.Token)
+
             var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
             switch (true) {
                 case (!passwordResult && !tokenResult):
@@ -489,7 +491,7 @@ class Webfront {
                 return
             }
 
-            await db.logActivity(ip, Localization.lookup['AUDIT_LOGIN_ATTEMPT'].replace('%CLIENTID%', req.body.ClientId), Localization.lookup['AUDIT_LOGIN_SUCCESS'])
+            db.logActivity(ip, Localization.lookup['AUDIT_LOGIN_ATTEMPT'].replace('%CLIENTID%', req.body.ClientId), Localization.lookup['AUDIT_LOGIN_SUCCESS'])
             req.session.ClientId = req.body.ClientId
             res.end(JSON.stringify({
                 success: true

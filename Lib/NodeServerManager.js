@@ -158,7 +158,7 @@ if (configured) {
     Hostname: configuration.WebfrontHostname, 
   }, sessionStore, Database))
 
-  var CLICommands = new _CLICommands(Managers[0])
+  var CLICommands = new _CLICommands(Managers[0], Managers)
 } else {
   var configMake = new ConfigMaker()
   configMake.init()
