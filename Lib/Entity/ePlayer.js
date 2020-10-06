@@ -45,7 +45,7 @@ class ePlayer extends EventEmitter {
       Ban (Reason, Origin) {
         this.Server.DB.addPenalty({
           TargetId: this.ClientId,
-          OriginId: Origin,
+          OriginId: Origin.ClientID,
           PenaltyType: 'PENALTY_PERMA_BAN',
           Duration: 0,
           Reason: Reason
@@ -56,7 +56,7 @@ class ePlayer extends EventEmitter {
       Tempban (Reason, Origin, Duration) {
         this.Server.DB.addPenalty({
           TargetId: this.ClientId,
-          OriginId: Origin,
+          OriginId: Origin.ClientId,
           PenaltyType: 'PENALTY_TEMP_BAN',
           Duration: Duration,
           Reason: Reason
@@ -72,7 +72,7 @@ class ePlayer extends EventEmitter {
       Kick (Message, Origin = NodeServerManager, Log = true, Basemsg = 'You have been kicked: ^5') {
         this.Server.DB.addPenalty({
           TargetId: this.ClientId,
-          OriginId: Origin,
+          OriginId: Origin.ClientId,
           PenaltyType: 'PENALTY_KICK',
           Duration: 0,
           Reason: Message

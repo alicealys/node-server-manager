@@ -207,17 +207,17 @@ class Plugin {
                     }
         
                     Target.Session.Data.lastMsg = Player
-                    Player.Session.Data.lastMsg = Target
+                    Player.inGame && (Player.Session.Data.lastMsg = Target)
     
                     Target.Tell(`^3[^5${Player.Name}^3 (@^5${Player.ClientId}^3) -> me]^7 ${args.slice(2).join(' ')}`)
                     Player.Tell(`^3[me -> ^5${Target.Name} ^3(@^5${Target.ClientId}^3)^3]^7 ${args.slice(2).join(' ')}`)
                 }
-                },
-                'reply': {
+            },
+            'reply': {
                 ArgumentLength: 1,
                 Permission: Permissions.Commands.COMMAND_USER_CMDS,
                 Alias: 'r',
-                inGame: false,
+                inGame: true,
                 callback: async(Player, args) => {
                     switch (true) {
                         case (!Player.Session.Data.lastMsg):
