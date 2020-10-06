@@ -1,12 +1,13 @@
 const path            = require('path')
 const readline        = require('readline')
+const Utils            = new (require(path.join(__dirname, '../Utils/Utils.js')))()
+const Localization     = require(path.join(__dirname, `../Configuration/Localization.json`)).lookup
+const Permissions      = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
     terminal: false
 })
-const Utils            = new (require(path.join(__dirname, '../Utils/Utils.js')))()
-const Localization      = require(path.join(__dirname, `../Configuration/Localization.json`)).lookup
 
 class CLICommands {
     constructor(Manager) {
@@ -14,6 +15,7 @@ class CLICommands {
             Name: 'Node Server Manager',
             ClientId: 1,
             inGame: false,
+            PermissionLevel: Permissions.Levels['ROLE_MANAGER'],
             Tell: (msg) => {
                 console.log(this.COD2BashColor(`^7${msg}^7`))
             }

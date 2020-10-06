@@ -11,16 +11,8 @@ class Plugin {
     this.Manager = Manager
     this.Managers = Managers
     this.Server.on('connect', this.onPlayerConnect.bind(this))
-    this.Server.on('map_loaded', this.onMapLoaded.bind(this))
     this.Server.on('line', this.onLine.bind(this))
-    //setInterval(this.updatePlayerBalance.bind(this), 1000)
     this.init()
-  }
-  async onMapLoaded() {
-      this.Server.Clients.forEach(Client => {
-          if (!Client) return
-          this.setBalanceDvar(Player)
-      })
   }
   async onLine(line) {
     line = line.trim().replace(new RegExp(/([0-9]+:[0-9]+)\s+/g), '')

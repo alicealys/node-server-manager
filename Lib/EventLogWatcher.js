@@ -15,6 +15,10 @@ class EventLogWatcher extends EventParser {
     init () {
         var filePath = path.resolve(this.logfile)
 
+        if (!fs.existsSync(filePath)) {
+            console.log(`Warning: log file "${filePath}" doesn't exist\nMake sure you selected the right file in Configuration/NSMConfiguration.json Servers -> LOGFILE\n`)
+        }
+
         if (process.platform == 'win32') {
             var tail = spawn(`powershell`, ['-command', 'get-content', '-wait', '-Tail 0', `"${filePath}"`])
             tail.stdout.on('data', (data) => {
