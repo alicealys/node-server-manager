@@ -14,12 +14,11 @@ class Plugin {
             switch (playerPenalties[i].PenaltyType) {
                 case 'PENALTY_PERMA_BAN':
                     playerPenalties[i].Active && Player.Kick(`Banned for: ^5${playerPenalties[i].Reason}`, NodeServerManager)
-                return
+                break
                 case 'PENALTY_TEMP_BAN':
                     var dateDiff = (new Date(playerPenalties[i].Date) - new Date()) / 1000
                     if (dateDiff + playerPenalties[i].Duration > 0) {
                         playerPenalties[i].Active && Player.Kick(`Banned for: ^5${playerPenalties[i].Reason}^7 ${Utils.secondsToDhms(dateDiff + playerPenalties[i].Duration)} left`, NodeServerManager)
-                        return
                     }
                 break
             }
