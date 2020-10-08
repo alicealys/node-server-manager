@@ -14,7 +14,7 @@ chmod +x StartNSM.sh
 
 # Windows Install
 Requirements
-* nodejs
+* nodejs (latest)
 * npm
 
 Install both from [here](https://nodejs.org/en/)
@@ -32,7 +32,7 @@ StartNSM.bat
 | Enable webfront https (true / false) | Whether to enable ssl on the webfront |
 | SSL Key file | Provide the path for the SSL key |
 | SSL Certificate file | Provide a path for the SSL certificate |
-| Webfront hostname | The url that will be used for the webfront ( for example in the discord webhook plugin) |
+| Webfront hostname | The url that will be used for the webfront (for example in the discord webhook plugin), must be like www.hostname.com |
 | Discord WebHook url | ( Optional ) specify the discord webhook url if you want to enable it |
 | MOTD | (Message of  the day) will show up at the bottom of every webfront page ( you can use xbbcode to format it and cod color codes (^1, ^2...) as well as placeholders |
 | Server IP | IP Address of the server |
@@ -52,7 +52,10 @@ Other optional parameters
 | autoMessages | Array containing all auto messages |
 | autoMessagesInterval | Interval of auto messages |
 | sessionDuration | Duration of each session (for in game login |
-| commandPrefix | Command prefix |
+| commandPrefixes | Array containing command prefixes |
+| broadcastCommandPrefixes | Array broadcast (tell everyone in the server) containing command prefixes |
+| links | Array containing links that will be shown using the links command, example { "Name": "Discord", "Url": "discord.gg/whatever" } |
+| socialMedia | Similar to links but it will display the url or whatever you set it to by typing the command prefix followed by the name of the link (ex !discord), format is [ "name", "url" ] |
 
 Text Placeholders
 | Name | Description |
@@ -167,24 +170,72 @@ to the server
 | PlutoT6Rcon | Rcon settings for T6 |
 | StatLogger | Logs player kills, death, playtime... |
 | ZombiesBank | (requires server-side gsc script) Adds a bank system to zombies (you can withdraw, desposit and even transfer money to other players) |
+| ZombiesStats | (requires server-side gsc script) Logs zombies stats and adds zstats command |
+| MoreCommands | name says it |
 
 # Zombies Bank
 To make this plugin work simply add this gsc code to any gsc script:
 ```gsc
 
 init() {
-  setDvar("bank_withdraw", "");
-  setDvar("bank_deposit", "");
-  level thread playerBank();
+   	level thread onPlayerConnect();
+   	setDvar("bank_withdraw", "");
+  	setDvar("bank_deposit", "");
+  	level thread playerBank();
+}
+
+onPlayerConnect()
+{
+	level endon( "end_game" );
+   	self endon( "disconnect" );
+	for (;;)
+	{
+		level waittill( "connected", player );
+		player thread endPlayerMoney2();
+		player thread endPlayerMoney(); // probably not necessary
+		player thread setPlayerMoney();
+
+	}
+}
+
+endPlayerMoney() {
+	self endon("disconnect");
+	for (;;) {
+		level waittill("end_game");
+		setDvar(self getEntityNumber() + "_money", 0);
+	}
+}
+
+endPlayerMoney2() {
+	self endon("disconnect");
+	for (;;) {
+		level waittill("_zombie_game_over");
+		setDvar(self getEntityNumber() + "_money", 0);
+	}
+}
+
+
+setPlayerMoney() {
+	level endon("end_game");
+	level endon("_zombie_game_over");
+	self endon("disconnect");
+	for (;;) {
+		if (!isAlive(self)) {
+			setDvar(self getEntityNumber() + "_money", 0);
+		} else {
+			setDvar(self getEntityNumber() + "_money", self.score);
+		}
+		wait 0.05;
+	}
 }
 
 getPlayerByGuid(guid) {
-    for (i = 0; i < level.players.size; i++) {
-        if (isAlive(level.players[i]) && int(level.players[i] getGuid()) == int(guid)) {
-            return level.players[i];
-        } 
-    }
-    return false;
+    	for (i = 0; i < level.players.size; i++) {
+        	if (isAlive(level.players[i]) && int(level.players[i] getGuid()) == int(guid)) {
+            	return level.players[i];
+        	} 
+    	}
+    	return false;
 }
 
 playerBank() {
