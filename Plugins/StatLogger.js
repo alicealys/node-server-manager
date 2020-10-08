@@ -17,6 +17,9 @@ class Plugin {
       this.Buffer.Stats[Player.ClientId] = this.Buffer.Stats[Player.ClientId] ? this.Buffer.Stats[Player.ClientId] : await this.Server.DB.getPlayerStatsTotal(Player.ClientId)
       this.Buffer.Stats[Attacker.ClientId] = this.Buffer.Stats[Attacker.ClientId] ? this.Buffer.Stats[Attacker.ClientId] : await this.Server.DB.getPlayerStatsTotal(Attacker.ClientId)
 
+      !this.Buffer.previousStats[Player.ClientId] && (this.Buffer.previousStats[Player.ClientId] = {}, Object.assign(this.Buffer.previousStats[Player.ClientId], this.Buffer.Stats[Player.ClientId]))
+      !this.Buffer.previousStats[Attacker.ClientId] && (this.Buffer.previousStats[Attacker.ClientId] = {}, Object.assign(this.Buffer.previousStats[Attacker.ClientId], this.Buffer.Stats[Attacker.ClientId]))
+
       this.Buffer.Stats[Attacker.ClientId].Kills++
       this.Buffer.Stats[Player.ClientId].Deaths++
 
@@ -41,6 +44,7 @@ class Plugin {
   }
   async updateStats() {
     Object.entries(this.Buffer.Stats).forEach(async Stats => {
+
       if (!this.Buffer.previousStats[Stats[0]] || (Stats[1].Kills <= this.Buffer.previousStats[Stats[0]].Kills && Stats[1].Deaths <= this.Buffer.previousStats[Stats[0]].Deaths)) return
       
       this.Server.DB.editStats(Stats[0], Stats[1])
