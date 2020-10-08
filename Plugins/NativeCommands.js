@@ -220,7 +220,7 @@ class Plugin {
                 inGame: true,
                 callback: async(Player, args) => {
                     switch (true) {
-                        case (!Player.Session.Data.lastMsg):
+                        case (!Player.Session || !Player.Session.Data.lastMsg):
                             Player.Tell(Localization['COMMAND_REPLY_NOT_CONV'])
                         return
                         case (!this.Server.findClient(Player.Session.Data.lastMsg.ClientId)):
@@ -586,6 +586,11 @@ class Plugin {
                     }
         
                     var Client = await this.Server.getClient(args[1])
+
+                    if (!args[2].match(/([0-9]+)([A-Za-z]+)/)) {
+                        Player.Tell(Localization.COMMAND_PARSE_TIME_ERROR)
+                        return
+                    }
         
                     var parts = Array.from(args[2].match(/([0-9]+)([A-Za-z]+)/)).slice(1)
         

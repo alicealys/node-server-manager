@@ -45,7 +45,7 @@ class ePlayer extends EventEmitter {
       Ban (Reason, Origin) {
         this.Server.DB.addPenalty({
           TargetId: this.ClientId,
-          OriginId: Origin.ClientID,
+          OriginId: Origin.ClientId,
           PenaltyType: 'PENALTY_PERMA_BAN',
           Duration: 0,
           Reason: Reason

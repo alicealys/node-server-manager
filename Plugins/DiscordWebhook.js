@@ -1,10 +1,10 @@
 const path              = require('path')
 const config            = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`))
 const { Webhook, MessageBuilder }       = require('discord-webhook-node')
-var hook                = new Webhook({ url: config.discordHookUrl, throwErrors: false, retryOnLimit: false,})
-const discord           = require('discord.js')
+const hook              = new Webhook({ url: config.discordHookUrl, throwErrors: false, retryOnLimit: false,})
 const fetch             = require('node-fetch')
 const Utils             = new (require(path.join(__dirname, '../Utils/Utils.js')))()
+const https             = require('https')
 
 hook.setUsername('NSM Bot')
 
@@ -12,18 +12,37 @@ class Plugin {
     constructor(Server, Manager) {
         this.Server = Server
         this.Manager = Manager
+        this.Url = null
         this.Server.on('connect', this.onPlayerConnect.bind(this))
         this.Server.on('disconnect', this.onPlayerDisconnect.bind(this))
         this.Server.on('penalty', this.onPlayerPenalty.bind(this))
     }
     async onPlayerConnect (Player) {
-        this.sendHook(`:inbox_tray: ${Player.Name}`, ' ' ,`${config.webfrontHostname}/id/${Player.ClientId}`)
+        this.sendHook(`:inbox_tray: ${Player.Name}`, ' ' ,`${await this.getUrl()}/id/${Player.ClientId}`)
         Player.on('message', async (Message) => {
-            this.sendHook(`:envelope_with_arrow: ${Player.Name}`, Message, `${config.webfrontHostname}/id/${Player.ClientId}`)
+            this.sendHook(`:envelope_with_arrow: ${Player.Name}`, Message, `${await this.getUrl()}/id/${Player.ClientId}`)
         })
     }
     async onPlayerDisconnect (Player) {
-        this.sendHook(`:outbox_tray: ${Player.Name}`, ' ' ,`${config.webfrontHostname}/id/${Player.ClientId}`)
+        this.sendHook(`:outbox_tray: ${Player.Name}`, ' ' ,`${await this.getUrl()}/id/${Player.ClientId}`)
+    }
+    async getUrl() {
+        if (this.Url) return this.Url
+
+        try {
+            var result = (await fetch(`${config.WebfrontSSL ? 'https://' : 'http://'}${config.webfrontHostname}/api/verify`))
+            var hostname = result ? config.webfrontHostname : (await fetch('https://api.ipify.org/?format=json')).json().ip
+            this.Url = `${config.WebfrontSSL ? 'https://' : 'http://'}${hostname}`
+    
+            this.Url = this.Url
+        }
+        catch (e) {
+            var hostname = (await (await fetch('https://api.ipify.org/?format=json')).json()).ip
+            this.Url = `${config.WebfrontSSL ? 'https://' : 'http://'}${hostname}`
+        }
+
+        return this.Url
+
     }
     async getFlag (IPAddress) {
         return (await (await fetch(`https://extreme-ip-lookup.com/json/${IPAddress.split(':')[0]}`)).json()).countryCode.toLocaleLowerCase()
@@ -34,7 +53,7 @@ class Plugin {
             'PENALTY_PERMA_BAN': 'Perma ban',
             'PENALTY_KICK': 'Kick'
         }
-        this.sendHookPenalty(`:hammer: ${Target.Name}`, ' ', `${config.webfrontHostname}/id/${Target.ClientId}`, translation[Type], Reason, Origin, Duration)
+        this.sendHookPenalty(`:hammer: ${Target.Name}`, ' ', `${await this.getUrl()}/id/${Target.ClientId}`, translation[Type], Reason, Origin, Duration)
     }
     async sendHookPenalty(Title, Description, Url, Type, Reason, Origin, Duration) {
         var messageEmbed = new MessageBuilder()

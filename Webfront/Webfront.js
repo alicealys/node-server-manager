@@ -29,6 +29,13 @@ var lookup = {
     }
 }
 
+const jsonReturns = {
+    success: JSON.stringify({
+        success: true,
+        error: ''
+    })
+}
+
 function getRoleFrom (Value, Type) {
     switch (Type) {
       case 0:
@@ -251,6 +258,10 @@ class Webfront {
                     });
                 }
             })
+        })
+
+        this.app.get('/api/verify', async (req, res, next) => {
+            res.end(jsonReturns.success)
         })
         
         this.app.get('/api/audit', async (req, res, next) => {

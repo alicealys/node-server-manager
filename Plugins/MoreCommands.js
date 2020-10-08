@@ -6,7 +6,6 @@ const config                = require(path.join(__dirname, `../Configuration/NSM
 const Utils                 = new (require(path.join(__dirname, '../Utils/Utils.js')))()
 const mathjs                = require('mathjs')
 const wait                  = require('delay')
-const { waitForDebugger } = require('inspector')
 
 class Plugin {
     constructor(Server, Manager, Managers) {

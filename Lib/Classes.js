@@ -3,7 +3,7 @@ const Localization      = require(path.join(__dirname, `../Configuration/Localiz
 const Utils             = new (require(path.join(__dirname, '../Utils/Utils.js')))()
 const Permissions       = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
 
-var NodeServerManager = {
+const NodeServerManager = {
     ClientId: 1,
     Name: 'Node Server Manager',
     Guid: 'node'
