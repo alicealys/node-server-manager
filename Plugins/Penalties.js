@@ -6,19 +6,20 @@ class Plugin {
     constructor(Server, Manager) {
         this.Server = Server
         this.Manager = Manager
-        this.Server.on('connect', this.onPlayerConnect.bind(this))
+        this.Server.on('any_event', this.onEvent.bind(this))
     }
-    async onPlayerConnect (Player) {
-        var playerPenalties = await this.Server.DB.getAllPenalties(Player.ClientId)
+    async onEvent (Event) {
+        var playerPenalties = await this.Server.DB.getAllPenalties(Event.Origin.ClientId)
+
         for (var i = 0; i < playerPenalties.length; i++) {
             switch (playerPenalties[i].PenaltyType) {
                 case 'PENALTY_PERMA_BAN':
-                    playerPenalties[i].Active && Player.Kick(`Banned for: ^5${playerPenalties[i].Reason}`, NodeServerManager)
+                    playerPenalties[i].Active && Event.Origin.Kick(`Banned for: ^5${playerPenalties[i].Reason}`, NodeServerManager)
                 break
                 case 'PENALTY_TEMP_BAN':
                     var dateDiff = (new Date(playerPenalties[i].Date) - new Date()) / 1000
                     if (dateDiff + playerPenalties[i].Duration > 0) {
-                        playerPenalties[i].Active && Player.Kick(`Banned for: ^5${playerPenalties[i].Reason}^7 ${Utils.secondsToDhms(dateDiff + playerPenalties[i].Duration)} left`, NodeServerManager)
+                        playerPenalties[i].Active && Event.Origin.Kick(`Banned for: ^5${playerPenalties[i].Reason}^7 ${Utils.secondsToDhms(dateDiff + playerPenalties[i].Duration)} left`, NodeServerManager)
                     }
                 break
             }

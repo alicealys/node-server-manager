@@ -132,6 +132,7 @@ class _Server extends EventEmitter {
             this.Clients[c.num] = new ePlayer(c.guid, c.name, c.num, c.address, this)
             await this.Clients[c.num].build()
             this.emit('connect', this.Clients[c.num])
+            this.emit('any_event', {type: 'join', Origin: this.Clients[c.num]})
         })
     }
     globalBroadcast(Message) {
