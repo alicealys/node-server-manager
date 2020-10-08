@@ -237,21 +237,26 @@ class Plugin {
                 Permission: Permissions.Commands.COMMAND_USER_CMDS,
                 inGame: false,
                 callback: async (Player, args = null, delay) => {
-                    var Managers = this.Managers.concat()
-    
-                    for (var j = 0; j < Managers.length; j++) {
-                        var Manager = Managers[j]
-                        var Clients = Utils.chunkArray(Manager.Server.Clients.filter((value) => {return value}), 4)
-    
-                        for (var i = 0; i < Clients.length; i++) {
-                            var line = []
-    
-                            for (var o = 0; o < Clients[i].length; o++) {
-                                line.push(`^7[^6${Utils.getRoleFrom(Clients[i][o].PermissionLevel, 1).Name}^7 (@^5${Clients[i][o].ClientId}^7)] ^5${Clients[i][o].Name}^7`)
-                            }
-                            Player.Tell(line.join(' '))
-                            delay && await wait(500)
-                        }
+                    var allClients = Utils.chunkArray(this.getAllClients(), Player.inGame ? 4 : 15)
+
+                    var page = args[1] ? Math.max(1, Math.min(parseInt(args[1]), allClients.length)) : 1
+
+                    if (!allClients.length) {
+                        Player.Tell(Localization['NO_PLAYERS_ONLINE'])
+                        return
+                    }
+
+                    await Player.Tell(Utils.formatString(Localization['COMMAND_LIST_PAGE'], {max: allClients.length, current: page}, '%')[0])
+
+                    for (var i = 0; i < allClients[page - 1].length; i++) {
+                        Player.Tell(Utils.formatString(Localization['COMMAND_PLAYERS_FORMAT'], 
+                        {
+                            Name: allClients[page - 1][i].Name,
+                            ClientId: allClients[page - 1][i].ClientId,
+                            Role: Utils.getRoleFrom(allClients[page - 1][i].PermissionLevel, 1).Name,
+                            Level: allClients[page - 1][i].PermissionLevel,
+                            Hostname: allClients[page - 1][i].Server.HostnameRaw
+                        }, '%')[0])
                     }
                 }
             },
@@ -686,6 +691,14 @@ class Plugin {
                 }
         }
         this.Server.on('event', this.onEventAsync.bind(this));
+    }
+    getAllClients() {
+        var Clients = []
+        this.Managers.forEach(Manager => {
+            var clients = Manager.Server.Clients.filter(x => x)
+            Clients = Clients.concat(clients)
+        })
+        return Clients
     }
     async playerCommand (Player, args, prefix) {
         if (!Player) return
