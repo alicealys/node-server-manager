@@ -72,7 +72,7 @@ class ePlayer extends EventEmitter {
                                             .replace('%MESSAGE%', text))
       }
       Kick (Message, Origin = NodeServerManager, Log = true, Basemsg = 'You have been kicked: ^5') {
-        awaitthis.Server.DB.addPenalty({
+        this.Server.DB.addPenalty({
           TargetId: this.ClientId,
           OriginId: Origin.ClientId,
           PenaltyType: 'PENALTY_KICK',
