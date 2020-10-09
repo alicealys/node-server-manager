@@ -33,7 +33,7 @@ class Plugin {
         var placeholders = {
             'TOTALCLIENTS' : {
                 async get() {
-                    return (await placeholders.Managers[0].Server.DB.getAllClients()).length
+                    return (await placeholders.Managers[0].Server.DB.getAllClients())
                 }
             },
             'PLAYERCOUNT': {

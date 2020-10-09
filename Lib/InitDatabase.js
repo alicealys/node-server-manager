@@ -147,13 +147,13 @@ class Database {
         
         return Owner.length > 0 ? Owner[0].dataValues : false
     }
-    async getClientByName(Name) {
+    async getClientByName(Name, Limit = 50) {
         var _Clients = await Models.NSMConnections.findAll({
+            group: ['ClientId'],
             order: [
                 ['Date', 'desc']
             ],
-            group: ['ClientId'],
-            limit: 50,
+            limit: Limit,
             where: {
                 Name: {
                     [Sequelize.Op.like]: `%${Name.toLocaleLowerCase()}%`
@@ -169,6 +169,25 @@ class Database {
             Clients.push(Client)
         }
         return Clients
+    }
+
+    async clearReports() {
+        await Models.NSMReports.update(
+            { Active: false },
+            { where: {  } }, {transaction: this.transaction}
+        )
+    }
+
+    async getActiveReports() {
+        return await Models.NSMReports.findAll({
+            where: {
+                Active: true,
+            },
+        }, {transaction: this.transaction})
+    }
+
+    async addReport(OriginId, TargetId, Reason) {
+        await Models.NSMReports.build({OriginId, TargetId, Reason}, {transaction: this.transaction}).save()
     }
 
     async logActivity(Origin, Type, Description) {
@@ -394,14 +413,15 @@ class Database {
     }
 
     async getGlobalStats() {
-        var totalKills = (await Models.NSMKills.count({}, {transaction: this.transaction}))
+        var totalKills = (await Models.NSMKills.findAll({
+            attributes: [[Sequelize.fn('max', Sequelize.literal('_rowid_')), 'totalKills']],
+        }))[0].dataValues.totalKills
 
         var totalPlayedTime = (await Models.NSMPlayerStats.findAll({
             attributes: [[Sequelize.fn('sum', Sequelize.col('PlayedTime')), 'totalPlayedTime']],
         }))[0].dataValues.totalPlayedTime
 
         return {totalKills, totalPlayedTime}
-        //return Stats.length > 0 ? Stats[0].dataValues : false
     }
 
     async getPlayerStats(ClientId) {
@@ -485,7 +505,9 @@ class Database {
     }
 
     async getAllClients() {
-        return await Models.NSMClients.findAll({}, {transaction: this.transaction})
+        return (await Models.NSMClients.findAll({
+            attributes: [[Sequelize.fn('max', Sequelize.literal('_rowid_')), 'totalClients']],
+        }))[0].dataValues.totalClients
     }
 
     async getAllConnections(ClientId) {
@@ -651,6 +673,9 @@ class Database {
                 where: {
                     ClientId
                 },
+                order: [
+                    ['Date', 'desc']
+                ],
                 attributes: ['Name']
             }))
             if (Name.length > 0) {

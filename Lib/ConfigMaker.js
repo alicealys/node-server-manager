@@ -63,6 +63,7 @@ class ConfigMaker {
                     'broadcastCommandPrefixes': ['@'],
                     'links': [],
                     'socialMedia': [],
+                    'rules': [],
                     "autoMessagesInterval": 60,
                     "autoMessages": [
                         "A total of ^5{TOTALCLIENTS}^7 players have played on this server",

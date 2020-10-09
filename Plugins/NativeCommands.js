@@ -705,8 +705,8 @@ class Plugin {
 
         var isBroadcast = config.broadcastCommandPrefixes.includes(prefix)
         
-        var executedMiddleware = await this.Manager.Commands.executeMiddleware(args[0], Player, args, { Broadcast: isBroadcast })
-        if (this.Manager.Commands.Execute(args[0], Player, args, { Broadcast: isBroadcast } )) return
+        var executedMiddleware = await this.Manager.Commands.executeMiddleware(args[0], Player, args, { broadcast: isBroadcast })
+        if (this.Manager.Commands.Execute(args[0], Player, args, { broadcast: isBroadcast } )) return
     
         var Client = await this.Server.DB.getClient(Player.ClientId)
         var command = Utils.getCommand(this.Manager.commands, args[0])

@@ -1,7 +1,8 @@
 const path              = require('path')
 const fetch             = require('node-fetch')
-const Utils            = new (require(path.join(__dirname, '../Utils/Utils.js')))()
-const Localization          = require(path.join(__dirname, `../Configuration/Localization.json`)).lookup
+const Utils             = new (require(path.join(__dirname, '../Utils/Utils.js')))()
+const Localization      = require(path.join(__dirname, `../Configuration/Localization.json`)).lookup
+const Permissions       = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
 
 class Plugin {
     constructor(Server, Manager, Managers) {
@@ -22,6 +23,9 @@ class Plugin {
         })
 
         this.Server.on('connect', async (Player) => {
+            if (Player.PermissionLevel >= Permissions.Levels['ROLE_MODERATOR']) {
+                Player.Tell(Utils.formatString(Localization['AUTO_RECENT_REPORTS'], { count: (await this.Server.DB.getActiveReports()).length }, '%')[0])
+            }
             if (process.env.NODE_ENV && process.env.NODE_ENV.toLocaleLowerCase() == 'dev') return
             var connections = await this.Server.DB.getAllConnections(Player.ClientId)
             Player.Tell(Localization['WELCOME_PLAYER']

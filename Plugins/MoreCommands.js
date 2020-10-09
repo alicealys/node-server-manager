@@ -49,6 +49,69 @@ class Plugin {
 
         (() => {
             let command = new Command()
+            .setName('reports')
+            .setAlias('reps')
+            .addParam(0, 'clear', {optional: true})
+            .setPermission('ROLE_MODERATOR')
+            .addCallback( async (Player, Params, Args, Options, Funcs) => {
+                if (Params.clear) {
+                    this.Server.DB.clearReports()
+                    Player.Tell(Localization['COMMAND_REPORTS_CLEAR'])
+                    return
+                }
+
+                var Reports = Utils.chunkArray(await this.Server.DB.getActiveReports(), Player.inGame ? 4 : 15)
+
+                if (!Reports.length) {
+                    Player.Tell(Localization['COMMAND_NO_RESULT'])
+                    return
+                }
+
+                var page = Params.page ? Math.max(1, Math.min(parseInt(Params.page), Reports.length)) : 1
+
+                await Player.Tell(Utils.formatString(Localization['COMMAND_LIST_PAGE'], {max: Reports.length, current: page}, '%')[0])
+                Player.inGame && await wait(300)
+
+                for (var i = 0; i < Reports[page - 1].length; i++) {
+                    var TargetName = await this.Server.DB.getName(Reports[page - 1][i].TargetId)
+                    var OriginName = await this.Server.DB.getName(Reports[page - 1][i].OriginId)
+
+                    Player.Tell(Utils.formatString(Localization['COMMAND_REPORTS_TELL'], {Origin: OriginName, Target: TargetName, Reason: Reports[page - 1][i].Reason}, '%')[0])
+                }
+
+            })
+            this.Manager.Commands.Add(command)
+        })(this);
+
+        (() => {
+            let command = new Command()
+            .setName('report')
+            .setAlias('rep')
+            .addParam(0, 'target', {optional: false})
+            .addParam(1, 'reason', {optional: false, join: true})
+            .addException((Player) => {
+                return !Player.Data.lastReport || (new Date() - Player.Data.lastReport) / 1000 > 300
+            }, Utils.formatString(Localization['COMMAND_REPORT_COOLDOWN'], {time: 5}, '%')[0])
+            .addCallback( async (Player, Params, Args, Options, Funcs) => {
+                var Client = await this.Server.getClient(Params.target)
+
+                if (!Client) {
+                    Player.Tell(Localization['COMMAND_CLIENT_NOT_FOUND'])
+                    return
+                }
+
+                this.Server.DB.addReport(Player.ClientId, Client.ClientId, Params.reason)
+
+                Player.Data.lastReport = new Date()
+                Player.Tell(Localization['COMMAND_REPORT_SUCCESS'])
+
+                this.Server.tellStaffGlobal(Utils.formatString(Localization['COMMAND_REPORT_TELL'], {Origin: Player.Name, Hostname: Player.Server.HostnameRaw,Target: Client.Name, Reason: Params.reason}, '%')[0])
+            })
+            this.Manager.Commands.Add(command)
+        })(this);
+
+        (() => {
+            let command = new Command()
             .setName('staff')
             .addCallback(async (Player, Params, Args, Options, Funcs) => {
                 var staff = []
@@ -108,6 +171,7 @@ class Plugin {
             .setPermission('ROLE_OWNER')
             .addCallback(async (Player, Params, Args, Options, Funcs) => {
                 try {
+                    console.log(Params.js)
                     eval(Params.js)
                 }
                 catch (e) {

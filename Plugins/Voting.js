@@ -1,12 +1,10 @@
-const moment            = require('moment')
 const path              = require('path')
-const crypto            = require('crypto')
 const wait              = require('delay')
 const Permissions       = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
 const config            = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`))
 const Localization      = require(path.join(__dirname, `../Configuration/Localization.json`)).lookup
 const Utils             = new (require(path.join(__dirname, '../Utils/Utils.js')))()
-
+const { Command, NodeServerManager }       = require(path.join(__dirname, `../Lib/Classes.js`))
 class Plugin {
     constructor(Server, Manager) {
         this.Server = Server
@@ -65,7 +63,7 @@ class Plugin {
             Kick: {
                 Name: 'VOTE_KICK',
                 Callback: async (Vote) => {
-                    Vote.Target.Kick(Localization['COMMAND_VOTEKICK_KICK_MESSAGE'], 1)
+                    Vote.Target.Kick(Localization['COMMAND_VOTEKICK_KICK_MESSAGE'], NodeServerManager)
                 }
             },
             Map: {

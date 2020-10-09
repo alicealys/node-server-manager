@@ -7,7 +7,7 @@ const Maps            = require(path.join(__dirname, `../../Configuration/Locali
 const Permissions     = require(path.join(__dirname, `../../Configuration/NSMConfiguration.json`)).Permissions
 
 class _Server extends EventEmitter {
-    constructor(IP, PORT, RCON, DATABASE, sessionStore, Managers, Id, Manager) {
+    constructor(IP, PORT, RCON, DATABASE, sessionStore, clientData, Managers, Id, Manager) {
         super()
         this.Clients = new Array(18).fill(null)
         this.Rcon = RCON
@@ -19,6 +19,7 @@ class _Server extends EventEmitter {
         this.DB = DATABASE
         this.MaxClients = 18
         this.Mapname = null
+        this.clientData = clientData
         this.Gametype = 'UNKNOWN'
         this.HostnameRaw = `[${this.IP}:${this.PORT}]`
         this.uptime = 0
@@ -74,16 +75,40 @@ class _Server extends EventEmitter {
         }
         catch (e) {}
     }
+    tellStaffGlobal(Message) {
+        this.Managers.forEach(Manager => {
+            Manager.Server.tellStaff(Message)
+        })
+    }
+    tellStaff(Message) {
+        this.Clients.filter(x => x && x.PermissionLevel >= Permissions.Levels['ROLE_MODERATOR'] && x.Tell(Message))
+    }
     async getClient(name) {
         var clientIdRegex = /\@([0-9]+)/g
-        var Clients = name.match(clientIdRegex) ? [await this.DB.getClient(clientIdRegex.exec(name)[1])] : ((name.length >= 3 && !name.match('%')) ? (await this.DB.getClientByName(name)) : false)
+
+        if (!name.match(/\@([0-9]+)/g) && this.findClientByName(name)) {
+            return this.findClientByName(name)
+        }
+        
+        var Clients = name.match(clientIdRegex) 
+            ? [await this.DB.getClient(clientIdRegex.exec(name)[1])] 
+            : ((name.length >= 3 && !name.match('%')) ? (await this.DB.getClientByName(name, 20)) : false)
+        
         var Client = Clients ? Clients.reverse()[0] : false
         return Client 
     }
     getPlayerByName(Name) {
         var Client = this.Clients.find(x => x && x.Name.startsWith(Name))
         return Client
-    } 
+    }
+    findClientByName(Name) {
+        var Client = null
+        this.Managers.forEach(Manager => {
+            if (Client) return
+            Client = Manager.Server.Clients.find(x => x && x.Name.toLocaleLowerCase().startsWith(Name.toLocaleLowerCase()))
+        })
+        return Client
+    }
     findClient(ClientId) {
         var Client = null
         this.Managers.forEach(Manager => {

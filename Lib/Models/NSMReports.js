@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const NSMConnections = sequelize.define('NSMConnections', 
+    const NSMReports = sequelize.define('NSMReports', 
     {
         Id: {
             type: DataTypes.INTEGER,
@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             primaryKey: true
         },
-        ClientId: {
+        OriginId: {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
@@ -15,17 +15,22 @@ module.exports = (sequelize, DataTypes) => {
                 key: 'ClientId'
             }
         },
-        Name: {
+        TargetId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'NSMClients',
+                key: 'ClientId'
+            }
+        },
+        Reason: {
             type: DataTypes.TEXT,
             allowNull: false,
         },
-        Guid: {
-            type: DataTypes.TEXT,
+        Active: {
+            type: DataTypes.BOOLEAN,
             allowNull: false,
-        },
-        IPAddress: {
-            type: DataTypes.TEXT,
-            allowNull: true,
+            defaultValue: true
         },
         Date: {
             type: DataTypes.DATE,
@@ -35,7 +40,6 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         timestamps: false
     })
-    
-    NSMConnections.sync()
-    return NSMConnections
+    NSMReports.sync()
+    return NSMReports
 }

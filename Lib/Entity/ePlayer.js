@@ -1,6 +1,6 @@
 const EventEmitter          = require('events')
 const path                  = require('path')
-const { NodeServerManager } = require(path.join(__dirname, '../Classes.js'))
+const { Commands, NodeServerManager } = require(path.join(__dirname, '../Classes.js'))
 
 function secondsToDhms (seconds) {
   seconds = Number(seconds);
@@ -39,6 +39,7 @@ class ePlayer extends EventEmitter {
         this.PermissionLevel = await this.Server.DB.getClientLevel(this.ClientId)
         this.Server.DB.logConnection(this)
 
+        this.Data = this.Server.clientData.getData(this.ClientId)
         this.IPAddress.split(':')[0] && (this.Session = this.Server.sessionStore.createSession(this.IPAddress.split(':')[0]))
         this.Session && (this.Session.Data.Authorized = this.Session.Data.Authorized != undefined ? this.Session.Data.Authorized : false)
       }
@@ -65,12 +66,13 @@ class ePlayer extends EventEmitter {
         this.Kick(`You have been banned for: ^5${Reason} ${secondsToDhms(Duration)}^7 left`, Origin, false, '')
       }
       Tell (text) {
+        if (!text) return
         this.Server.Rcon.executeCommandAsync(this.Server.Rcon.commandPrefixes.Rcon.Tell
                                             .replace('%CLIENT%', this.Clientslot)
                                             .replace('%MESSAGE%', text))
       }
       Kick (Message, Origin = NodeServerManager, Log = true, Basemsg = 'You have been kicked: ^5') {
-        this.Server.DB.addPenalty({
+        awaitthis.Server.DB.addPenalty({
           TargetId: this.ClientId,
           OriginId: Origin.ClientId,
           PenaltyType: 'PENALTY_KICK',
