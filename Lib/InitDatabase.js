@@ -492,6 +492,11 @@ class Database {
         return Stats
     }
 
+    async getClientByGuid(Guid) {
+        var result = await this.getClientId(Guid)
+        return result ? await this.getClient(result) : false
+    }
+
     async getClientId(Guid) {
 
         var result = await Models.NSMClients.findAll({
