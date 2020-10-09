@@ -47,7 +47,19 @@ function addSeparator(Date) {
     document.getElementById('message-log').appendChild(msg)
 }
 
+function escapeHtml(text) {
+    var map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+  }
+
 function logMessage(Message, Name, ClientId, Hostname, Date, Append) {
+    Message = escapeHtml(Message)
     var msg = createElementFromHTML(
         `<div class='wf-message'>
             <div class='wf-message-sender'>

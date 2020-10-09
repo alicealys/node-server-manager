@@ -70,6 +70,17 @@ function parseHTML(html) {
   return t.content.cloneNode(true);
 }
 
+function escapeHtml(text) {
+  var map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
 async function notifyMe(ServerId, Client, Message) {
   const notifications = document.getElementById("notifications-cont")
   var n = document.createDocumentFragment()
@@ -218,6 +229,7 @@ function makeRequest (method, url, data, contentType = null) {
 }
 
 var logMessage = (msg, append, date = new Date()) => {
+  msg.Message = escapeHtml(msg.Message)
   var penalties = {
     'PENALTY_TEMP_BAN' : 'Temp banned',
     'PENALTY_PERMA_BAN' : 'Perma banned',
