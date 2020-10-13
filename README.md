@@ -51,11 +51,11 @@ Other optional parameters
 | Roles | Contains the role base names and their display names |
 | autoMessages | Array containing all auto messages |
 | autoMessagesInterval | Interval of auto messages |
-| sessionDuration | Duration of each session (for in game login |
+| sessionDuration | Duration of each session (for in game login and other stuff) |
 | commandPrefixes | Array containing command prefixes |
-| broadcastCommandPrefixes | Array broadcast (tell everyone in the server) containing command prefixes |
-| links | Array containing links that will be shown using the links command, example { "Name": "Discord", "Url": "discord.gg/whatever" } |
-| socialMedia | Similar to links but it will display the url or whatever you set it to by typing the command prefix followed by the name of the link (ex !discord), format is [ "name", "url" ] |
+| broadcastCommandPrefixes | Array containing broadcast (tell everyone in the server) command prefixes |
+| links | Array containing links that will be shown using the links command, example `{ "Name": "Discord", "Url": "discord.gg/whatever" }` |
+| socialMedia | Similar to links but it will display the url or whatever you set it to by typing the command prefix followed by the name of the link (ex !discord), format is `[ "name", "url" ]` |
 
 Text Placeholders
 | Name | Description |
