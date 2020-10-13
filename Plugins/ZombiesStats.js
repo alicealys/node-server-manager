@@ -129,9 +129,27 @@ class Plugin {
         var Stats = (await this.NSMZStats.findAll({where: ClientId})).map(x => x = x.dataValues)
         return Stats.length > 0 ? Stats[0] : false
     }
+    async addClientMeta() {
+        this.Server.DB.clientProfileMeta.push(async (ClientId) => {
+            var stats = await this.getZStats(ClientId)
+            if (!stats) return {}
+            return {
+                name: 'Zombies Stats',
+                data: {
+                    'Kills': stats.Kills, 
+                    'Downs': stats.Kills, 
+                    'Revives': stats.Kills, 
+                    'Highest Round': stats.HighestRound, 
+                    'Headshots': stats.Headshots, 
+                    'Score': stats.Score, 
+                }
+            }
+        })
+    }
     async zStats() {
         this.Manager.on('webfront-ready', (Webfront) => {
             Webfront.addHeaderHtml(`<a href='/zstats' class='wf-header-link'><i class="fas fa-skull"></i></a>`, 3)
+            this.addClientMeta()
         })
         await this.createTable()
         this.Manager.commands['zstats'] = {

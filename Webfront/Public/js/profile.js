@@ -85,7 +85,7 @@ async function notifyMe(ServerId, Client, Message) {
   const notifications = document.getElementById("notifications-cont")
   var n = document.createDocumentFragment()
   var status = ServerId ? JSON.parse(await makeRequest('GET', `/api/players?ServerId=${ServerId}`)) : null
-  Message = escapeHtml(Message);
+  Message = escapeHtml(Message)
   var notif = createElementFromHTML(`
   <div class='notification-notif notifFadeIn notifFadeOut'>
       <div class='notification-icon'></div>

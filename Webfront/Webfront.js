@@ -935,13 +935,11 @@ class Webfront {
                 return
             }
 
+            Client.clientMeta = await this.db.getClientProfileMeta(Client.ClientId, Client.clientMeta)  
             Client.Role = getRoleFrom(Client.PermissionLevel, 1).Name
-            Client.Stats = await db.getPlayerStatsTotal(Client.ClientId)
-            Client.Meta = await db.getClientMeta(Client.ClientId)
             Client.InGame = await this.getClientStatus(Client.Guid)
             Client.WebStatus = getClientWebStatus(Client.ClientId)
             Client.Messages = await db.getMessages(Client.ClientId, 0, 20)
-            Client.messageCount = (await db.getMessageCount(Client.ClientId))
             Client.Ban = await db.isBanned(Client.ClientId)
             Client.Flag = Client.IPAddress ? await getFlag(Client.IPAddress.split(':')[0]) : null
             Client.Status = {}

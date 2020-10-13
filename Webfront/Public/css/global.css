@@ -3202,6 +3202,8 @@ body {
 }
 .wf-message-message {
   white-space: pre-wrap;
+  display: inline-block;
+  word-break: break-word;
 }
 .wf-client-wrap:hover {
   background-color: var(--color-4);
@@ -3565,7 +3567,10 @@ body {
 }
 .wf-profile-info {
   border-radius: 5px;
+  overflow-y:scroll;
+  overflow-x:hidden;
   padding:10px;
+  max-height: 400px;
   background-color: var(--color-3);
   margin-top:30px;
   margin-left: 15px;
@@ -3587,8 +3592,7 @@ body {
 }
 .wf-profile-info-info {
   margin:5px;
-  max-width:400px;
-  width:48%;
+  width:calc(50% - 20px);
   display:inline-flex;
 }
 .wf-profile-info-info div:first-child {
@@ -3658,7 +3662,7 @@ body {
 .wf-chat-separator span {
   background-color:var(--color-3) ;
   box-shadow: 0px 3px 3px 2px var(--color-3);
-  padding:0 20px; 
+  padding:10px 20px; 
 }
 .wf-chat-separator:before, 
 .wf-chat-separator:after { 

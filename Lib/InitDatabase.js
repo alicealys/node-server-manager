@@ -5,6 +5,35 @@ const Models            = require('./DatabaseModels.js')
 class Database {
     constructor () {
         this.clientCache = []
+        this.clientProfileMeta = [
+            async (ClientId) => {
+                var stats = await this.getPlayerStatsTotal(ClientId)
+                var weaponMeta = await this.getClientMeta(ClientId)
+                var count = await this.getMessageCount(ClientId)
+                if (!stats) return {}
+                return  {
+                        name: 'Stats',
+                        data: {
+                            'Kills': stats.Kills ? stats.Kills : 0,
+                            'Deaths': stats.Deaths ? stats.Deaths : 0,
+                            'KDR': (stats.Kills / Math.max(stats.Deaths, 1)).toFixed(2),
+                            'Performance': stats.Performance.toFixed(2),
+                            'Total Damage': weaponMeta.Damage ? weaponMeta.Damage : 0,
+                            'Favourite Weapon': weaponMeta.MostUsed ? weaponMeta.MostUsed : 'none',
+                            'Most Hit': weaponMeta.HitLoc ? weaponMeta.HitLoc : 'none',
+                            'Messages': count,
+                        }
+                    }
+            }
+        ]   
+    }
+
+    async getClientProfileMeta(ClientId) {
+        var metaRef = []
+        for (var i = 0; i < this.clientProfileMeta.length; i++) {
+            metaRef.push(await this.clientProfileMeta[i](ClientId))
+        }
+        return metaRef
     }
 
     async startTransaction() {
