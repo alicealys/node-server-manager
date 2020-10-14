@@ -29,6 +29,7 @@ class ConfigMaker {
                 {Question: 'Server Port', value: 27016},
                 {Question: 'Server Rcon Password', value: ''},
                 {Question: 'Server Log file path', value: '/pluto/storage/iw5/games_mp.log'},
+                {Question: 'Reserved slots:', value: 0},
             ]
             
             function askQuestion(Index) {
@@ -79,6 +80,7 @@ class ConfigMaker {
                             'PORT' : configTemplate[10].value,
                             'PASSWORD' : configTemplate[11].value,
                             'LOGFILE' : configTemplate[12].value,
+                            'reservedSlots' : configTemplate[13].value,
                         }
             
                     ],

@@ -1,6 +1,8 @@
 const path                              = require('path')
 const { Command, NodeServerManager }    = require(path.join(__dirname, `../Lib/Classes.js`))
 const Utils                             = new (require(path.join(__dirname, '../Utils/Utils.js')))()
+const Permissions                       = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
+const Localization                       = require(path.join(__dirname, `../Configuration/Localization.json`)).lookup
 
 class Plugin {
     constructor(Server, Manager) {
@@ -10,6 +12,10 @@ class Plugin {
     }
     async onEvent (Event) {
         try {
+            if (this.Server.getClients().length + this.Server.reservedSlots >= this.Server.MaxClients && Event.Origin.PermissionLevel < Permissions.Levels['ROLE_MODERATOR']) {
+                Event.Origin.Kick(Localization['KICK_CLIENTSLOT_RESERVED'])
+            }
+
             var playerPenalties = await this.Server.DB.getAllPenalties(Event.Origin.ClientId)
 
             for (var i = 0; i < playerPenalties.length; i++) {

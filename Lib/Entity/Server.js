@@ -7,7 +7,7 @@ const Maps            = require(path.join(__dirname, `../../Configuration/Locali
 const Permissions     = require(path.join(__dirname, `../../Configuration/NSMConfiguration.json`)).Permissions
 
 class _Server extends EventEmitter {
-    constructor(IP, PORT, RCON, DATABASE, sessionStore, clientData, Managers, Id, Manager) {
+    constructor(IP, PORT, RCON, DATABASE, sessionStore, clientData, Managers, Id, Manager, reservedSlots) {
         super()
         this.Clients = new Array(18).fill(null)
         this.Rcon = RCON
@@ -33,13 +33,14 @@ class _Server extends EventEmitter {
         this.HeartbeatInt = setInterval(this.Heartbeat.bind(this), 15000)
         this.sessionStore = sessionStore
         this.on('init', this.onInitGame.bind(this))
+        this.reservedSlots = reservedSlots
         Manager.Commands = new Commands()
-    }
-    COD2BashColor(string) {
-        return string.replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), `\x1b[3$1m`)
     }
     getMap(name) {
       return this.Maps.find(Map => Map.Name.toLocaleLowerCase().startsWith(name) || Map.Alias.toLocaleLowerCase().startsWith(name) )
+    }
+    getClients() {
+        return this.Clients.filter(c => c)
     }
     onInitGame() {
         var onLine = async () => {
@@ -67,8 +68,8 @@ class _Server extends EventEmitter {
             this.Gamename = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.gamename)
             this.Maps = this.Gamename != 'UNKNOWN' ? Maps.find(x => x.Game == this.Gamename).Maps : []
             this.mapRotation = (await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.maprotation)).match(/((?:gametype|exec) +(?:([a-z]{1,4})(?:.cfg)?))? *map ([a-z|_|\d]+)/gi).map(x => x.trim().split(/\s+/g)[1])
-            this.HostnameRaw = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.hostname)
-            this.Hostname = this.COD2BashColor(this.HostnameRaw)
+            this.Hostname = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.hostname)
+            this.HostnameRaw = this.Hostname
             this.Mapname = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.mapname)
             this.MaxClients = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.maxclients)
             this.externalIP = !this.IP.match(/(^127\.)|(localhost)|(^192\.168\.)|(^10\.)|(^172\.1[6-9]\.)|(^172\.2[0-9]\.)|(^172\.3[0-1]\.)|(^::1$)|(^[fF][cCdD])/g) ? this.IP : await ip.v4()
@@ -165,7 +166,6 @@ class _Server extends EventEmitter {
             Manager.Server.Broadcast(Message)
         })
     }
-
     Broadcast (string) {
         this.Clients.forEach(c => {
             if (c == null) return

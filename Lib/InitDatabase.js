@@ -5,6 +5,7 @@ const Models            = require('./DatabaseModels.js')
 class Database {
     constructor () {
         this.clientCache = []
+        this.Models = Models
         this.clientProfileMeta = [
             async (ClientId) => {
                 var stats = await this.getPlayerStatsTotal(ClientId)

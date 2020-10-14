@@ -1,8 +1,7 @@
 const Sequelize         = require('sequelize')
 const path              = require('path')
-const Models            = require(path.join(__dirname, `../Lib/DatabaseModels.js`))
-const Permissions = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
-const Localization = require(path.join(__dirname, `../Configuration/Localization.json`)).lookup
+const Permissions       = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
+const Localization      = require(path.join(__dirname, `../Configuration/Localization.json`)).lookup
 const Utils             = new (require(path.join(__dirname, '../Utils/Utils.js')))()
 const wait              = require('delay')
 
@@ -21,7 +20,7 @@ class Plugin {
         }).save()
       }
     async createTable() {
-        this.NSMZStats = Models.DB.define('NSMZStats', 
+        this.NSMZStats = this.Server.DB.Models.DB.define('NSMZStats', 
         {
             ClientId: {
                 type: Sequelize.INTEGER,
@@ -68,6 +67,7 @@ class Plugin {
             timestamps: false
         })
         this.NSMZStats.sync()
+        this.Server.DB.Models.NSMZStats = this.NSMZStats
     }
     async getTopStats(page, limit) {
         var Stats = (await this.NSMZStats.findAll({
@@ -129,27 +129,9 @@ class Plugin {
         var Stats = (await this.NSMZStats.findAll({where: ClientId})).map(x => x = x.dataValues)
         return Stats.length > 0 ? Stats[0] : false
     }
-    async addClientMeta() {
-        this.Server.DB.clientProfileMeta.push(async (ClientId) => {
-            var stats = await this.getZStats(ClientId)
-            if (!stats || stats.score <= 500) return {}
-            return {
-                name: 'Zombies Stats',
-                data: {
-                    'Kills': stats.Kills, 
-                    'Downs': stats.Kills, 
-                    'Revives': stats.Kills, 
-                    'Highest Round': stats.HighestRound, 
-                    'Headshots': stats.Headshots, 
-                    'Score': stats.Score, 
-                }
-            }
-        })
-    }
     async zStats() {
         this.Manager.on('webfront-ready', (Webfront) => {
             Webfront.addHeaderHtml(`<a href='/zstats' class='wf-header-link'><i class="fas fa-skull"></i></a>`, 3)
-            this.addClientMeta()
         })
         await this.createTable()
         this.Manager.commands['zstats'] = {

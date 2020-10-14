@@ -477,7 +477,17 @@ class Webfront {
                 }))
                 return
             }
+            
             var Client = await db.getClient(req.body.ClientId)
+
+            if (!Client) {
+                res.end(JSON.stringify({
+                    success: false,
+                    error: 'Invalid credentials'
+                }))
+                return
+            }
+
             var twoFactorResult = Client.Settings.TwoFactor ? await Auth.twoFactor(Client.ClientId, req.body.twofactor) : true
 
             var passwordResult  = await Auth.Password(req.body.ClientId, req.body.Token)

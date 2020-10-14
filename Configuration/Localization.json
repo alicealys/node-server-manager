@@ -163,7 +163,8 @@
         "PENALTY_TEMP_BAN_MESSAGE": "[^1Penalties^7] ^5%NAME%^7 was ^1temp banned^7 by ^5%ORIGIN%^7 for ^3%REASON%^7 for ^5%DURATION%",
         "PENALTY_PERMA_BAN_MESSAGE": "[^1Penalties^7] ^5%NAME%^7 was ^1perma banned^7 by ^5%ORIGIN%^7 for ^3%REASON%",
         "PENALTY_KICK_MESSAGE": "[^1Penalties^7] ^5%NAME%^7 was ^3kicked^7 by ^5%ORIGIN%^7 for ^3%REASON%",
-        "PENALTY_UNBAN_MESSAGE": "[^1Penalties^7] ^5%NAME%^7 was ^2unbanned^7 by ^5%ORIGIN%^7 for ^3%REASON%"
+        "PENALTY_UNBAN_MESSAGE": "[^1Penalties^7] ^5%NAME%^7 was ^2unbanned^7 by ^5%ORIGIN%^7 for ^3%REASON%",
+        "KICK_CLIENTSLOT_RESERVED": "Clientslot is reserved for priviledged user"
     },
     "Games": {
       "T6": {

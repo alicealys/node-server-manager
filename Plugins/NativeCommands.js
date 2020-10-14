@@ -16,7 +16,6 @@ fs.watch(configName, async (filename) => {
                 console.log(`Failed to reload config file ${configName}: ${e.toString()}`); return }
 
         config = newData
-        console.log(`Reloaded config file ${configName}`)
     }
 })
 

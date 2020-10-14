@@ -18,7 +18,7 @@ const ConfigMaker             = require('./ConfigMaker.js')
 
 var Info = {
   Author: 'fed',
-  Version: '0.2'
+  Version: '1.0.0'
 }
 
 var Managers = []
@@ -42,9 +42,14 @@ class Logger {
   }
 }
 
+function COD2BashColor(string) {
+  return string.replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), `\x1b[3$1m`)
+}
+
 class NSM extends EventEmitter{
   constructor (configuration) {
     super()
+    this.configuration = configuration
     this.Version = Info.Version
     this.Author = Info.Author
     this.IP = configuration.IP
@@ -61,7 +66,7 @@ class NSM extends EventEmitter{
 
     // Connect to the server's rcon
     this.RconConnection = new RconConnection(this.IP, this.PORT, this.PASSWORD)
-    this.Server = new Server(this.IP, this.PORT, this.RconConnection, Database, sessionStore, clientData, Managers, Id++, this)
+    this.Server = new Server(this.IP, this.PORT, this.RconConnection, Database, sessionStore, clientData, Managers, Id++, this, this.configuration.reservedSlots)
     this._EventLogWatcher = this.LOGFILE ? new EventLogWatcher(this.LOGFILE, this.Server, this) : new ServerLogWatcher(this.LOGSERVERURI, this.Server, this)
 
     // Load plugins before initializing Server.Clients
@@ -72,7 +77,7 @@ class NSM extends EventEmitter{
 
 
     if (this.Server.Hostname) {
-      console.log(`Now watching \x1b[33m${this.Server.Hostname}\x1b[0m at \x1b[35m${this.IP}:${this.PORT}\x1b[0m`)
+      console.log(`Now watching \x1b[33m${COD2BashColor(this.Server.Hostname)}\x1b[0m at \x1b[35m${this.IP}:${this.PORT}\x1b[0m`)
     } else {
       console.log(`Not watching \x1b[35m${this.IP}:${this.PORT}\x1b[0m: communication failed`)
       clearInterval(this.Server.HeartbeatInt)
