@@ -72,7 +72,7 @@ class _Server extends EventEmitter {
             this.Hostname = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.hostname)
             this.HostnameRaw = this.Hostname
             this.Mapname = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.mapname)
-            this.MaxClients = this.config.maxClientsOvverride ? this.config.maxClientsOvverride : await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.maxclients)
+            this.MaxClients = this.config.maxClientsOverride ? this.config.maxClientsOverride : await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.maxclients)
             this.externalIP = !this.IP.match(/(^127\.)|(localhost)|(^192\.168\.)|(^10\.)|(^172\.1[6-9]\.)|(^172\.2[0-9]\.)|(^172\.3[0-1]\.)|(^::1$)|(^[fF][cCdD])/g) ? this.IP : await ip.v4()
         }
         catch (e) {}
