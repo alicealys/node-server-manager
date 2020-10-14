@@ -7,7 +7,7 @@ const Maps            = require(path.join(__dirname, `../../Configuration/Locali
 const Permissions     = require(path.join(__dirname, `../../Configuration/NSMConfiguration.json`)).Permissions
 
 class _Server extends EventEmitter {
-    constructor(IP, PORT, RCON, DATABASE, sessionStore, clientData, Managers, Id, Manager, reservedSlots) {
+    constructor(IP, PORT, RCON, DATABASE, sessionStore, clientData, Managers, Id, Manager, config) {
         super()
         this.Clients = new Array(18).fill(null)
         this.Rcon = RCON
@@ -33,7 +33,8 @@ class _Server extends EventEmitter {
         this.HeartbeatInt = setInterval(this.Heartbeat.bind(this), 15000)
         this.sessionStore = sessionStore
         this.on('init', this.onInitGame.bind(this))
-        this.reservedSlots = reservedSlots
+        this.config = config
+        this.reservedSlots = config.reservedSlots
         Manager.Commands = new Commands()
     }
     getMap(name) {
@@ -71,7 +72,7 @@ class _Server extends EventEmitter {
             this.Hostname = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.hostname)
             this.HostnameRaw = this.Hostname
             this.Mapname = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.mapname)
-            this.MaxClients = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.maxclients)
+            this.MaxClients = this.config.maxClientsOvverride ? this.config.maxClientsOvverride : await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.maxclients)
             this.externalIP = !this.IP.match(/(^127\.)|(localhost)|(^192\.168\.)|(^10\.)|(^172\.1[6-9]\.)|(^172\.2[0-9]\.)|(^172\.3[0-1]\.)|(^::1$)|(^[fF][cCdD])/g) ? this.IP : await ip.v4()
         }
         catch (e) {}
