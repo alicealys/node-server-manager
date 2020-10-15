@@ -25,7 +25,7 @@ class CLICommands {
         this.customCommands = {
             'chat': {
                 callback: () => {
-                    this.Player.Tell(`Chat ${this.streamChat ? '^2enabled' : '^1disabled'}`)
+                    this.Player.Tell(`Chat ${this.chatEnabled ? '^2enabled' : '^1disabled'}`)
                     this.chatEnabled = !this.chatEnabled
                 }
             }
