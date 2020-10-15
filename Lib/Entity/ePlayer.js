@@ -34,8 +34,7 @@ class ePlayer extends EventEmitter {
         this.removeAllListeners()
       }
       async build() {
-        await this.Server.DB.addClient(this.Guid)
-        this.ClientId = await this.Server.DB.getClientId(this.Guid)
+        this.ClientId = await this.Server.DB.addClient(this.Guid)
         await this.Server.DB.initializeStats(this.ClientId)
 
         this.PermissionLevel = await this.Server.DB.getClientLevel(this.ClientId)

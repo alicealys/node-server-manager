@@ -45,6 +45,7 @@ class Database {
     constructor () {
         this.clientCache = []
         this.Models = Models
+        this.cache = {}
         this.metaService = new MetaService(Models)
         this.clientProfileMeta = [
             async (ClientId) => {
@@ -66,7 +67,10 @@ class Database {
                         }
                     }
             }
-        ]   
+        ]
+        setInterval(() => {
+            this.cache = {}
+        }, 60 * 1000 * 30)
     }
 
     async getClientProfileMeta(ClientId) {
@@ -84,7 +88,9 @@ class Database {
 
     async addClient(Guid) {
         await this.startTransaction()
-        if (await this.getClientId(Guid)) return
+
+        var ClientId = await this.getClientId(Guid)
+        if (ClientId) return ClientId
 
         if (!(await this.getClientId('Node'))) {
             try {
@@ -105,8 +111,6 @@ class Database {
         var Client = await Models.NSMClients.build({
             Guid: Guid
         }, {transaction: this.transaction}, {transaction: this.transaction}).save()
-
-        // await this.transaction.commit()
 
         return Client.dataValues.ClientId
     }
@@ -353,8 +357,6 @@ class Database {
 
         if (Connection.length == 0) return false
 
-        await this.initializeStats(ClientId)
-
         delete Client[0].dataValues.Password
         
         var Client = {...Client[0].dataValues, ...Connection[0].dataValues}
@@ -473,16 +475,26 @@ class Database {
     }
 
     async getPlayerStatsTotal(ClientId) {
+        if (this.cache[`statsTotal_${ClientId}`]) return this.cache[`statsTotal_${ClientId}`]
+
         var Stats = await Models.NSMPlayerStats.findAll({
             attributes: ['Kills', 'Deaths', 'PlayedTime', [Sequelize.literal('max(Performance, 0)'), 'Performance'], 'TotalPerformance'],
             where: {
                 ClientId: ClientId
-            }
+            },
+            raw: true
         }, {transaction: this.transaction})
+
+        if (Stats.length) {
+            this.cache[`statsTotal_${ClientId}`] = Stats[0]
+            return Stats[0]
+        }
         return Stats.length > 0 ? Stats[0].dataValues : false
     }
 
     async getGlobalStats() {
+        if (this.cache[`globalStats`]) return this.cache[`globalStats`]
+
         var totalKills = (await Models.NSMKills.findAll({
             attributes: [[Sequelize.fn('max', Sequelize.literal('_rowid_')), 'totalKills']],
         }))[0].dataValues.totalKills
@@ -491,10 +503,14 @@ class Database {
             attributes: [[Sequelize.fn('sum', Sequelize.col('PlayedTime')), 'totalPlayedTime']],
         }))[0].dataValues.totalPlayedTime
 
-        return {totalKills, totalPlayedTime}
+        this.cache[`globalStats`] = {totalKills, totalPlayedTime}
+
+        return this.cache[`globalStats`]
     }
 
     async getPlayerStats(ClientId) {
+        if (this.cache[`stats_${ClientId}`]) return this.cache[`stats_${ClientId}`]
+
         var Player = await this.getClient(ClientId)
         if (!Player) return false
         var Stats = {
@@ -502,6 +518,8 @@ class Database {
             Deaths: await this.getPlayerDeaths(ClientId),
             Player: Player
         }
+
+        this.cache[`stats_${ClientId}`] = Stats
         return Stats
     }
 
@@ -510,6 +528,8 @@ class Database {
     }
 
     async getTopZStats(page, limit) {
+        if (this.cache[`zstats_${page};${limit}`]) return this.cache[`zstats_${page};${limit}`]
+
         var NSMZStats = await Models.DB.define('NSMZStats')
         var Stats = (await NSMZStats.findAll({
             limit: limit,
@@ -527,10 +547,14 @@ class Database {
         for (var i = 0; i < Stats.length; i++) {
             Stats[i].Name = await this.getName(Stats[i].ClientId)
         }
+        this.cache[`zstats_${page};${limit}`] = Stats
+
         return Stats
     }
 
     async getStatHistory(page, limit) {
+        if (this.cache[`statHistory_${page};${limit}`]) return this.cache[`statHistory_${page};${limit}`]
+
         var Stats = (await Models.NSMPlayerStats.findAll({
             limit: limit,
             attributes: ['ClientId', 'Kills', 'Deaths', [Sequelize.literal('max(Performance, 0)'), 'Performance'], 'TotalPerformance', 'PlayedTime', 'Id', [Sequelize.literal('ROW_NUMBER() over (order by Performance desc)'), 'Rank']],
@@ -558,6 +582,8 @@ class Database {
                 ]
             })).map(s => s = {x: s.Date, y: s.Performance})
         }
+
+        this.cache[`statHistory_${page};${limit}`] = Stats
 
         return Stats
     }

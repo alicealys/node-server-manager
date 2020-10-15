@@ -911,7 +911,7 @@ class Webfront {
                 return
             }
 
-            Client.clientMeta = await this.db.getClientProfileMeta(Client.ClientId, Client.clientMeta)  
+            Client.clientMeta = await this.db.getClientProfileMeta(Client.ClientId)  
             Client.Role = Utils.getRoleFrom(Client.PermissionLevel, 1).Name
             Client.InGame = await this.getClientStatus(Client.Guid)
             Client.WebStatus = getClientWebStatus(Client.ClientId)
