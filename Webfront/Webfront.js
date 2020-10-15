@@ -1,27 +1,26 @@
-const express   = require('express')
-const jshtml    = require('jshtml')
-const path      = require('path')
-const fs        = require('fs')
-const session   = require('express-session')
-const ejs       = require('ejs')
-const moment    = require('moment')
-const bodyParser= require('body-parser')
-const bcrypt    = require('bcrypt')
-const fetch     = require('node-fetch')
-const ws        = require('ws')
-const Permissions = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
-const configName = path.join(__dirname, `../Configuration/NSMConfiguration.json`)
-const config = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`))
-const Localization = require(path.join(__dirname, `../Configuration/Localization.json`))
-const https     = require('https')
-const http = require('http')
-const rateLimit = require("express-rate-limit")
-const db  = new (require(path.join(__dirname, '../Lib/InitDatabase.js')))()
-const _utils            = require(path.join(__dirname, '../Utils/Utils.js'))
-const Utils             = new _utils()
-const Auth              = new (require('./api/Auth.js'))(db)
-const twoFactor         = require('node-2fa')
-const jsdom            = new require('jsdom')
+const express       = require('express')
+const jshtml        = require('jshtml')
+const path          = require('path')
+const fs            = require('fs')
+const session       = require('express-session')
+const ejs           = require('ejs')
+const moment        = require('moment')
+const bodyParser    = require('body-parser')
+const bcrypt        = require('bcrypt')
+const fetch         = require('node-fetch')
+const ws            = require('ws')
+const Permissions   = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
+const configName    = path.join(__dirname, `../Configuration/NSMConfiguration.json`)
+const config        = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`))
+const Localization  = require(path.join(__dirname, `../Configuration/Localization.json`))
+const https         = require('https')
+const http          = require('http')
+const rateLimit     = require("express-rate-limit")
+const db            = new (require(path.join(__dirname, '../Lib/InitDatabase.js')))()
+const Utils         = new(require(path.join(__dirname, '../Utils/Utils.js')))()
+const Auth          = new (require('./api/Auth.js'))(db)
+const twoFactor     = require('node-2fa')
+const jsdom         = new require('jsdom')
 
 var lookup = {
     errors: {
@@ -34,34 +33,6 @@ const jsonReturns = {
         success: true,
         error: ''
     })
-}
-
-function getRoleFrom (Value, Type) {
-    switch (Type) {
-      case 0:
-        var RolesArray = Object.entries(Permissions.Roles)
-        for (var i = 0; i < RolesArray.length; i++) {
-          if (RolesArray[i][1].toLocaleLowerCase() == Value.toLocaleLowerCase()) {
-            return {
-              Name: RolesArray[i][1],
-              Level: Permissions.Levels[RolesArray[i][0]]
-            }
-          }
-        }
-      break;
-      case 1:
-        var RolesArray = Object.entries(Permissions.Levels)
-        for (var i = 0; i < RolesArray.length; i++) {
-          if (RolesArray[i][1] == Value) {
-            return {
-              Name: Permissions.Roles[RolesArray[i][0]],
-              Level: RolesArray[i][1]
-            }
-          }
-        }
-      break;
-    }
-    return false
 }
 
 class Webfront {
@@ -78,22 +49,17 @@ class Webfront {
     addHeaderHtml(html, index) {
         if (!this.headerExtraHtml.find(x => x.html == html && x.index == index))
             this.headerExtraHtml.push({ html, index })
-
-        
-            this.app.get('/zstats', async (req, res, next) => {
-                res.end(400)
-            })
     }
     async getClientStatus(Guid) {
-        var Status = { Online: false}
+        var Status = { Online: false }
+
         for (var o = 0; o < this.Managers.length; o++) {
             var Manager = this.Managers[o]
-            /*if (!Manager.Server.Rcon.isRunning) continue
-            var status = await Manager.Server.Rcon.getStatus()
-            if (!status) status = Manager.Server.previousStatus*/
+
             for (var i = 0; i < Manager.Server.Clients.length; i++) {
                 var client = Manager.Server.Clients[i]
                 if (!client) continue
+                
                 if (client.Guid == Guid) {
                     Status.Online = true
                     Status.Hostname = Manager.Server.HostnameRaw
@@ -101,10 +67,31 @@ class Webfront {
                 }
             }
         }
-        return Status;
+        return Status
+    }
+    renderDynamicHTML(req) {
+        return new Promise(async (resolve, reject) => {
+
+            var Client = req.session.ClientId ? await db.getClient(req.session.ClientId) : {Name: 'Guest', ClientId: 0}
+            var Motd = config.MOTD ? config.MOTD.replace('{USERNAME}', Client.Name)
+                                                .replace('{CLIENTID}', Client.ClientId) : null
+
+            ejs.renderFile(path.join(__dirname, '/html/header.ejs'), {session: req.session, Permissions: Permissions, Motd: Motd, Client: Client, config: config}, (err, str) => {
+                var dom = new jsdom.JSDOM(str)
+
+                for (var i = 0; i < this.headerExtraHtml.length; i++) {
+                    var el = dom.window.document.createElement('div')
+                    el.innerHTML = this.headerExtraHtml[i].html
+                    dom.window.document.getElementById('header-btns').insertBefore(el.firstChild, dom.window.document.getElementById('header-btns').children[this.headerExtraHtml[i].index])
+                }
+
+                resolve(dom.window.document.getElementById('wf-header').outerHTML)
+            })
+        })
     }
     Start() {
         this.app = express()
+
         const server = this.Config.SSL ? https.createServer({
             key: fs.readFileSync(this.Config.Key),
             cert: fs.readFileSync(this.Config.Cert),
@@ -161,23 +148,6 @@ class Webfront {
 
         this.app.use(this.sessionParser)
 
-        var header = null
-        this.app.use(async (req, res, next) => {
-            var Client = req.session.ClientId ? await db.getClient(req.session.ClientId) : {Name: 'Guest', ClientId: 0}
-            var Motd = config.MOTD ? config.MOTD.replace('{USERNAME}', Client.Name)
-                                                .replace('{CLIENTID}', Client.ClientId) : null
-            ejs.renderFile(path.join(__dirname, '/html/header.ejs'), {session: req.session, Permissions: Permissions, Motd: Motd, Client: Client, config: config}, (err, str) => {
-                var dom = new jsdom.JSDOM(str)
-                for (var i = 0; i < this.headerExtraHtml.length; i++) {
-                    var el = dom.window.document.createElement('div')
-                    el.innerHTML = this.headerExtraHtml[i].html
-                    dom.window.document.getElementById('header-btns').insertBefore(el.firstChild, dom.window.document.getElementById('header-btns').children[this.headerExtraHtml[i].index])
-                }
-                header = dom.window.document.getElementById('wf-header').outerHTML
-            });
-            next()
-        })
-
         require(path.join(__dirname, `../Plugins/Routes`))(this.app, this.Managers[0].Server.DB, this)
 
         this.app.get('/', async (req, res, next) => {
@@ -186,9 +156,10 @@ class Webfront {
             if (req.session.ClientId) {
                 Client = await db.getClient(req.session.ClientId)
             }
-            ejs.renderFile(path.join(__dirname, '/html/index.ejs'), {header: header, session: req.session, Client: Client}, (err, str) => {
+
+            ejs.renderFile(path.join(__dirname, '/html/index.ejs'), {header: await this.renderDynamicHTML(req), session: req.session, Client: Client}, (err, str) => {
                 res.end(str)
-            });
+            })
         })
 
         this.app.get('/api/discord/callback', async (req, res, next) => {
@@ -199,6 +170,7 @@ class Webfront {
             req.session.destroy()
             res.end()
         })
+
         this.app.post('/auth/changepassword', async (req, res, next) => {
 
             switch (true) {
@@ -240,7 +212,7 @@ class Webfront {
                             res.end(JSON.stringify({
                                 success: true
                             }))
-                        });
+                        })
                     })
                 } else {
                     if ((new Date() - new Date(tokenHash.Date)) / 1000  > 120) {
@@ -255,7 +227,7 @@ class Webfront {
                         res.end(JSON.stringify({
                             success: true
                         }))
-                    });
+                    })
                 }
             })
         })
@@ -294,25 +266,28 @@ class Webfront {
         })
 
         this.app.get('/audit', async (req, res, next) => {
+            var header = await this.renderDynamicHTML(req)
             res.setHeader('Content-type', 'text/html')
             if (!req.session.ClientId) {
                 res.status(401)
-                ejs.renderFile(path.join(__dirname, '/html/error.ejs'), {header: header, error: {Code: 401, Description: 'You must be logged in to do that'}}, (err, str) => {
+                ejs.renderFile(path.join(__dirname, '/html/error.ejs'), {header, error: {Code: 401, Description: 'You must be logged in to do that'}}, (err, str) => {
                     res.end(str)
-                });
+                })
                 return
             }
+
             var Client = await db.getClient(req.session.ClientId)
             if (Client.PermissionLevel < Permissions.Levels.ROLE_ADMIN) {
                 res.status(401)
-                ejs.renderFile(path.join(__dirname, '/html/error.ejs'), {header: header, error: {Code: 401, Description: 'You don\'t have sufficient permissions for this'}}, (err, str) => {
+                ejs.renderFile(path.join(__dirname, '/html/error.ejs'), {header, error: {Code: 401, Description: 'You don\'t have sufficient permissions for this'}}, (err, str) => {
                     res.end(str)
-                });
+                })
             }
+            
             var Audit = await db.getAudit(0, 25)
             ejs.renderFile(path.join(__dirname, '/html/audit.ejs'), {header, Audit}, (err, str) => {
                 res.end(str)
-            });
+            })
         })
 
         this.app.post('/auth/changesetting', async (req, res, next) => {
@@ -332,6 +307,7 @@ class Webfront {
                     }))
                 return
             }
+
             var result = await Auth.Password(req.session.ClientId, req.body.password)
             result && await db.setClientSetting(req.session.ClientId, req.query.setting, (req.query.value == 'true'))
             res.end(JSON.stringify({
@@ -492,8 +468,8 @@ class Webfront {
 
             var passwordResult  = await Auth.Password(req.body.ClientId, req.body.Token)
             var tokenResult     = await Auth.Token(req.body.ClientId, req.body.Token)
-
             var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
+
             switch (true) {
                 case (!passwordResult && !tokenResult):
                     await db.logActivity(ip, Localization.lookup['AUDIT_LOGIN_ATTEMPT'].replace('%CLIENTID%', req.body.ClientId), Localization.lookup['AUDIT_LOGIN_CRED_FAIL'])
@@ -517,15 +493,6 @@ class Webfront {
                 success: true
             }))
         })
-
-        var timeConvert = (n) => {
-            var num = n;
-            var hours = (num / 60);
-            var rhours = Math.floor(hours);
-            var minutes = (hours - rhours) * 60;
-            var rminutes = Math.round(minutes);
-            return `${rhours}:${rminutes}`
-        }
 
         var getSessionClientId = (SessionID) => {
             var found = false
@@ -592,6 +559,8 @@ class Webfront {
         })
 
         this.app.get('/authenticator', async (req, res, next) => {
+            var header = await this.renderDynamicHTML(req)
+
             if (!req.session.ClientId) {
                 res.setHeader('Content-type', 'text/html')
                 res.status(401)
@@ -600,8 +569,8 @@ class Webfront {
                 });
                 return
             }
-            var Client = await db.getClient(req.session.ClientId)
 
+            var Client = await db.getClient(req.session.ClientId)
             var clientsToAuth = []
 
             this.Managers.forEach(Manager => {
@@ -614,10 +583,12 @@ class Webfront {
             res.setHeader('Content-type', 'text/html')
             ejs.renderFile(path.join(__dirname, `/html/authenticator.ejs`), {header: header, Client: Client, clientsToAuth: clientsToAuth}, (err, str) => {
                 res.end(str)
-            });
+            })
         })
 
         this.app.get('/settings', async (req, res, next) => {
+            var header = await this.renderDynamicHTML(req)
+
             if (!req.session.ClientId) {
                 res.setHeader('Content-type', 'text/html')
                 res.status(401)
@@ -626,36 +597,42 @@ class Webfront {
                 });
                 return
             }
+
             var Client = await db.getClient(req.session.ClientId)
             Client.hasPassword = await db.getClientField(Client.ClientId, 'Password') != null
             res.setHeader('Content-type', 'text/html')
             ejs.renderFile(path.join(__dirname, `/html/settings.ejs`), {header: header, Client: Client}, (err, str) => {
                 res.end(str)
-            });
+            })
         })
 
         this.app.get('/api/stats', async (req, res, next) => {
             var page = req.query.page ? req.query.page : 0
             var limit = 10
             var Stats = await db.getStatHistory(page, limit)
+
             for (var i = 0; i < Stats.length; i++) {
                 delete Stats[i].Id
                 Stats[i].Name = (await db.getClient(Stats[i].ClientId)).Name
                 Stats[i].PlayedTimeString = Utils.time2str(Stats[i].PlayedTime * 60)
             }
+
             res.end(JSON.stringify(Stats))
         })
 
         this.app.get('/stats', async (req, res, next) => {
+            var header = await this.renderDynamicHTML(req)
             var Stats = await db.getStatHistory(0 , 10)
+
             for (var i = 0; i < Stats.length; i++) {
                 Stats[i].Name = (await db.getClient(Stats[i].ClientId)).Name
                 Stats[i].PlayedTimeString = Utils.time2str(Stats[i].PlayedTime * 60)
             }
+
             res.setHeader('Content-type', 'text/html')
             ejs.renderFile(path.join(__dirname, '/html/stats.ejs'), {header: header, Stats: Stats}, (err, str) => {
                 res.end(str)
-            });
+            })
         })
 
         this.app.get('/api/statistics', async (req, res, next) => {
@@ -664,8 +641,10 @@ class Webfront {
                 this.Managers.forEach(m => count += m.Server.Clients.filter((value) => { return value }).length)
                 return count
             }
+
             var Managers = this.Managers.concat()
             var topServer = Managers.sort((a, b) => {return b.Server.Clients.filter((value) => { return value }).length - a.Server.Clients.filter((value) => { return value }).length})[0].Server
+
             var statistics = {
                 serverCount: this.Managers.length,
                 playerCount: getPlayerCount(),
@@ -676,15 +655,18 @@ class Webfront {
                     PORT: topServer.PORT
                 }
             }
+
             res.end(JSON.stringify(statistics))
         })
 
         this.app.get('/info', async (req, res, next) =>  {
+            var header = await this.renderDynamicHTML(req)
+
             res.setHeader('Content-type', 'text/html')
             var Client = req.session.ClientId ? await db.getClient(req.session.ClientId) : null
             ejs.renderFile(path.join(__dirname, '/html/info.ejs'), {header: header, Client: Client, Info: config.Info, Permissions: Permissions}, (err, str) => {
                 res.end(str)
-            });
+            })
         })
 
 
@@ -722,19 +704,6 @@ class Webfront {
                 return
             }
 
-            var findClient = (ClientId) => {
-                var found = false;
-                this.Managers.forEach(Manager => {
-                    Manager.Server.Clients.forEach(Client => {
-                        if (!Client) return
-                        if (Client.ClientId == ClientId) {
-                            found = Client;
-                        }
-                    })
-                })
-                return found;
-            }
-            var inGame = req.query.target ? findClient(req.query.target) : null
             switch (req.query.command.toLocaleUpperCase()) {
                 case 'COMMAND_CHANGE_INFO':
                     switch (true) {
@@ -774,6 +743,7 @@ class Webfront {
                 break
             }
         })
+
         this.app.get('/api/mod', async (req, res, next) => {
             switch (true) {
                 case (!req.session.ClientId || !req.query.command):
@@ -819,13 +789,15 @@ class Webfront {
                     }
                 }
                 var end = () => {
-                res.end(JSON.stringify({
-                    success: true,
-                    result: result
-                }))
+                    res.end(JSON.stringify({
+                        success: true,
+                        result: result
+                    }))
                 }
+
                 var args = command.substr(1).split(/\s+/)
                 var command = Utils.getCommand(this.Managers[0].commands, args[0])
+                
                 switch (true) {
                   case (!this.Managers[0].commands[command]):
                     Player.Tell(lookup.COMMAND_NOT_FOUND)
@@ -867,6 +839,7 @@ class Webfront {
                         }))
                     return
                 }
+
                 var result = (await this.Managers[req.query.ServerId].Server.Rcon.executeCommandAsync(command)).trim().split('\n')
                 result.length == 1 ? result[0] = 'Command executed successfully' : result = result.splice(1)
                 res.end(JSON.stringify({
@@ -875,17 +848,6 @@ class Webfront {
                 }))
             }
         })
-
-        var escapeHtml = (text) => {
-            var map = {
-              '&': '&amp;',
-              '<': '&lt;',
-              '>': '&gt;',
-              '"': '&quot;',
-              "'": '&#039;'
-            };
-            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
-          }
 
         this.app.post('/api/editprofile', async (req, res, next) => {
             switch (true) {
@@ -907,6 +869,7 @@ class Webfront {
                     }))
                 return
             }
+
             req.body.description = req.body.description.length > 0 ? req.body.description : 'No info'
             await db.setClientField(req.session.ClientId, 'Description', req.body.description)
             res.end(JSON.stringify({
@@ -916,6 +879,7 @@ class Webfront {
 
         var getClientWebStatus = (ClientId) => {
             var connectedClients = []
+
             this.socketClients.forEach( socketClient => {
                 if (new Date() - new Date(socketClient.conn.heartbeat) < 5000) {
                     socketClient.conn.session.ClientId 
@@ -923,6 +887,7 @@ class Webfront {
                     : connectedClients.push({Client: 'unknown', heartbeat: socketClient.conn.heartbeat})
                 }
             })
+
             for (var i = 0; i < connectedClients.length; i++) {
                 if (connectedClients[i].Client == ClientId) return true
             }
@@ -935,6 +900,7 @@ class Webfront {
 
         this.app.get('/id/:id', async (req, res, next) => {
             res.setHeader('Content-type', 'text/html')
+
             var Client = await db.getClient(req.params.id)
             if (!Client) {
                 res.setHeader('Content-type', 'text/html')
@@ -946,7 +912,7 @@ class Webfront {
             }
 
             Client.clientMeta = await this.db.getClientProfileMeta(Client.ClientId, Client.clientMeta)  
-            Client.Role = getRoleFrom(Client.PermissionLevel, 1).Name
+            Client.Role = Utils.getRoleFrom(Client.PermissionLevel, 1).Name
             Client.InGame = await this.getClientStatus(Client.Guid)
             Client.WebStatus = getClientWebStatus(Client.ClientId)
             Client.Messages = await db.getMessages(Client.ClientId, 0, 20)
@@ -968,18 +934,22 @@ class Webfront {
                     Client.Status.Color = 'green'
                 break
             }
+
+            var header = await this.renderDynamicHTML(req)
             var self = req.session.ClientId ? await db.getClient(req.session.ClientId) : null
-            ejs.renderFile(path.join(__dirname, '/html/client.ejs'), {self: self, Permissions: Permissions ,header: header, Client: Client, moment: moment}, (err, str) => {
+            ejs.renderFile(path.join(__dirname, '/html/client.ejs'), {self: self, Permissions: Permissions, header: header, Client: Client, moment: moment}, (err, str) => {
                 res.end(str)
-            });
+            })
         })
 
         this.app.get('/chat', async (req, res, next) => {
+            var header = await this.renderDynamicHTML(req)
+
             res.setHeader('Content-type', 'text/html')
             var Messages = (await db.getAllMessages(undefined, 0, 50))
             ejs.renderFile(path.join(__dirname, '/html/chat.ejs'), {header: header, Messages: Messages}, (err, str) => {
                 res.end(str)
-            });
+            })
         })
 
         this.app.get('/api/players', async (req, res, next) => {
@@ -999,6 +969,7 @@ class Webfront {
 
         this.app.get('/api/socketclients', async (req, res, next) => {
             var connectedClients = []
+
             this.socketClients.forEach( async socketClient => {
                 if (new Date() - new Date(socketClient.conn.heartbeat) < 3000) {
                     socketClient.conn.session.ClientId 
@@ -1006,17 +977,21 @@ class Webfront {
                     : connectedClients.push({Client: 'unknown', heartbeat: socketClient.conn.heartbeat})
                 }
             })
+
             res.end(JSON.stringify(connectedClients))
         })
+
         this.app.set('view engine', 'jshtml')
         this.app.get('/search', async (req, res, next) => {
+            var header = await this.renderDynamicHTML(req)
+
             res.setHeader('Content-type', 'text/html')
             var Clients = []
             var error = null
             if (req.query.q.length > 0) {
                 Clients = await db.getClientByName(req.query.q)
                 Clients.forEach(Client => {
-                    Client.Role = getRoleFrom(Client.PermissionLevel, 1).Name
+                    Client.Role = Utils.getRoleFrom(Client.PermissionLevel, 1).Name
                 })
                 Clients.sort((a, b) => {
                     return new Date(b.Date) - new Date(a.Date)
@@ -1026,7 +1001,7 @@ class Webfront {
             }
             ejs.renderFile(path.join(__dirname, '/html/search.ejs'), {header: header, Clients: Clients, query: req.query.q, moment: moment, error: error}, (err, str) => {
                 res.end(str)
-            });
+            })
         })
 
         this.app.get('/api/servers', async (req, res, next) => {
@@ -1057,12 +1032,14 @@ class Webfront {
             res.end(JSON.stringify(Messages))
         })
 
-        this.app.get('*', (req, res, next) => {
+        this.app.get('*', async (req, res, next) => {
+            var header = await this.renderDynamicHTML(req)
+
             res.setHeader('Content-type', 'text/html')
             res.status(404)
             ejs.renderFile(path.join(__dirname, '/html/error.ejs'), {header: header, error: {Code: 404, Description: lookup.errors[404]}}, (err, str) => {
                 res.end(str)
-            });
+            })
         })
 
 
@@ -1078,8 +1055,10 @@ class Webfront {
     UpdateClientHistory() {
         this.Managers.forEach(async Manager => {
             if (!Manager.Server.Rcon.isRunning) return
+
             var status = await Manager.Server.Rcon.getStatus()
             if (!status) return
+
             Manager.Server.clientHistory.push({x: new Date(), y: status.data.clients.length})
             if (Manager.Server.clientHistory.length > 300) Manager.Server.clientHistory.shift()
         })
@@ -1090,6 +1069,7 @@ class Webfront {
             url.substr(1).split("&").forEach(function(item) {queryDict[item.split("=")[0]] = item.split("=")[1]})
             return queryDict;
         }
+
         socket.on('connection', async (conn, req) => {
             conn.heartbeat = new Date()
             this.sessionParser(req, {}, () => {
@@ -1097,9 +1077,11 @@ class Webfront {
                     conn.send(JSON.stringify({
                         event: 'socket_response'
                     }))
-                }, 0);
+                }, 0)
+
                 conn.session = req.session
                 var params = getParams(req.url.substr(1))
+
                 if (params.action) {
                     switch (params.action) {
                         case 'socket_listen_servers':
@@ -1243,6 +1225,7 @@ class Webfront {
                 MaxClients: Manager.Server.MaxClients,
                 Hostname: Manager.Server.HostnameRaw,
             }
+
             var Status = {
                 ServerId: i,
                 Online: true,
@@ -1257,9 +1240,11 @@ class Webfront {
             Manager.Server.previousStatus = Status
             Servers.push(Status)
         }
+
         Servers.sort((a, b) => {
             return b.Clients.length - a.Clients.length;
         })
+        
         return Servers
 
     }
