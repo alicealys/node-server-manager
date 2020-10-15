@@ -15,8 +15,8 @@ class Plugin {
                 name: 'Zombies Stats',
                 data: {
                     'Kills': stats.Kills, 
-                    'Downs': stats.Kills, 
-                    'Revives': stats.Kills, 
+                    'Downs': stats.Downs, 
+                    'Revives': stats.Revives, 
                     'Highest Round': stats.HighestRound, 
                     'Headshots': stats.Headshots, 
                     'Score': stats.Score, 
