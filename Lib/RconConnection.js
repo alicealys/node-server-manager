@@ -82,7 +82,7 @@ class Rcon {
             var gamename = await this.getDvar('gamename')
 
             rawClients.forEach(client => {
-                var regex = /^ *([0-9]+) +-?([0-9]+) +-?([0-9]+) +-?([0-9]+) +((?:[A-Za-z0-9]){8,32}|(?:[A-Za-z0-9]){8,32}|bot[0-9]+|(?:[[A-Za-z0-9]+)) *(.{0,32}) +([0-9]+) +(\d+\.\d+\.\d+.\d+\:-*\d{1,5}|0+.0+:-*\d{1,5}|loopback|unknown) +(-*[0-9]+) +([0-9]+) *$/g
+                var regex = /^ *([0-9]+) +-?([0-9]+) +-?([0-9]+) +-?([0-9]+) +((?:[A-Za-z0-9]){8,32}|(?:[A-Za-z0-9]){8,32}|bot[0-9]+|(?:[[A-Za-z0-9]+)) *(.{0,32}) +([0-9]+) +(\d+\.\d+\.\d+.\d+\:-*\d{1,5}|0+.0+:-*\d{1,5}|loopback|unknown|bot) +(-*[0-9]+) +([0-9]+) *$/g
                 
                 if (!client.match(regex)) return
                 var match = regex.exec(client)

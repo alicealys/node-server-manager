@@ -23,20 +23,24 @@ class Plugin {
         })
 
         this.Server.on('connect', async (Player) => {
+            if (Player.IPAddress.match(/(unknown|loopback|bot)/g)) return
+
             if (Player.PermissionLevel >= Permissions.Levels['ROLE_MODERATOR']) {
                 Player.Tell(Utils.formatString(Localization['AUTO_RECENT_REPORTS'], { count: (await this.Server.DB.getActiveReports()).length }, '%')[0])
             }
+
             if (process.env.NODE_ENV && process.env.NODE_ENV.toLocaleLowerCase() == 'dev') return
+
             var connections = await this.Server.DB.getAllConnections(Player.ClientId)
+
             Player.Tell(Localization['WELCOME_PLAYER']
                         .replace('%PLAYER%', Player.Name)
                         .replace('%CONNECTIONS%', this.ordinalSuffix(connections.length | 1)))
+
             if (Player.Session.Data.Authorized) {
                 Player.Tell('Logged in through previous session')
             }
 
-
-            
             if (Player.IPAddress) {
                 var info = await this.getInfo(Player.IPAddress.match(/(localhost|127\.0\.0\.1)/g) ? this.Server.externalIP : Player.IPAddress)
                 this.Server.Broadcast(Localization['WELCOME_PLAYER_BROADCAST']

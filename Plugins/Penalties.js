@@ -9,10 +9,10 @@ class Plugin {
         this.Server = Server
         this.Manager = Manager
         this.Server.on('any_event', this.onEvent.bind(this))
-        this.Server.on('connected', this.onPlayerConnected.bind(this))
+        this.Server.on('connect', this.onPlayerConnected.bind(this))
     }
     async onPlayerConnected(Player) {
-        if (this.Server.getClients().length - this.Server.getPriviledgedClients().length + this.Server.reservedSlots > this.Server.MaxClients && Player.PermissionLevel < Permissions.Levels['ROLE_MODERATOR']) {
+        if (this.Server.getClients().length + this.Server.reservedSlots > this.Server.MaxClients && Player.PermissionLevel < Permissions.Levels['ROLE_MODERATOR']) {
             Player.Kick(Localization['KICK_CLIENTSLOT_RESERVED'])
         }
     }
