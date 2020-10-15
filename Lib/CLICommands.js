@@ -10,7 +10,8 @@ const rl = readline.createInterface({
 })
 
 class CLICommands {
-    constructor(Manager) {
+    constructor(Manager, Managers) {
+        this.Managers = Managers
         this.Player = {
             Name: 'Node Server Manager',
             ClientId: 1,
@@ -21,13 +22,34 @@ class CLICommands {
             }
         }
         this.Manager = Manager
+        this.customCommands = {
+            'chat': {
+                callback: () => {
+                    this.Player.Tell(`Chat ${this.streamChat ? '^2enabled' : '^1disabled'}`)
+                    this.streamChat = !this.streamChat
+                }
+            }
+        }
+        this.streamChat()
         rl.on('line', this.processCommand.bind(this))
+    }
+    streamChat() {
+        this.Managers.forEach(Manager => {
+            Manager.Server.on('message', async (Player, Message) => {
+                this.Player.Tell(Utils.formatString(Localization['GLOBALCHAT_FORMAT'], {Name: Player.Name, Message, Hostname: Player.Server.HostnameRaw}, '%')[0])
+            })
+        })
     }
     COD2BashColor(string) {
         return string.replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), `\x1b[3$1m`)
     }
     async processCommand(line) {
         var args = line.split(/\s+/)
+
+        if (this.customCommands[args[0].toLocaleLowerCase()]) {
+            this.customCommands[args[0].toLocaleLowerCase()].callback()
+            return
+        }
 
         var executedMiddleware = await this.Manager.Commands.executeMiddleware(args[0], this.Player, args)
         if (this.Manager.Commands.Execute(args[0], this.Player, args)) return
