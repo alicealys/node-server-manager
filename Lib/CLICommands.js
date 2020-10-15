@@ -26,7 +26,7 @@ class CLICommands {
             'chat': {
                 callback: () => {
                     this.Player.Tell(`Chat ${this.streamChat ? '^2enabled' : '^1disabled'}`)
-                    this.streamChat = !this.streamChat
+                    this.chatEnabled = !this.chatEnabled
                 }
             }
         }
@@ -36,7 +36,8 @@ class CLICommands {
     streamChat() {
         this.Managers.forEach(Manager => {
             Manager.Server.on('message', async (Player, Message) => {
-                this.Player.Tell(Utils.formatString(Localization['GLOBALCHAT_FORMAT'], {Name: Player.Name, Message, Hostname: Player.Server.HostnameRaw}, '%')[0])
+                if (this.chatEnabled)
+                    this.Player.Tell(Utils.formatString(Localization['GLOBALCHAT_FORMAT'], {Name: Player.Name, Message, Hostname: Player.Server.HostnameRaw}, '%')[0])
             })
         })
     }
