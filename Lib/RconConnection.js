@@ -15,7 +15,7 @@ class Rcon {
       this.previousClients = []
       this.client = dgram.createSocket('udp4')
     }
-    async _executeCommandAsync(command) {
+    async executeCommandAsync(command) {
         return new Promise(async (resolve, reject) => {
             var client =  dgram.createSocket('udp4')
             var message = new Buffer.from(this.commandPrefixes.Rcon.prefix
@@ -56,15 +56,6 @@ class Rcon {
             }, 5000)
         })
     }
-    async executeCommandAsync(command) {
-        for (var i = 0; i < this.commandRetries; i++) {
-            var result = await this._executeCommandAsync(command)
-            if (result) {
-                return result
-            }
-            await wait(200)
-        }
-    }
     async setDvar(dvarName, value) {
         await this.executeCommandAsync(this.commandPrefixes.Rcon.setDvar.replace('%DVAR%', dvarName).replace('%VALUE%', value))
     }
@@ -80,12 +71,7 @@ class Rcon {
             if (!status) return false
             status = status.split('\n').slice(1, -1)
 
-            switch (true) {
-                case (!status):
-                    return {success: false, error: ''}
-                case (status[0].includes('invalid')):
-                    return {success: false, error: status[0]}
-            }
+            if (status[0].includes('invalid')) return false
 
             var map = status[0].split(/\s+/g)[1]
             var rawClients = status.slice(3)
