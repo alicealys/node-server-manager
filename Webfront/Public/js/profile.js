@@ -77,14 +77,15 @@ function escapeHtml(text) {
     '>': '&gt;',
     '"': '&quot;',
     "'": '&#039;'
-  };
-  return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+  }
+  return text.replace(/[&<>"']/g, function(m) { return map[m] })
 }
 
 async function notifyMe(ServerId, Client, Message) {
   const notifications = document.getElementById("notifications-cont")
   var n = document.createDocumentFragment()
   var status = ServerId ? JSON.parse(await makeRequest('GET', `/api/players?ServerId=${ServerId}`)) : null
+  console.log(Message)
   Message = escapeHtml(Message)
   var notif = createElementFromHTML(`
   <div class='notification-notif notifFadeIn notifFadeOut'>
@@ -143,7 +144,7 @@ function escapeHtml(text) {
     '>': '&gt;',
     '"': '&quot;',
     "'": '&#039;'
-  };
+  }
   return text.replace(/[&<>"']/g, function(m) { return map[m]; });
 }
 
@@ -228,8 +229,11 @@ function makeRequest (method, url, data, contentType = null) {
     });
 }
 
+function stripString(string) {
+  return string.replace(new RegExp(/(\^.)/g), '')
+}
+
 var logMessage = (msg, append, date = new Date()) => {
-  msg.Message = escapeHtml(msg.Message)
   var penalties = {
     'PENALTY_TEMP_BAN' : 'Temp banned',
     'PENALTY_PERMA_BAN' : 'Perma banned',
@@ -243,20 +247,20 @@ var logMessage = (msg, append, date = new Date()) => {
             <div class='wf-message-sender'>
                 <a class='wf-link wf-message-sender' href='/id/${msg.Client.ClientId}'>${msg.Client.Name}</a>:</div>
                 <div class='wf-default wf-message-date'>${moment(date).calendar()}</div>
-            <div class='wf-message-message'>${msg.Message}</div>
+            <div class='wf-message-message'>${escapeHtml(stripString(msg.Message))}</div>
         </div>
         `))
       break
       case 'Penalty':
-        var msg = msg.Target.ClientId == Client.ClientId ? (parseHTML(`
+        var msg = msg.Target.ClientId == Profile.ClientId ? (parseHTML(`
         <div class='wf-message'>
             <div class='wf-default wf-message-date'>${moment(date).calendar()}</div>
-            <div class='wf-message-message'><span class='iw-red'>${penalties[msg.PenaltyType]}</span> <span class='iw-yellow'>${msg.Target.ClientId}</span> for <span class='iw-cyan'>${msg.Reason}</span></div>
+            <div class='wf-message-message'><span class='iw-red'>${penalties[msg.PenaltyType]}</span> <span class='iw-yellow'>${msg.Target.Name}</span> for <span class='iw-cyan'>${escapeHtml(stripString(msg.Reason))}</span></div>
         </div>
         `)) : (parseHTML(`
         <div class='wf-message'>
             <div class='wf-default wf-message-date'>${moment(date).calendar()}</div>
-            <div class='wf-message-message'><span class='iw-red'>${penalties[msg.PenaltyType]}</span> by <span class='iw-yellow'>${msg.Origin.ClientId}</span> for <span class='iw-cyan'>${msg.Reason}</span></div>
+            <div class='wf-message-message'><span class='iw-red'>${penalties[msg.PenaltyType]}</span> by <span class='iw-yellow'>${msg.Origin.Name}</span> for <span class='iw-cyan'>${escapeHtml(stripString(msg.Reason))}</span></div>
         </div>
         `))
       break
@@ -266,7 +270,7 @@ var logMessage = (msg, append, date = new Date()) => {
             <div class='wf-message-sender'>
                 <a class='wf-link wf-message-sender' href='/id/${msg.Client.ClientId}'>${msg.Client.Name}</a>:</div>
                 <div class='wf-default wf-message-date'>${moment(date).calendar()}</div>
-            <div class='wf-message-message'>${COD2HTML(msg.Message, '')}</div>
+            <div class='wf-message-message'>${COD2HTML(escapeHtml(msg.Message), '')}</div>
         </div>
         `))
       break

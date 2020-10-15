@@ -1,6 +1,6 @@
 window.addEventListener('load', () => {
     var wsProtocol = location.protocol === 'https:' ? 'wss' : 'ws'
-    var socket = new WebSocket(`${wsProtocol}://${window.location.hostname}/?action=socket_listen_messages`)
+    var socket = new WebSocket(`${wsProtocol}://${window.location.host}/?action=socket_listen_messages`)
     socket.onopen = () => {
         setInterval(() => {
             socket.send(JSON.stringify({action: 'heartbeat'}))
@@ -22,12 +22,13 @@ window.addEventListener('load', () => {
         if (log.scrollTop + 50 >= (log.scrollHeight - log.offsetHeight) && pageLoaded && !maxPage) {
             pageLoaded = false
             var nextMessages = JSON.parse(await makeRequest('GET', `/api/messages?&page=${nextPage}&limit=50`))
+            console.log(nextMessages)
             nextMessages.forEach(Message => {
                 if ( ( previousDate - new Date(Message.Date) ) / 1000 / 60 / 30 >= 1) { 
                     previousDate = new Date(Message.Date)
                     addSeparator(new Date(Message.Date))
                 }
-                logMessage(Message.Message, Message.Name, Message.ClientId, Message.Hostname, new Date(Message.Date), true)
+                logMessage(Message.Message, Message.Name, Message.OriginId, Message.Hostname, new Date(Message.Date), true)
             })
             pageLoaded = true
             nextPage++
