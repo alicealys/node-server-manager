@@ -15,6 +15,7 @@ class Plugin {
                 setDvar: 'set %DVAR% %VALUE%',
                 clientKick: `clientkick_for_reason %CLIENT% "%REASON%"`,
                 Tell: `tell %CLIENT% "%MESSAGE%"`,
+                Say: `say "%MESSAGE%"`,
             },
             getInfo: '\xff\xff\xff\xffgetinfo',
             getStatus: '\xff\xff\xff\xffgetstatus',
