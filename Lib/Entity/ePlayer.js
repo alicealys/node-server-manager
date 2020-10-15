@@ -1,6 +1,7 @@
 const EventEmitter          = require('events')
 const path                  = require('path')
 const { Commands, NodeServerManager } = require(path.join(__dirname, '../Classes.js'))
+const { ChaiPlayer }            = require('../ChaiscriptApi.js')
 
 function secondsToDhms (seconds) {
   seconds = Number(seconds);
@@ -21,6 +22,7 @@ class ePlayer extends EventEmitter {
         super()
         this.Guid = Guid
         this.Name = Name
+        this.chai = new ChaiPlayer(Server, Clientslot)
         this.inGame = true
         this.lastSeen = new Date()
         this.IPAddress = IPAddress

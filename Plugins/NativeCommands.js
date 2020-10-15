@@ -338,33 +338,6 @@ class Plugin {
                     }
                 }
             },
-            'stats': {
-                ArgumentLength: 0,
-                Permission: Permissions.Commands.COMMAND_USER_CMDS,
-                inGame: false,
-                callback: async (Player, args) => {
-                    var Target = !args[1] ? Player : await this.Server.getClient(args[1])
-        
-                    if (!Target) {
-                        Player.Tell(Localization.COMMAND_CLIENT_NOT_FOUND)
-                        return
-                    }
-    
-                    var ClientId = Target.ClientId
-                    var Stats = await this.Server.DB.getPlayerStatsTotal(ClientId)
-                    var Client = await this.Server.DB.getClient(ClientId)
-    
-                    if (Stats)
-                        Player.Tell(Localization.COMMAND_STATS_FORMAT
-                        .replace('%PLAYEDTIME%', Utils.time2str(Stats.PlayedTime * 60))
-                        .replace('%PERFORMANCE%', Stats.Performance.toFixed(2))
-                        .replace('%NAME%', Client.Name)
-                        .replace('%KILLS%', Stats.Kills)
-                        .replace('%DEATHS%', Stats.Deaths)
-                        .replace('%KDR%',(Stats.Kills / Math.max(Stats.Deaths, 1)).toFixed(2)))
-                    else Player.Tell(Localization.COMMAND_CLIENT_NOT_FOUND)
-                }
-            },
             'token': {
                 ArgumentLength: 0,
                 Permission: Permissions.Commands.COMMAND_USER_CMDS,
@@ -423,46 +396,6 @@ class Plugin {
                         Player.Tell(result[i])
                         delay && await wait(300)
                     }
-                }
-            },
-            'tp': {
-                ArgumentLength: 1,
-                Permission: Permissions.Commands.COMMAND_TP,
-                inGame: true,
-                callback: async (Player, args) => {
-                    var Client = await this.Server.getClient(args[1])
-                    var Target = await this.Server.Rcon.getClientByGuid(Client.Guid)
-    
-                    switch (true) {
-                        case !Client:
-                        case !Target:
-                            Player.Tell(Localization.COMMAND_CLIENT_NOT_FOUND)
-                        return
-                    }
-    
-                    await this.Server.Rcon.executeCommandAsync(`seta tp_src ${Player.Clientslot}`)
-                    await this.Server.Rcon.executeCommandAsync(`seta tp_dest ${Target.num}`)
-                    Player.Tell(`Teleporting you to ${Target.name}`)
-                }
-            },
-            'tphere': {
-                ArgumentLength: 1,
-                Permission: Permissions.Commands.COMMAND_TP,
-                inGame: true,
-                callback: async (Player, args) => {
-                    var Client = await this.Server.getClient(args[1])
-                    var Target = await this.Server.Rcon.getClientByGuid(Client.Guid)
-    
-                    switch (true) {
-                        case !Client:
-                        case !Target:
-                            Player.Tell(Localization.COMMAND_CLIENT_NOT_FOUND)
-                        return
-                    }
-    
-                    await this.Server.Rcon.executeCommandAsync(`seta tp_src ${Target.num}`)
-                    await this.Server.Rcon.executeCommandAsync(`seta tp_dest ${Player.Clientslot}`)
-                    Player.Tell(`Teleporting ${Target.name} to you`)
                 }
             },
             'setrole': {

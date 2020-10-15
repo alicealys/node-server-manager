@@ -162,12 +162,12 @@ class Plugin {
                 }, '%')[0])
             })
             this.Manager.Commands.Add(command)
-        })(this);   
+        })(this);
 
         (() => {
             let command = new Command()
             .setName('eval')
-            .addParam(0, 'js', true)
+            .addParam(0, 'js', {join: true})
             .setPermission('ROLE_OWNER')
             .addCallback(async (Player, Params, Args, Options, Funcs) => {
                 try {
@@ -187,12 +187,13 @@ class Plugin {
             .setName('stats')
             .addParam(0, 'client', {join: true, optional: true})
             .addCallback(async (Player, Params, Args, Options, Funcs) => {
-                var Target = Params.join ? Player : await this.Server.getClient(Params.join)
+                var Target = !Params.client ? Player : await this.Server.getClient(Params.client)
 
                 if (!Target) {
                   Player.Tell(Localization.COMMAND_CLIENT_NOT_FOUND)
                   return
                 }
+
                 var ClientId = Target.ClientId
                 var Stats = await this.Server.DB.getPlayerStatsTotal(ClientId)
                 var Client = await this.Server.DB.getClient(ClientId)
@@ -206,6 +207,7 @@ class Plugin {
                   .replace('%KDR%',(Stats.Kills / Math.max(Stats.Deaths, 1)).toFixed(2)))
                 else Funcs.Tell(Localization.COMMAND_CLIENT_NOT_FOUND)
             })
+            this.Manager.Commands.Add(command)
         })(this);
 
         (() => {

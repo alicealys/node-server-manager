@@ -5,6 +5,7 @@ const EventEmitter    = require('events')
 const ip              = require('public-ip')
 const Maps            = require(path.join(__dirname, `../../Configuration/Localization.json`)).Maps
 const Permissions     = require(path.join(__dirname, `../../Configuration/NSMConfiguration.json`)).Permissions
+const { ChaiscriptApi }            = require('../ChaiscriptApi.js')
 
 class _Server extends EventEmitter {
     constructor(IP, PORT, RCON, DATABASE, sessionStore, clientData, Managers, Id, Manager, config) {
@@ -35,6 +36,7 @@ class _Server extends EventEmitter {
         this.on('init', this.onInitGame.bind(this))
         this.config = config
         this.reservedSlots = config.reservedSlots
+        this.chai = new ChaiscriptApi(this)
         Manager.Commands = new Commands()
     }
     getMap(name) {
@@ -51,6 +53,21 @@ class _Server extends EventEmitter {
             this.removeListener('line', onLine)
         }
         this.on('line', onLine)
+    }
+    findLocalClient(name) {
+        var clientIdRegex = /\@([0-9]+)/g
+        var found = false
+
+        name = name.match(clientIdRegex) ? clientIdRegex.exec(name)[1] : name
+
+        this.Clients.forEach(Client => {
+            if (!Client) return
+
+            if (Client.Name.toLocaleLowerCase() == name || Client.ClientId == name) {
+                found = Client
+            }
+        })
+        return found
     }
     getStaffMembers() {
         var staff = []
@@ -74,6 +91,7 @@ class _Server extends EventEmitter {
             this.Mapname = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.mapname)
             this.MaxClients = this.config.maxClientsOverride ? this.config.maxClientsOverride : await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.maxclients)
             this.externalIP = !this.IP.match(/(^127\.)|(localhost)|(^192\.168\.)|(^10\.)|(^172\.1[6-9]\.)|(^172\.2[0-9]\.)|(^172\.3[0-1]\.)|(^::1$)|(^[fF][cCdD])/g) ? this.IP : await ip.v4()
+            this.emit('dvars_loaded')
         }
         catch (e) {}
     }

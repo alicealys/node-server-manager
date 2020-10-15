@@ -1,0 +1,17 @@
+setInterval(fun() {
+    for (var i = 0; i < 20; ++i) {
+        if (gsc.getDvar("chai_${i}") != "") {
+            var string = gsc.getDvar("chai_${i}")
+            try {
+                var header = "chai_${i};"
+                var newline = "\n"
+                print("evaluating ${string}")
+                gsc.setDvar("chai_${i}", "")
+                eval(string)
+            }
+            catch (e) {
+                print("error evaluating ${string}, ${e}")
+            }
+        }
+    }
+}, 100)
