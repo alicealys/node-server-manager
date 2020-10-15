@@ -63,16 +63,12 @@ class NSM extends EventEmitter{
     this.StartAsync()
   }
   async StartAsync() {
-
-    // Connect to the server's rcon
     this.RconConnection = new RconConnection(this.IP, this.PORT, this.PASSWORD)
     this.Server = new Server(this.IP, this.PORT, this.RconConnection, Database, sessionStore, clientData, Managers, Id++, this, this.configuration)
     this._EventLogWatcher = this.LOGFILE ? new EventLogWatcher(this.LOGFILE, this.Server, this) : new ServerLogWatcher(this.LOGSERVERURI, this.Server, this)
 
-    // Load plugins before initializing Server.Clients
     this.LoadPlugins()
     
-    // Load Server Dvars
     await this.Server.setDvarsAsync()
 
 
@@ -84,14 +80,14 @@ class NSM extends EventEmitter{
       return
     }
 
-    // Load Client from status command
     await this.Server.loadClientsAsync()
-    //this.Server.Broadcast('^3NSM^7 is now ^2ONLINE')
 
-    // Start watching log
     this._EventLogWatcher.init()
 
     this.emit('ready')
+  }
+  log(string) {
+    console.log(`[${new Date().toISOString()}] - - ${COD2BashColor(string)}`)
   }
   LoadPlugins() {
     const directoryPath = path.join(__dirname, '../Plugins');

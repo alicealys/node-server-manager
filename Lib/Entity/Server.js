@@ -7,7 +7,8 @@ const Maps              = require(path.join(__dirname, `../../Configuration/Loca
 const Permissions       = require(path.join(__dirname, `../../Configuration/NSMConfiguration.json`)).Permissions
 const { ChaiscriptApi } = require('../ChaiscriptApi.js')
 
-class _Server extends EventEmitter {
+var wasRunning = true
+class Server extends EventEmitter {
     constructor(IP, PORT, RCON, DATABASE, sessionStore, clientData, Managers, Id, Manager, config) {
         super()
         this.Clients = new Array(18).fill(null)
@@ -26,12 +27,12 @@ class _Server extends EventEmitter {
         this.uptime = 0
         this.Gamename = 'UNKNOWN'
         this.Managers = Managers
+        this.Manager = Manager
         this.previousUptime = 0
         this.previousStatus = null
         this.setMaxListeners(18)
         this.Heartbeat()
         this.heartbeatRetry = 2
-        this.HeartbeatInt = setInterval(this.Heartbeat.bind(this), 15000)
         this.sessionStore = sessionStore
         this.on('init', this.onInitGame.bind(this))
         this.config = config
@@ -96,8 +97,10 @@ class _Server extends EventEmitter {
 
             this.externalIP = !this.IP.match(/(^127\.)|(localhost)|(^192\.168\.)|(^10\.)|(^172\.1[6-9]\.)|(^172\.2[0-9]\.)|(^172\.3[0-1]\.)|(^::1$)|(^[fF][cCdD])/g) ? this.IP : await ip.v4()
             this.emit('dvars_loaded')
+
+            this.HeartbeatInt = setInterval(this.Heartbeat.bind(this), 15000)
         }
-        catch (e) {}
+        catch (e) { }
     }
     tellStaffGlobal(Message) {
         this.Managers.forEach(Manager => {
@@ -121,6 +124,9 @@ class _Server extends EventEmitter {
         var Client = Clients ? Clients.reverse()[0] : false
         return Client 
     }
+    toString() {
+        return `${this.IP}:${this.PORT}`
+    }
     getPlayerByName(Name) {
         var Client = this.Clients.find(x => x && x.Name.startsWith(Name))
         return Client
@@ -143,12 +149,13 @@ class _Server extends EventEmitter {
     }
     async Heartbeat() {
         try {
-            var status = await this.Rcon.executeCommandAsync(this.Rcon.commandPrefixes.Rcon.status)
+            var status = await this.Rcon.sendCommand('pingreq')
 
             if (!status) {
                 if (this.heartbeatRetry <= 0) {
                     this.Rcon.isRunning = false
-                    console.log(`${this.IP}:${this.PORT} is not responding`)
+                    wasRunning && this.Manager.log(`^1Connection lost with ^6[${this.toString()}]^7`)
+                    wasRunning = false
                 }
                 this.heartbeatRetry > 0 && this.heartbeatRetry--
             } else this.heartbeatRetry = 2
@@ -156,7 +163,8 @@ class _Server extends EventEmitter {
             if (!this.Rcon.isRunning && status != false) {
                 this.heartbeatRetry = 1
                 this.Rcon.isRunning = true
-                console.log(`${this.IP}:${this.PORT} is responding again, reloading clients...`)
+                wasRunning = true
+                this.Manager.log(`^1Connection re-established with ^6[${this.toString()}]^7`)
                 setTimeout( async () => {
                     await this.loadClientsAsync()
                     this.emit('reload')
@@ -190,10 +198,7 @@ class _Server extends EventEmitter {
         })
     }
     Broadcast (string) {
-        this.Clients.forEach(c => {
-            if (c == null) return
-            c.Tell(string);
-        })
+        this.Rcon.executeCommandAsync(this.Rcon.commandPrefixes.Rcon.Say.replace('%MESSAGE%', string))
     }
   }
-module.exports = _Server
+module.exports = Server

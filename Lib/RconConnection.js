@@ -15,6 +15,45 @@ class Rcon {
       this.previousClients = []
       this.client = dgram.createSocket('udp4')
     }
+    async sendCommand(command) {
+        return new Promise(async (resolve, reject) => {
+            var client =  dgram.createSocket('udp4')
+            var message = new Buffer.from(command, 'binary')
+        try {
+            client.on('listening', async () => {
+                client.send(message, 0, message.length, this.port, this.ip, async (err) => {
+                    if (err) {
+                        client.close()
+                        resolved = true
+                        resolve(false)
+                    }
+                })
+            })
+        }
+        catch (e) {
+            console.log(`Error sending udp packet: ${e.toString()}`)
+            resolve(false)
+        }
+
+        client.bind()
+
+        var resolved = false;
+        var onMessage = (msg) => {
+            resolve(msg.toString())
+            client.close()
+            resolved = true
+        }
+
+        client.on('message', onMessage);
+
+        setTimeout(() => {
+            if (!resolved) {
+                    client.close()
+                    resolve(false)
+                }
+            }, 3000)
+        })
+    }
     async executeCommandAsync(command) {
         return new Promise(async (resolve, reject) => {
             var client =  dgram.createSocket('udp4')
