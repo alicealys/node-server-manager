@@ -2,10 +2,50 @@ const Sequelize         = require('sequelize')
 const bcrypt            = require('bcrypt')
 const Models            = require('./DatabaseModels.js')
 
+class MetaService {
+    constructor(Models) {
+        this.Models = Models
+    }
+    async addPersistentMeta(Key, Value, ClientId) {
+        var meta = await this.Models.NSMMeta.findAll({
+            where: {
+                ClientId,
+                Key
+            },
+            raw: true
+        })
+
+        if (!meta.length) {
+            await this.Models.NSMMeta.build({
+                ClientId,
+                Key,
+                Value
+            }).save()
+            return
+        }
+
+        await this.Models.NSMMeta.update(
+            { Value: Value },
+            { where: { ClientId, Key } })
+    }
+    async getPersistentMeta(Key, ClientId) {
+        var meta = await this.Models.NSMMeta.findAll({
+            where: {
+                ClientId,
+                Key
+            },
+            raw: true
+        })
+
+        return meta.length ? meta[0] : null
+    }
+}
+
 class Database {
     constructor () {
         this.clientCache = []
         this.Models = Models
+        this.metaService = new MetaService(Models)
         this.clientProfileMeta = [
             async (ClientId) => {
                 var stats = await this.getPlayerStatsTotal(ClientId)

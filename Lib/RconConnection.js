@@ -1,7 +1,8 @@
 const dgram             = require('dgram');
 const path              = require('path')
 const commandPrefixes   = require('./RconCommandPrefixes')
-const Utils            = new (require(path.join(__dirname, '../Utils/Utils.js')))()
+const Utils             = new (require(path.join(__dirname, '../Utils/Utils.js')))()
+const wait              = require('delay')
 
 class Rcon {
     constructor (ip, port, password) {
@@ -10,10 +11,11 @@ class Rcon {
       this.password = password
       this.commandPrefixes = commandPrefixes
       this.isRunning = true
+      this.commandRetries = 3
       this.previousClients = []
       this.client = dgram.createSocket('udp4')
     }
-    async executeCommandAsync(command) {
+    async _executeCommandAsync(command) {
         return new Promise(async (resolve, reject) => {
             var client =  dgram.createSocket('udp4')
             var message = new Buffer.from(this.commandPrefixes.Rcon.prefix
@@ -53,6 +55,15 @@ class Rcon {
                 }
             }, 5000)
         })
+    }
+    async executeCommandAsync(command) {
+        for (var i = 0; i < this.commandRetries; i++) {
+            var result = await this._executeCommandAsync(command)
+            if (result) {
+                return result
+            }
+            await wait(200)
+        }
     }
     async setDvar(dvarName, value) {
         await this.executeCommandAsync(this.commandPrefixes.Rcon.setDvar.replace('%DVAR%', dvarName).replace('%VALUE%', value))
