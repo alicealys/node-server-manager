@@ -1,11 +1,11 @@
 const path          = require('path')
 const configuration = require(path.join(__dirname, `../Configuration/NLSConfiguration.json`).toString())
 const ws            = require('ws')
-const md5           = require('md5')
 const fs            = require('fs')
-const readLastLines = require('read-last-lines')
 const https         = require('https')
 const http          = require('http')
+const spawn         = require('child_process').spawn
+const Tail          = require('tail').Tail
 
 class NodeLogServer {
     constructor(config) {
@@ -40,24 +40,31 @@ class NodeLogServer {
                 return queryDict;
             }
 
-            fs.watch(this.logFile, async (event, filename) => {
-                if (!filename) return
+            var filePath = path.resolve(this.logfile)
 
-                var lastLine = await readLastLines.read(this.logFile, 1)
-                var currentMD5 = md5(await readLastLines.read(this.logFile, 4))
-              
-                if (!event || this.previousMD5 == currentMD5) return;
-              
-                this.previousMD5 = currentMD5;
+            if (!fs.existsSync(filePath)) {
+                console.log(`Warning: log file "${filePath}" doesn't exist\nMake sure you selected the right file in Configuration/NLSConfiguration.json Servers -> LOGFILE\n`)
+            }
     
-                socket.Broadcast(lastLine)
-            })
+            if (process.platform == 'win32') {
+                var tail = spawn(`powershell`, ['-command', 'get-content', '-wait', '-Tail 0', `"${filePath}"`])
+                tail.stdout.on('data', (data) => {
+                    this.onLine(data.toString())
+                })
+                return
+            }
+            
+            var tail = new Tail(filePath)
+            tail.watch()
+    
+            tail.on('line', this.onLine.bind(this))
 
             socket.Broadcast = (msg) => {
                 socket.authorizedClients.forEach(client => {
                     client.send(msg)
                 })
             }
+
             socket.authorizedClients = []
             socket.on('connection', (conn, req) => {
                 var params = getParams(req.url.substr(1))
@@ -74,6 +81,9 @@ class NodeLogServer {
         catch (e) {
             console.log(`Log server failed to start: ${e.toString()}`)
         }
+    }
+    onLine(data) {
+        socket.Broadcast(data)
     }
 }
 
