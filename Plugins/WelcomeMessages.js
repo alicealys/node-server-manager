@@ -41,8 +41,9 @@ class Plugin {
                 Player.Tell('Logged in through previous session')
             }
 
+            var setting = await this.Server.DB.metaService.getPersistentMeta('location', Player.ClientId)
             if (Player.IPAddress) {
-                var info = await this.getInfo(Player.IPAddress.match(/(localhost|127\.0\.0\.1)/g) ? this.Server.externalIP : Player.IPAddress)
+                var info = !(setting && setting.Value == '1') ? await this.getInfo(Player.IPAddress.match(/(localhost|127\.0\.0\.1)/g) ? this.Server.externalIP : Player.IPAddress) : { country: Localization['STRING_HIDDEN'] }
                 this.Server.Broadcast(Localization['WELCOME_PLAYER_BROADCAST']
                                       .replace('%PLAYER%', Player.Name)
                                       .replace('%LOCATION%', info.country)

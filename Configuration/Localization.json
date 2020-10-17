@@ -143,7 +143,7 @@
         "COMMAND_NEXTMAP_FORMAT": "Next map is ^5%NAME%",
         "COMMAND_GLOBALCHAT_TRUE": "Global chat ^2ON",
         "COMMAND_GLOBALCHAT_FALSE": "Global chat ^1OFF",
-        "GLOBALCHAT_FORMAT": "^5%NAME%^7 @ ^3%HOSTNAME%^7: %MESSAGE%",
+        "GLOBALCHAT_FORMAT": "%ENABLED% ^5%NAME%^7 @ ^3%HOSTNAME%^7: %MESSAGE%",
         "COMMAND_REPLY_NOT_CONV": "Not in any conversation",
         "COMMAND_VOTE_COOLDOWN": "Your previous vote failed, please wait another [^5%TIME%^7] seconds before attempting to start another vote",
         "COMMAND_VOTE_TYPE_ERR": "Another vote is in progress to ^5%ACTION%^7",
@@ -179,7 +179,10 @@
         "ZBANK_MONEY_FORMAT_SELF": "Balance: ^2$%AMOUNT%^7",
         "ZBANK_MONEY_FORMAT": "^5%NAME%^7's balance: ^2$%AMOUNT%^7",
         "ZBANK_RECEIVE_FORMAT": "Received ^2$%AMOUNT%^7 from ^5%NAME%^7!",
-        "ZBANK_TRANSFER_FORMAT": "Successfully transfered ^2$%AMOUNT%^7 to ^5%NAME%^7's bank account! You payed a ^1$%FEE%^7 fee, Transaction ID: ^6#%ID%"
+        "ZBANK_TRANSFER_FORMAT": "Successfully transfered ^2$%AMOUNT%^7 to ^5%NAME%^7's bank account! You payed a ^1$%FEE%^7 fee, Transaction ID: ^6#%ID%",
+        "SETTING_TOGGLE_FORMAT": "%SETTING% %VALUE%",
+        "STRING_HIDDEN": "^0[Redacted]^7",
+        "SETTING_NOT_EXIST": "Setting does not exist"
     },
     "Games": {
       "T6": {

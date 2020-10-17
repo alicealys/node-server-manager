@@ -34,6 +34,31 @@ class Plugin {
 
         (() => {
             let command = new Command()
+            .setName('toggle')
+            .setAlias('t')
+            .addParam(0, 'setting')
+            .addCallback(async (Player, Params, Args, Options, Funcs) => {
+                let settingsMeta = ['location']
+                if (!settingsMeta.includes(Params.setting.toLocaleLowerCase())) {
+                    Player.Tell(Localization['SETTING_NOT_EXIST'])
+                    return
+                }
+
+                var setting = await this.Server.DB.metaService.getPersistentMeta(Params.setting, Player.ClientId)
+
+                this.Server.DB.metaService.addPersistentMeta(Params.setting.toLocaleLowerCase(), !(setting && setting.Value == '1'), Player.ClientId)
+
+                switch (Params.setting.toLocaleLowerCase()) {
+                    case 'location':
+                        Player.Tell(Utils.formatString(Localization['SETTING_TOGGLE_FORMAT'], {setting: Utils.capitalizeFirstLetter(Params.setting), value: !(setting && setting.Value == '1') ? '^1hidden' : '^2shown'}, '%')[0])
+                    break
+                }
+            })
+            this.Manager.Commands.Add(command)
+        })(this);
+
+        (() => {
+            let command = new Command()
             .setName('socialmedia')
             .setMiddleware(true)
             .addCallback(async (Player, Params, Args, Options, Funcs, next) => {

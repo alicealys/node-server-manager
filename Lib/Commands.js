@@ -61,6 +61,12 @@ class Commands {
 
         var Params = {}
         for (var i = 0; i < Command.Params.length; i++) {
+
+            Command.Params[i].Options = {
+                optional: (Command.Params[i].Options && Command.Params[i].Options.optional) ? Command.Params[i].Options.optional : false,
+                join: (Command.Params[i].Options && Command.Params[i].Options.join) ? Command.Params[i].Options.join : false,
+            }
+
             if (!Args[Command.Params[i].Index + 1]) {
                 if (Command.Params[i].Options.optional) continue
 

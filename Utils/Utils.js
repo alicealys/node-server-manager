@@ -36,6 +36,9 @@ class Utils {
       var sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
       return dDisplay + hDisplay + mDisplay + sDisplay;
     }
+    capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    }
     getRoleFrom (Value, Type) {
         switch (Type) {
           case 0:
