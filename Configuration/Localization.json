@@ -167,8 +167,19 @@
         "KICK_CLIENTSLOT_RESERVED": "Clientslot is reserved for priviledged user",
         "COMMAND_TP_FORMAT": "Teleporting ^5%ORIGIN%^7 to ^5%TARGET% (%COORDS%)",
         "COMMAND_FAILED": "Command failed",
+        "COMMAND_UNAVAILABLE_GAMETYPE": "This command is not available in this gamemode",
         "COMMAND_GIVEWEAPON": "Give yourself a weapon",
-        "USAGE_GIVEWEAPON": "^5weapon^7 <weaponname>"
+        "ZBANK_PARSE_ERROR": "Could not parse value",
+        "USAGE_GIVEWEAPON": "^5weapon^7 <weaponname>",
+        "ZBANK_BALANCE_ERROR": "Insufficient funds",
+        "ZBANK_WITHDRAW_SUCCESS": "Successfully withdrew ^2$%AMOUNT%^7 from your bank account!",
+        "ZBANK_WITHDRAW_FAIL": "Could not withdraw amount",
+        "ZBANK_DEPOSIT_SUCCESS": "Successfully deposited ^2$%AMOUNT%^7 into your bank account!",
+        "ZBANK_DEPOSIT_Fail": "Could not deposit amount",
+        "ZBANK_MONEY_FORMAT_SELF": "Balance: ^2$%AMOUNT%^7",
+        "ZBANK_MONEY_FORMAT": "^5%NAME%^7's balance: ^2$%AMOUNT%^7",
+        "ZBANK_RECEIVE_FORMAT": "Received ^2$%AMOUNT%^7 from ^5%NAME%^7!",
+        "ZBANK_TRANSFER_FORMAT": "Successfully transfered ^2$%AMOUNT%^7 to ^5%NAME%^7's bank account! You payed a ^1$%FEE%^7 fee, Transaction ID: ^6#%ID%"
     },
     "Games": {
       "T6": {

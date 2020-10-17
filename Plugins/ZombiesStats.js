@@ -92,7 +92,7 @@ class Plugin {
         })
 
         if (!Client.previousStats) {
-            Client.previousStats = {...Stats, Round}
+            Client.previousStats = Stats
             return
         }
 
@@ -104,6 +104,7 @@ class Plugin {
             Headshots: Stats.Headshots - Client.previousStats.Headshots,
             HighestRound: Round
         }
+
         Client.previousStats = {...Stats, Round}
 
         this.NSMZStats.update({

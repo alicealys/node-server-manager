@@ -840,7 +840,18 @@ class Webfront {
                     return
                 }
 
-                var result = (await this.Managers[req.query.ServerId].Server.Rcon.executeCommandAsync(command)).trim().split('\n')
+                var result = (await this.Managers[req.query.ServerId].Server.Rcon.executeCommandAsync(command))
+
+                if (!result) {
+                    res.end(JSON.stringify({
+                        success: true,
+                        result: ['Command failed']
+                    }))
+                    return
+                }
+                
+                result = result.trim().split('\n')
+
                 result.length == 1 ? result[0] = 'Command executed successfully' : result = result.splice(1)
                 res.end(JSON.stringify({
                     success: true,

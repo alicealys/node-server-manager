@@ -13,7 +13,7 @@ class Plugin {
         this.Managers.forEach(Manager => {
             Manager.Server.Clients.forEach(Client => {
                 if (!Client || !Client.Session.Data.globalChat || Client.Server.Id == Player.Server.Id) return
-                Client.Tell(Utils.formatString(Localization['GLOBALCHAT_FORMAT'], {Name: Player.Name, Message, Hostname: Player.Server.HostnameRaw}, '%')[0])
+                Client.Tell(Utils.formatString(Localization['GLOBALCHAT_FORMAT'], {Enabled: (Player.Session && Player.Session.Data.globalChat) ? '[^1G^7]' : '',Name: Player.Name, Message, Hostname: Player.Server.HostnameRaw}, '%')[0])
             })
         })
     }
