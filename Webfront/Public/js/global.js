@@ -20,8 +20,19 @@ window.addEventListener('load', () => {
     renderServerList()
 })
 
+function escapeHtml(text) {
+    var map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    }
+    return text.replace(/[&<>"']/g, function(m) { return map[m] })
+  }
+
 function logMessage(msg, refresh) {
-    if (!msg.data) return
+    if (!msg.data || msg.data.private || msg.data.ServerId == undefined) return
     var feed = document.querySelector(`*[data-serverid='${msg.data.ServerId}']`).querySelector('.wf-more-feed')
     switch (msg.event) {
         case 'event_client_message':
@@ -30,7 +41,7 @@ function logMessage(msg, refresh) {
             <div class='wf-message'>
                 <div class='wf-message-sender'>
                     <a class='wf-link wf-message-sender' href='/id/${msg.data.Client.ClientId}'>${msg.data.Client.Name}</a>:</div>
-                <div class='wf-message-message'>${COD2HTML(msg.data.Message, 'var(--color-text)')}</div>
+                <div class='wf-message-message'>${COD2HTML(escapeHtml(msg.data.Message), 'var(--color-text)')}</div>
             </div>
             `))
         break;

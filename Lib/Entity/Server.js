@@ -6,6 +6,7 @@ const ip                = require('public-ip')
 const Maps              = require(path.join(__dirname, `../../Configuration/Localization.json`)).Maps
 const Permissions       = require(path.join(__dirname, `../../Configuration/NSMConfiguration.json`)).Permissions
 const { ChaiscriptApi } = require('../ChaiscriptApi.js')
+const wait              = require('delay')
 
 var wasRunning = true
 class Server extends EventEmitter {
@@ -84,15 +85,20 @@ class Server extends EventEmitter {
     async setDvarsAsync() {
         try {
             this.Gametype = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.gametype)
+            await wait(200)
             this.Gamename = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.gamename)
+            await wait(200)
 
             this.Maps = this.Gamename != 'UNKNOWN' ? Maps.find(x => x.Game == this.Gamename).Maps : []
             this.mapRotation = (await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.maprotation)).match(/((?:gametype|exec) +(?:([a-z]{1,4})(?:.cfg)?))? *map ([a-z|_|\d]+)/gi).map(x => x.trim().split(/\s+/g)[1])
+            await wait(200)
 
             this.Hostname = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.hostname)
             this.HostnameRaw = this.Hostname
+            await wait(200)
 
             this.Mapname = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.mapname)
+            await wait(200)
             this.MaxClients = this.config.maxClientsOverride ? this.config.maxClientsOverride : await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.maxclients)
 
             this.externalIP = !this.IP.match(/(^127\.)|(localhost)|(^192\.168\.)|(^10\.)|(^172\.1[6-9]\.)|(^172\.2[0-9]\.)|(^172\.3[0-1]\.)|(^::1$)|(^[fF][cCdD])/g) ? this.IP : await ip.v4()

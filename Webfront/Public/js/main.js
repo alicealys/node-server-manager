@@ -1,12 +1,40 @@
 var servers
+
+class EventEmitter {
+    constructor() {
+        this.callbacks = []
+    }
+    on(event, callback) {
+        this.callbacks.push({event, callback})
+    }
+    emit(event) {
+        let args = [].slice.call(arguments)
+        this.callbacks.forEach(callback => {
+            if (event == callback.event) {
+                callback.callback.apply(null, args.slice(1))
+            }
+        })
+    }
+}
+
+var webfront = new EventEmitter()
+
 window.addEventListener('load', async () => {
     var wsProtocol = location.protocol === 'https:' ? 'wss' : 'ws'
-    var socket = new WebSocket(`${wsProtocol}://${window.location.host}`)
+    var socket = new WebSocket(`${wsProtocol}://${window.location.host}/?action=socket_listen_servers`)
+
+    socket.onmessage = (msg) => {   
+        var msg = JSON.parse(msg.data)
+        webfront.emit(msg.event, msg.data)
+    }
+
     socket.onopen = () => {
+        webfront.emit('connected')
         setInterval(() => {
             socket.send(JSON.stringify({action: 'heartbeat'}))
         }, 1000)
     }
+
     document.getElementById('client-search').addEventListener('keydown', (e) => {
         if (e.keyCode == 13) {
             e.preventDefault()
@@ -19,11 +47,13 @@ window.addEventListener('load', async () => {
             }
         }
     })
+
     servers = JSON.parse(await makeRequest('GET', '/api/servers', null))
     document.getElementById('client-search').addEventListener('input', (e) => {
         (e.target.textContent.length > 0) && e.target.parentNode.classList.add('wf-shadow-default')
     })
-    var params = getParams();
+
+    var params = getParams()
     params.q && ( document.getElementById('client-search').innerHTML = params.q )
 
     document.querySelectorAll('*[colorcode]').forEach(c => {
@@ -336,6 +366,18 @@ function createElementFromHTML(htmlString) {
     return div.firstChild; 
 }
 
+function escapeHtml(text) {
+    var map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    }
+    return text.replace(/[&<>"']/g, function(m) { return map[m] })
+  }
+
+let chat = false
 async function newRCONWindow() {
     var serversSelect = createElementFromHTML(`<select class='wf-select' data-nodrag></select>`)
     servers.forEach(server => {
@@ -361,9 +403,8 @@ async function newRCONWindow() {
         </div>
     `)
     serversSelect.addEventListener('change', () => {
-        Window.querySelector('.wf-rcon-log').innerHTML = null
+        clearConsole()
     })
-    console.log(Window.style.height)
     var clearConsole = () => {
         Window.querySelector('.wf-rcon-log').innerHTML = null
         Window.writeLine('Last login: ' + moment().format('ddd MMM DD hh:mm:ss yy'))
@@ -375,25 +416,38 @@ async function newRCONWindow() {
         Window.style.left = Window.style.top = e.target.getAttribute('data-maximized') == 'true' ? '0px' : '50px'
         Window.style.height = Window.style.width = e.target.getAttribute('data-maximized') == 'true' ? '100%' : 'auto'
     })
+
+    webfront.on('event_client_message', (event) => {
+        chat && Window.writeLine(`^5${event.Client.Name}^7 @ ^6${event.Hostname}^7: ${event.Message}`)
+    })
+
     Window.querySelector('.wf-rcon-textbox').addEventListener('keydown', async (e) => {
         if (e.keyCode == 13) {
             e.preventDefault()
             var command = e.target.textContent
             var args = command.toLocaleLowerCase().split(/\s+/g)
-            switch (true) {
-                case (args[0] == 'clear'):
+            e.target.innerHTML = null
+            Window.writeLine(`^2${Client.Name}@node^7:^5~^7$ ${command}`)
+            switch (args[0].toLocaleLowerCase()) {
+                case 'clear':
                     clearConsole();
                     e.target.innerHTML = null
                 return
+                case 'exit':
+                    Window.remove()
+                return
+                case 'chat':
+                    chat ^= true
+                    Window.writeLine(`Display chat ${chat ? '^2enabled' : '^1disabled'}`)
+                return
             }
-
-            Window.writeLine(`^2${Client.Name}@node^7:^5~^7$ ${command}`)
-            e.target.innerHTML = null
-            var result = JSON.parse(await makeRequest('GET', `/api/mod?command=${btoa(command)}&ServerId=${serversSelect.value}`, null))
-            if (!result.success) return
-            result.result.forEach(line => {
-                Window.writeLine(line)
-            })
+            if (command) {
+                var result = JSON.parse(await makeRequest('GET', `/api/mod?command=${btoa(command)}&ServerId=${serversSelect.value}`, null))
+                if (!result.success) return
+                result.result.forEach(line => {
+                    Window.writeLine(line)
+                })
+            }
         }
     })
     Window.addEventListener('click', (e) => {
@@ -402,6 +456,7 @@ async function newRCONWindow() {
     })
     Window.querySelector('.wf-rcon-header').prepend(serversSelect)
     Window.writeLine = (line) => {
+        line = escapeHtml(line)
         Window.querySelector('.wf-rcon-log').appendChild(createElementFromHTML(`
             <div data-nodrag class='wf-rcon-line'>
                 ${COD2HTML(line)}

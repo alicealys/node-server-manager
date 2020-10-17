@@ -99,9 +99,12 @@ class Rcon {
         await this.executeCommandAsync(this.commandPrefixes.Rcon.setDvar.replace('%DVAR%', dvarName).replace('%VALUE%', value))
     }
     async getDvar(dvarName) {
-        var dvar = await this.executeCommandAsync(this.commandPrefixes.Rcon.getDvar.replace('%DVAR%', dvarName))
-        if (!dvar || !dvar.match(/"(.*?)"/g)) return false
-        return dvar.match(/"(.*?)"/g)[0].slice(1, -1)
+        for (var i = 0; i < 3; i++) {
+            var dvar = await this.executeCommandAsync(this.commandPrefixes.Rcon.getDvar.replace('%DVAR%', dvarName))
+            if (!dvar || !dvar.match(/"(.*?)"/g)) continue
+            return dvar.match(/"(.*?)"/g)[0].slice(1, -1)
+        }
+        return false
     }
     async getStatus() {
         try {
