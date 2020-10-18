@@ -34,6 +34,7 @@ class EventLogWatcher extends EventParser {
         tail.on('line', this.onLine.bind(this))
     }
     onLine(line) {
+        this.Server.Rcon.isRunning = true
         this.Server.emit('line', line)
         this.Server.emit('stripped_line', line.trim().replace(new RegExp(/([0-9]+:[0-9]+)\s+/g), ''))
         var event = this.parseEvent(line)
