@@ -25,8 +25,8 @@ class CLICommands {
         this.customCommands = {
             'chat': {
                 callback: () => {
-                    this.Player.Tell(`Chat ${this.chatEnabled ? '^2enabled' : '^1disabled'}`)
                     this.chatEnabled = !this.chatEnabled
+                    this.Player.Tell(`Chat ${this.chatEnabled ? '^2enabled' : '^1disabled'}`)
                 }
             }
         }
@@ -37,7 +37,7 @@ class CLICommands {
         this.Managers.forEach(Manager => {
             Manager.Server.on('message', async (Player, Message) => {
                 if (this.chatEnabled)
-                    this.Player.Tell(Utils.formatString(Localization['GLOBALCHAT_FORMAT'], {Name: Player.Name, Message, Hostname: Player.Server.HostnameRaw}, '%')[0])
+                    this.Player.Tell(Utils.formatString(Localization['GLOBALCHAT_FORMAT'], {Enabled: '', Name: Player.Name, Message, Hostname: Player.Server.HostnameRaw}, '%')[0])
             })
         })
     }

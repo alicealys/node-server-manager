@@ -122,6 +122,8 @@ class Plugin {
                     var OriginName = await this.Server.DB.getName(Reports[page - 1][i].OriginId)
 
                     Player.Tell(Utils.formatString(Localization['COMMAND_REPORTS_TELL'], {Origin: OriginName, Target: TargetName, Reason: Reports[page - 1][i].Reason}, '%')[0])
+
+                    await wait(300)
                 }
 
             })
