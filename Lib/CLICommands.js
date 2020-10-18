@@ -53,7 +53,7 @@ class CLICommands {
         }
 
         var executedMiddleware = await this.Manager.Commands.executeMiddleware(args[0], this.Player, args)
-        if (this.Manager.Commands.Execute(args[0], this.Player, args)) return
+        if (this.Manager.Commands.execute(args[0], this.Player, args)) return
 
         var command = Utils.getCommand(this.Manager.commands, args[0])
         switch (true) {
