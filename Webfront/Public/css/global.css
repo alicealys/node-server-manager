@@ -3065,11 +3065,11 @@ body {
 .api-client-row div {
   padding:10px;
 }
-
-
 .wf-serverlist {
-  max-width: 1000px;
+  max-width: 1200px;
   margin:auto;
+  border-radius: 5px;
+  padding:15px;
 }
 .wf-serverlist-server {
   margin-bottom:20px;
@@ -3079,34 +3079,26 @@ body {
   padding:10px;
   text-align: center;
 }
-.wf-serverlist-server-info div img {
-  max-height: 200px;
-  border-radius:0px!important;
-}
-.wf-serverlist-server div:nth-child(even) {
-  /*background-color: var(--color-4);*/
-}
 .wf-serverlist-map {
-  flex-grow: 2;
+  flex-grow: 1;
   flex-basis: 1px;
-  padding:0px!important;
 }
 .wf-serverlist-hostname {
   flex-basis: 1px;
-  flex-grow: 2;
+  flex-grow: 1;
   text-align: left!important;
 }
 .wf-serverlist-players {
-  flex-grow: 1;
+  flex-grow: 0.5;
   flex-basis: 1px;
 }
 .wf-serverlist-button {
   flex-basis: 1px;
-  width: 20px;
+  flex-grow: 0.1;
 }
 .wf-serverlist-uptime {
   flex-basis: 1px;
-  flex-grow: 0.8;
+  flex-grow: 0.5;
 }
 .wf-serverlist-button i {
   cursor:pointer;
@@ -3115,6 +3107,7 @@ body {
   display:block;
   padding-left:40px;
   padding-right:40px;
+  height: 50px;
   align-items: center;
   justify-content: center;
   background-color: var(--color-1);
@@ -3131,12 +3124,12 @@ body {
 .wf-serverlist-server-more {
   display:block;
   background-color: var(--color-1);
-  max-width: 80%;
   padding:10px;
+  max-width: 85%;
   padding-left:50px;
   padding-right:50px;
   margin:auto;
-  margin-top:10px;
+  margin-top:20px;
   -webkit-transition: all 0.20s ease-in-out;
   -moz-transition: all 0.20s ease-in-out;
   -ms-transition: all 0.20s ease-in-out;
@@ -3300,13 +3293,13 @@ body {
     display:none;
   }
 }
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 650px) {
   .wf-header-search-wrap {
     display:none;
   }
 }
 
-@media only screen and (max-width: 700px) {
+@media only screen and (max-width: 800px) {
   .hide-mobile {
     display: none;
   }
@@ -3363,8 +3356,6 @@ body {
 }
 .wf-message-quit {
   color: #FF3131!important;
-}
-.wf-client-search-list {
 }
 .wf-client-search-client {
   font-family:codef;

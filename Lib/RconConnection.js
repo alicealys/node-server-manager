@@ -39,15 +39,17 @@ class Rcon {
 
         var resolved = false;
         var onMessage = (msg) => {
-            resolve(msg.toString())
+            client.removeAllListeners()
             client.close()
             resolved = true
+            resolve(msg.toString())
         }
 
         client.on('message', onMessage);
 
         setTimeout(() => {
             if (!resolved) {
+                    client.removeAllListeners()
                     client.close()
                     resolve(false)
                 }
@@ -80,9 +82,10 @@ class Rcon {
 
         var resolved = false;
         var onMessage = (msg) => {
-            resolve(msg.toString())
             client.close()
+            client.removeAllListeners()
             resolved = true
+            resolve(msg.toString())
         }
 
         client.on('message', onMessage);
@@ -90,6 +93,7 @@ class Rcon {
         setTimeout(() => {
             if (!resolved) {
                     client.close()
+                    client.removeAllListeners()
                     resolve(false)
                 }
             }, 5000)

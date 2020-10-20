@@ -238,7 +238,7 @@ class Plugin {
                 callback: async (Player, args = null, delay) => {
                     var allClients = Utils.chunkArray(this.getAllClients(), Player.inGame ? 4 : 15)
 
-                    var page = args[1] ? Math.max(1, Math.min(parseInt(args[1]), allClients.length)) : 1
+                    var page = Number.isInteger(parseInt(args[1])) ? Math.max(1, Math.min(parseInt(args[1]), allClients.length)) : 1
 
                     if (!allClients.length) {
                         Player.Tell(Localization['NO_PLAYERS_ONLINE'])
@@ -326,14 +326,30 @@ class Plugin {
     
                     if (args[1] && Managers[parseInt(args[1])] && Managers[parseInt(args[1])].Server.Mapname) {
                         var Manager = Managers[parseInt(args[1])]
-                        Player.Tell(`[${Manager.Server.HostnameRaw}]^7 - ^3${Manager.Server.IP}:^5${Manager.Server.PORT}^7 - ^5${Manager.Server.Clients.filter((value) => {return value}).length}^7 players online on ^5${Manager.Server.Mapname}`)
+                        Player.Tell(Utils.formatString(Localization['COMMAND_SERVERS_FORMAT'], 
+                        {
+                            Id: Manager.Server.Id, 
+                            Hostname: Manager.Server.Hostname, 
+                            Host: Manager.Server.getAddress(), 
+                            Clients: Manager.Server.getClients().length, 
+                            MaxClients: Manager.Server.MaxClients, 
+                            Mapname: Manager.Server.getMapname().Alias
+                        }, '%'))
                         return
                     }
     
                     for (var i = 0; i < Managers.length; i++) {
                         var Manager = Managers[i]
                         if (!Manager.Server.Mapname) continue
-                        Player.Tell(`[^5${i}^7] - [${Manager.Server.HostnameRaw}]^7 - ^3${Manager.Server.IP}:^5${Manager.Server.PORT}^7 - ^5${Manager.Server.Clients.filter((value) => {return value}).length}^7 players online on ^5${Manager.Server.Mapname}`)
+                        Player.Tell(Utils.formatString(Localization['COMMAND_SERVERS_FORMAT'], 
+                        {
+                            Id: Manager.Server.Id, 
+                            Hostname: Manager.Server.Hostname,
+                            Host: Manager.Server.getAddress(), 
+                            Clients: Manager.Server.getClients().length,
+                             MaxClients: Manager.Server.MaxClients, 
+                             Mapname: Manager.Server.getMapname().Alias
+                            }, '%'))
                         delay && await wait(500)
                     }
                 }
@@ -374,7 +390,7 @@ class Plugin {
                 inGame: false,
                 callback: async (Player, args, delay) => {
                     var result = []
-                    
+
                     if (!Player.inGame) {
                         switch (true) {
                             case (args.length < 2):
@@ -384,10 +400,12 @@ class Plugin {
                                 Player.Tell(Localization.SERVER_NOT_EXIST)
                             return
                         }
-    
-                        result = (await this.Managers[parseInt(args[1])].Server.Rcon.executeCommandAsync(args.slice(2).join(' '))).trim().split('\n')
+
+                        var cmd = (await this.Managers[parseInt(args[1])].Server.Rcon.executeCommandAsync(args.slice(2).join(' ')))
+                        result = cdm ? cmd.trim().split('\n') : Localization['COMMAND_RCON_FAILED'].split('\n')
                     } else {
-                        result = (await this.Server.Rcon.executeCommandAsync(args.slice(1).join(' '))).trim().split('\n')
+                        var cmd = await this.Server.Rcon.executeCommandAsync(args.slice(1).join(' '))
+                        result = cmd ? cmd.trim().split('\n') : Localization['COMMAND_RCON_FAILED'].split('\n')
                     }
     
                     result[0] = Localization.COMMAND_EXECUTE_SUCCESS
@@ -633,36 +651,42 @@ class Plugin {
         return Clients
     }
     async playerCommand (Player, args, prefix) {
-        if (!Player) return
+        try {
+            if (!Player) return
 
-        var isBroadcast = config.broadcastCommandPrefixes.includes(prefix)
+            var isBroadcast = config.broadcastCommandPrefixes.includes(prefix)
+            
+            var executedMiddleware = await this.Manager.Commands.executeMiddleware(args[0], Player, args, { broadcast: isBroadcast })
+            if (this.Manager.Commands.execute(args[0], Player, args, { broadcast: isBroadcast })) return
         
-        var executedMiddleware = await this.Manager.Commands.executeMiddleware(args[0], Player, args, { broadcast: isBroadcast })
-        if (this.Manager.Commands.execute(args[0], Player, args, { broadcast: isBroadcast })) return
+            var Client = await this.Server.DB.getClient(Player.ClientId)
+            var command = Utils.getCommand(this.Manager.commands, args[0])
     
-        var Client = await this.Server.DB.getClient(Player.ClientId)
-        var command = Utils.getCommand(this.Manager.commands, args[0])
-
-        switch (true) {
-            case (!this.Manager.commands[command]):
-            case (this.Manager.commands[command].gameTypeExclusions && this.Manager.commands[command].gameTypeExclusions.includes(this.Server.Gametype)):
-                !executedMiddleware && Player.Tell(Localization.COMMAND_NOT_FOUND)
-            return
-            case (Client.Settings.InGameLogin && !Player.Session.Data.Authorized):
-                Player.Tell(Localization.CLIENT_NOT_AUTHORIZED)
-            return
-            case (Player.PermissionLevel < Permissions.Levels[this.Manager.commands[command].Permission]):
-                Player.Tell(Localization.COMMAND_FORBIDDEN)
-            return
-            case (args.length - 1 < this.Manager.commands[command].ArgumentLength):
-                Player.Tell(Localization.COMMAND_ARGUMENT_ERROR)
-                await wait(300)
-                Player.Tell(`Usage: ^6${config.commandPrefixes[0]}^7${Localization[`USAGE_${command.toLocaleUpperCase()}`]}`)
-            return
+            switch (true) {
+                case (!this.Manager.commands[command]):
+                case (this.Manager.commands[command].gameTypeExclusions && this.Manager.commands[command].gameTypeExclusions.includes(this.Server.Gametype)):
+                    !executedMiddleware && Player.Tell(Localization.COMMAND_NOT_FOUND)
+                return
+                case (Client.Settings.InGameLogin && !Player.Session.Data.Authorized):
+                    Player.Tell(Localization.CLIENT_NOT_AUTHORIZED)
+                return
+                case (Player.PermissionLevel < Permissions.Levels[this.Manager.commands[command].Permission]):
+                    Player.Tell(Localization.COMMAND_FORBIDDEN)
+                return
+                case (args.length - 1 < this.Manager.commands[command].ArgumentLength):
+                    Player.Tell(Localization.COMMAND_ARGUMENT_ERROR)
+                    await wait(300)
+                    Player.Tell(`Usage: ^6${config.commandPrefixes[0]}^7${Localization[`USAGE_${command.toLocaleUpperCase()}`]}`)
+                return
+            }
+    
+            this.Manager.commands[command].logToAudit != false && this.Server.DB.logActivity(`@${Player.ClientId}`, Localization['AUDIT_CMD_EXEC'].replace('%NAME%', command), args.join(' '))
+            this.Manager.commands[command].callback(Player, args, true)
         }
-
-        this.Manager.commands[command].logToAudit != false && this.Server.DB.logActivity(`@${Player.ClientId}`, Localization['AUDIT_CMD_EXEC'].replace('%NAME%', command), args.join(' '))
-        this.Manager.commands[command].callback(Player, args, true)
+        catch (e) {
+            this.Manager.logger.writeLn(e)
+            Player.Tell(Localization['COMMAND_ERROR'])
+        }
     }
 }
 module.exports = Plugin

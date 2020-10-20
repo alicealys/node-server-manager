@@ -46,7 +46,7 @@ class Plugin {
                 var info = !(setting && setting.Value == '1') ? await this.getInfo(Player.IPAddress.match(/(localhost|127\.0\.0\.1)/g) ? this.Server.externalIP : Player.IPAddress) : { country: Localization['STRING_HIDDEN'] }
                 this.Server.Broadcast(Localization['WELCOME_PLAYER_BROADCAST']
                                       .replace('%PLAYER%', Player.Name)
-                                      .replace('%LOCATION%', info.country)
+                                      .replace('%LOCATION%', info ? info.country : Localization['STRING_UNKNOWN'])
                                       .replace('%LEVEL%', Player.PermissionLevel)
                                       .replace('%ROLE%', Utils.getRoleFrom(Player.PermissionLevel, 1).Name))
             }
@@ -54,7 +54,11 @@ class Plugin {
     }
 
     async getInfo(IPAddress) {
-        return (await (await fetch(`https://extreme-ip-lookup.com/json/${IPAddress.split(':')[0]}`)).json())
+        var result = await fetch(`https://extreme-ip-lookup.com/json/${IPAddress.split(':')[0]}`)
+        if (result) {
+            return await result.json()
+        }
+        return false
     }
 
     ordinalSuffix(i) {

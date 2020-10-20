@@ -1232,7 +1232,7 @@ class Webfront {
             }
 
             var Dvars = {
-                Map: Manager.Server.Mapname,
+                Map: Manager.Server.getMapname().Alias,
                 MaxClients: Manager.Server.MaxClients,
                 Hostname: Manager.Server.HostnameRaw,
             }

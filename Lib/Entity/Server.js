@@ -47,6 +47,10 @@ class Server extends EventEmitter {
     getClients() {
         return this.Clients.filter(c => c)
     }
+    getMapname() {
+        var map = this.getMap(this.Mapname)
+        return map
+    }
     onInitGame() {
         var onLine = async () => {
             this.Mapname = await this.Rcon.getDvar('mapname')
@@ -132,6 +136,9 @@ class Server extends EventEmitter {
     }
     toString() {
         return `${this.IP}:${this.PORT}`
+    }
+    getAddress() {
+        return `${this.externalIP}:${this.PORT}`
     }
     getPlayerByName(Name) {
         var Client = this.Clients.find(x => x && x.Name.startsWith(Name))

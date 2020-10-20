@@ -149,7 +149,7 @@ async function renderServerList() {
             <div data-serverid='${server.ServerId}' class='wf-serverlist-server'>
                 <div class='wf-serverlist-server-info'>
                     <div class='wf-serverlist-hostname'>${COD2HTML(status.Dvars.Hostname, 'var(--color-text)')}</div>
-                    <div class='wf-serverlist-players hide-mobile'>${status.Dvars.Map}</div>
+                    <div class='wf-serverlist-map hide-mobile'>${status.Dvars.Map}</div>
                     <div class='wf-serverlist-uptime hide-mobile' data-uptime><i class="fas fa-history"></i> ${time2str(status.Uptime)}</div>
                     <div class='wf-serverlist-players hide-mobile' data-playercount><i class="fas fa-users"></i> ${status.Clients.length} / ${status.Dvars.MaxClients} </div>
                     <div class='wf-serverlist-button hide-mobile' ><i class='fas fa-sort-up an' onclick='prependServer(${server.ServerId})'></i></div>

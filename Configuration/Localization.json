@@ -183,7 +183,11 @@
         "ZBANK_TRANSFER_FORMAT": "Successfully transfered ^2$%AMOUNT%^7 to ^5%NAME%^7's bank account! You payed a ^1$%FEE%^7 fee, Transaction ID: ^6#%ID%",
         "SETTING_TOGGLE_FORMAT": "%SETTING% %VALUE%",
         "STRING_HIDDEN": "^0[Redacted]^7",
-        "SETTING_NOT_EXIST": "Setting does not exist"
+        "SETTING_NOT_EXIST": "Setting does not exist",
+        "STRING_UNKNOWN": "Unknown",
+        "COMMAND_RCON_FAILED": "Command execution failed",
+        "COMMAND_ERROR": "An internal error has occurred while executing this command",
+        "COMMAND_SERVERS_FORMAT": "^5#%ID%^7 - ^3%HOSTNAME%^7 ^6[%HOST%]^7 - %MAPNAME% ^5%CLIENTS% / %MAXCLIENTS%"
     },
     "Games": {
       "T6": {
