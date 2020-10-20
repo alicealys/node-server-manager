@@ -402,7 +402,7 @@ class Plugin {
                         }
 
                         var cmd = (await this.Managers[parseInt(args[1])].Server.Rcon.executeCommandAsync(args.slice(2).join(' ')))
-                        result = cdm ? cmd.trim().split('\n') : Localization['COMMAND_RCON_FAILED'].split('\n')
+                        result = cmd ? cmd.trim().split('\n') : Localization['COMMAND_RCON_FAILED'].split('\n')
                     } else {
                         var cmd = await this.Server.Rcon.executeCommandAsync(args.slice(1).join(' '))
                         result = cmd ? cmd.trim().split('\n') : Localization['COMMAND_RCON_FAILED'].split('\n')
