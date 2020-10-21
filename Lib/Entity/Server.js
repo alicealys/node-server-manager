@@ -21,7 +21,7 @@ class Server extends EventEmitter {
         this.clientActivity = []
         this.DB = DATABASE
         this.MaxClients = 18
-        this.Mapname = null
+        this.Mapname = ''
         this.clientData = clientData
         this.Gametype = 'UNKNOWN'
         this.HostnameRaw = `[${this.IP}:${this.PORT}]`
@@ -49,7 +49,7 @@ class Server extends EventEmitter {
     }
     getMapname() {
         var map = this.getMap(this.Mapname)
-        return map ? map : this.Mapname
+        return map ? map : { Name: this.Mapname, Alias: this.Mapname }
     }
     onInitGame() {
         var onLine = async () => {
