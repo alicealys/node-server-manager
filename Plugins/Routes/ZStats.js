@@ -1,7 +1,7 @@
 const path              = require('path')
 const ejs               = require('ejs')
-const Permissions = require(path.join(__dirname, `../../Configuration/NSMConfiguration.json`)).Permissions
-const config = require(path.join(__dirname, `../../Configuration/NSMConfiguration.json`))
+const Permissions       = require(path.join(__dirname, `../../Configuration/NSMConfiguration.json`)).Permissions
+const config            = require(path.join(__dirname, `../../Configuration/NSMConfiguration.json`))
 const jsdom            = new require('jsdom')
 
 module.exports = (app, db, Webfront) => {

@@ -2,7 +2,7 @@ const path              = require('path')
 const wait              = require('delay')
 const Permissions       = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
 const config            = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`))
-const Localization      = require(path.join(__dirname, `../Configuration/Localization.json`)).lookup
+const Localization      = require(path.join(__dirname, `../Configuration/Localization-${process.env.LOCALE}.json`)).lookup
 const Utils             = new (require(path.join(__dirname, '../Utils/Utils.js')))()
 const { Command, NodeServerManager }       = require(path.join(__dirname, `../Lib/Classes.js`))
 class Plugin {

@@ -1,7 +1,7 @@
 const path                  = require('path')
 const { Command }           = require(path.join(__dirname, `../Lib/Classes.js`))
-const Localization          = require(path.join(__dirname, `../Configuration/Localization.json`)).lookup
-const Games                 = require(path.join(__dirname, `../Configuration/Localization.json`)).Games
+const Localization          = require(path.join(__dirname, `../Configuration/Localization-${process.env.LOCALE}.json`)).lookup
+const Games                 = require(path.join(__dirname, `../Configuration/Localization-${process.env.LOCALE}.json`)).Games
 const config                = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`))
 const Utils                 = new (require(path.join(__dirname, '../Utils/Utils.js')))()
 const mathjs                = require('mathjs')

@@ -1,14 +1,4 @@
-const sqlite3           = require('sqlite3').verbose()
-const Sequelize         = require('sequelize')
-const path              = require('path')
-const Models            = require(path.join(__dirname, `../Lib/DatabaseModels.js`))
-const Database  = require(path.join(__dirname, '../Lib/InitDatabase.js'))
-const db = new Database()
-const _utils            = require(path.join(__dirname, '../Utils/Utils.js'))
-const Utils             = new _utils()
 const wait              = require('delay')
-
-const Permissions = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
 
 class Plugin {
   constructor(Server, Manager, Managers) {

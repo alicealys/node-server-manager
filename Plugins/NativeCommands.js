@@ -5,7 +5,7 @@ const wait                  = require('delay')
 const fs                    = require('fs')
 const Permissions           = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
 const configName            = path.join(__dirname, `../Configuration/NSMConfiguration.json`)
-const Localization          = require(path.join(__dirname, `../Configuration/Localization.json`)).lookup
+const Localization          = require(path.join(__dirname, `../Configuration/Localization-${process.env.LOCALE}.json`)).lookup
 const Utils                 = new (require(path.join(__dirname, '../Utils/Utils.js')))()
 var config                  = require(configName)
 

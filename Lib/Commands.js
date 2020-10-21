@@ -1,5 +1,5 @@
 const path              = require('path')
-const Localization      = require(path.join(__dirname, `../Configuration/Localization.json`)).lookup
+const Localization      = require(path.join(__dirname, `../Configuration/Localization-${process.env.LOCALE}.json`)).lookup
 
 class Commands {
     constructor() {

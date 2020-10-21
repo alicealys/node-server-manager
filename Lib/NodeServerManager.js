@@ -2,16 +2,7 @@ const fs                      = require('fs')
 const path                    = require('path')
 const configured              = fs.existsSync(path.join(__dirname, `../Configuration/NSMConfiguration.json`))
 
-if (configured) {
-    var RconConnection          = require('./RconConnection.js')
-    var Server                  = require(path.join(__dirname, '../Lib/Entity/Server.js'))
-    var Database                = new (require(path.join(__dirname, '../Lib/InitDatabase.js')))()
-    var EventLogWatcher         = require('./EventLogWatcher.js')
-    var ServerLogWatcher        = require('./ServerLogWatcher.js')
-    var _CLICommands            = require('./CLICommands.js')
-    var sessionStore            = new (require(path.join(__dirname, `../Webfront/SessionStore.js`)))()
-    var clientData              = new (require(path.join(__dirname, `../Lib/ClientData.js`)))()
-}
+process.env.LOCALE = 'en'
 
 const EventEmitter            = require('events')
 const ConfigMaker             = require('./ConfigMaker.js')
@@ -108,8 +99,17 @@ class NSM extends EventEmitter{
 
 if (configured) {
 
-    const configuration = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`).toString())
-
+    const configuration         = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`).toString())
+    process.env.LOCALE          = configuration.locale ? fs.existsSync(path.join(__dirname, `../Configuration/Localization-${configuration.locale}.json`)) ? configuration.locale : 'en' : 'en'
+    var RconConnection          = require('./RconConnection.js')
+    var Server                  = require(path.join(__dirname, '../Lib/Entity/Server.js'))
+    var Database                = new (require(path.join(__dirname, '../Lib/InitDatabase.js')))()
+    var EventLogWatcher         = require('./EventLogWatcher.js')
+    var ServerLogWatcher        = require('./ServerLogWatcher.js')
+    var _CLICommands            = require('./CLICommands.js')
+    var sessionStore            = new (require(path.join(__dirname, `../Webfront/SessionStore.js`)))()
+    var clientData              = new (require(path.join(__dirname, `../Lib/ClientData.js`)))()
+    
     console.log("============================================================")
     console.log(`                 Node Server Manager v${Info.Version}`)
     console.log(`                         By ${Info.Author}`)

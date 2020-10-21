@@ -1,7 +1,7 @@
 const path              = require('path')
 const fetch             = require('node-fetch')
 const Utils             = new (require(path.join(__dirname, '../Utils/Utils.js')))()
-const Localization      = require(path.join(__dirname, `../Configuration/Localization.json`)).lookup
+const Localization      = require(path.join(__dirname, `../Configuration/Localization-${process.env.LOCALE}.json`)).lookup
 const Permissions       = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
 
 class Plugin {

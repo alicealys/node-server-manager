@@ -3,7 +3,7 @@ const path              = require('path')
 const Models            = require(path.join(__dirname, `../Lib/DatabaseModels.js`))
 const Utils             = new (require(path.join(__dirname, '../Utils/Utils.js')))()
 const Permissions       = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
-const Localization      = require(path.join(__dirname, `../Configuration/Localization.json`)).lookup
+const Localization      = require(path.join(__dirname, `../Configuration/Localization-${process.env.LOCALE}.json`)).lookup
 
 class Plugin {
   constructor(Server, Manager, Managers) {

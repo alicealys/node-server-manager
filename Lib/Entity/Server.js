@@ -3,7 +3,7 @@ const path              = require('path')
 const Commands          = require(path.join(__dirname, `../Commands.js`))
 const EventEmitter      = require('events')
 const ip                = require('public-ip')
-const Maps              = require(path.join(__dirname, `../../Configuration/Localization.json`)).Maps
+const Maps              = require(path.join(__dirname, `../../Configuration/Localization-${process.env.LOCALE}.json`)).Maps
 const Permissions       = require(path.join(__dirname, `../../Configuration/NSMConfiguration.json`)).Permissions
 const { ChaiscriptApi } = require('../ChaiscriptApi.js')
 const wait              = require('delay')
@@ -49,7 +49,7 @@ class Server extends EventEmitter {
     }
     getMapname() {
         var map = this.getMap(this.Mapname)
-        return map
+        return map ? map : this.Mapname
     }
     onInitGame() {
         var onLine = async () => {
