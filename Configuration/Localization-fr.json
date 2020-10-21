@@ -120,17 +120,17 @@
         "COMMAND_PLAYERS_FORMAT": "[^%LEVEL%%ROLE%^7] ^5%NAME%^7 (^6@%CLIENTID%^7) @ ^3%HOSTNAME%",
         "NO_PLAYERS_ONLINE": "Aucuns joueurs en ligne",
         "COMMAND_NOT_SETUP": "Cette commande n\"as pas encore de reponse",
-        "COMMAND_TOKEN_FORMAT": "Your login token is %TOKEN%, valid for 2 minutes, your ClientID is ^2%CLIENTID%^7 { ^5numbers^7, ^3letters^7 }",
+        "COMMAND_TOKEN_FORMAT": "Votre token de login %TOKEN%, est valide pour 2 minutes, votre ClientID est ^2%CLIENTID%^7 { ^5numbers^7, ^3letters^7 }",
         "COMMAND_PARSE_TIME_ERROR": "Mauvaise utilisation, format: 1d (jour), 2h (heures), 3m (minutes), 10s (secondes)",
         "RCON_SERVER_NOT_SPECIFIED": "Specifie les serveur sur lequel vous voulez executer la commande",
-        "SERVER_NOT_EXIST": "Specified server doesn\"t exist or is offline, Usage: rcon serverid command",
-        "TOKEN_LOGIN_DISABLED": "Token login is disabled, to re-enable it go to your account settings",
-        "CLIENT_NOT_AUTHORIZED": "You activated in-game login, go to the webfront and authorize the login before executing any commands",
-        "AUDIT_CMD_EXEC": "Execute command %NAME%",
-        "AUDIT_LOGIN_ATTEMPT": "Attempted to login (ClientId: %CLIENTID%)",
-        "AUDIT_LOGIN_SUCCESS": "Successful login",
-        "AUDIT_LOGIN_2FA_FAIL": "Failed login (Invalid 2FA Code)",
-        "AUDIT_LOGIN_CRED_FAIL": "Failed login (Invalid credentials)",
+        "SERVER_NOT_EXIST": "Le serveur specifie n'\"existe pas, Usage: rcon serverid command",
+        "TOKEN_LOGIN_DISABLED": "Le login par token est desactive, activez le pour acceder a vos parametres de compte",
+        "CLIENT_NOT_AUTHORIZED": "Vous venez d\"activer le login par token, allez sur le webfront pour l\"autoriser avant d\"executer n\"importe quelle commande.",
+        "AUDIT_CMD_EXEC": "Execute la commande %NAME%",
+        "AUDIT_LOGIN_ATTEMPT": "Tentative de connexion (ClientId: %CLIENTID%)",
+        "AUDIT_LOGIN_SUCCESS": "Connexion reussie",
+        "AUDIT_LOGIN_2FA_FAIL": "La connexion a echouee (Code A2F invalide)",
+        "AUDIT_LOGIN_CRED_FAIL": "La connexion a echouee (Identifiants invalides)",
         "COMMAND_ZSTATS_FORMAT": "^7[ ^5%PLAYER%^7 ] => ^5%SCORE%^7 Score | ^5%KILLS%^7 Kills | ^5%DOWNS%^7 Morts \n ^5%REVIVES%^7 Reanimations | ^5%HEADSHOTS%^7 Headshots | ^5%HIGHESTROUND% ^7Plus grosse manche",
         "STATS_NOT_EXIST": "Ce joueurs n\"as pas de stats",
         "COMMAND_LINKS_FORMAT": "^5%NAME%^7 => ^3%URL%",
@@ -789,10 +789,6 @@
             {
               "Alias": "Rust",
               "Name": "mp_rust"
-            },
-            {
-              "Alias": "Testmap",
-              "Name": "mp_test"
             },
             {
               "Alias": "Seatown",
