@@ -6,6 +6,6 @@ node_modules
 *.db-journal
 *.save
 *.swp
-!Configuration/Localization.json
+!Configuration/Localization-*.json
 Log/*
 Log

@@ -1,0 +1,1101 @@
+{
+    "lookup": {
+        "COMMAND_NOT_FOUND" : "Commande non trouvee, faites ^5help^7 pour une liste de commandes",
+        "COMMAND_ARGUMENT_ERROR" : "Pas assez d\"arguments pour la commande",
+        "COMMAND_CLIENT_NOT_FOUND" : "Joueur non trouve",
+        "COMMAND_CLIENT_NOT_INGAME" : "Le joueur n\"est pas dans la partie",
+        "ROLE_HIERARCHY_ERROR" : "Vous ne pouvez pas mettre ce role",
+        "CLIENT_HIERARCHY_ERROR": "Vous ne pouvez pas executer cette commande ici",
+        "COMMAND_EXECUTE_SUCCESS" : "Commande bien executee",
+        "COMMAND_ENV_ERROR": "Cette commande peux etre executer seulement en jeu",
+        "ROLE_SELF_ERROR" : "Vous ne pouvez pas modifier votre propre roles",
+        "COMMAND_STATS_FORMAT" : "[ ^5%NAME% ^7] => ^5%KILLS% ^7Kills | ^5%DEATHS% ^7Morts | ^5%KDR% ^7Ratio | ^5%PERFORMANCE% ^7Performance | ^5%PLAYEDTIME% ^7Temps de jeu ",
+        "COMMAND_FORBIDDEN" : "Vous n\"avez pas les permissions pour faire ceci",
+        "ROLE_NOT_EXIST" : "Le role specifie n\"existe pas",
+        "COMMAND_HELP": "Montre une liste de commande",
+        "USAGE_HELP": "^5help^7 [command]",
+        "COMMAND_PING": "Ping le serveur",
+        "USAGE_PING": "^5ping^7",
+        "COMMAND_TP" : "Vous teleporte a un joueur",
+        "USAGE_TP": "^5tp^7 <player>",
+        "COMMAND_TPHERE" : "Teleporte un joueur a vous",
+        "USAGE_TPHERE": "^5tphere^7 <player>",
+        "COMMAND_SETROLE" : "Modifie le role du joueur",
+        "USAGE_SETROLE": "^5setrole^7 <player> <role>",
+        "COMMAND_RCON" : "Executer des commandes rcon",
+        "USAGE_RCON": "^5rcon^7 <command>",
+        "COMMAND_STATS": "Donne vos statistiques",
+        "USAGE_STATS": "^5stats^7 [player]",
+        "COMMAND_OWNER": "Prendre la propriete du serveur",
+        "USAGE_OWNER": "^5owner^7",
+        "COMMAND_FIND": "Trouve l\"ID d\"un joueur",
+        "USAGE_FIND": "^5find^7 <name>",
+        "COMMAND_INFO": "Avoir les infos NSM",
+        "USAGE_INFO": "^5info^7",
+        "COMMAND_BROADCAST": "Envoie une annonce a tout les serveurs",
+        "USAGE_BROADCAST": "^5broadcast^7 <message>",
+        "COMMAND_TELL": "Envoie un message prive a un joueur",
+        "USAGE_TELL": "Tell <player> <message>",
+        "COMMAND_PLAYERS": "Montre la liste des joueurs globaux",
+        "USAGE_PLAYERS": "^5players^7",
+        "COMMAND_WHOAMI": "Montre des informations sur vous",
+        "USAGE_WHOAMI": "^5info^7",
+        "COMMAND_SERVERS": "Affiche la liste des serveurs",
+        "USAGE_SERVERS": "^5servers^7",
+        "COMMAND_TOKEN": "Retourne un token pour se connecter au webfront",
+        "USAGE_TOKEN": "^5token^7",
+        "COMMAND_KICK": "Kick un joueur",
+        "USAGE_KICK": "^5kick^7 <player> <reason>",
+        "COMMAND_UNBAN": "Unban un joueur",
+        "USAGE_UNBAN": "^5unban^7 <player> <reason>",
+        "COMMAND_TEMPBAN": "Tempban un joueur",
+        "USAGE_TEMPBAN": "^5tempban^7 <player> <duration> <reason>",
+        "COMMAND_BAN": "Ban un joueur",
+        "USAGE_BAN": "^5ban^7 <player> <reason>",
+        "COMMAND_WITHDRAW": "Retirer de l\"argent de votre compte",
+        "USAGE_WITHDRAW": "^5withdraw^7 <amount|all>",
+        "COMMAND_DEPOSIT": "Deposer de l\"argent sur votre compte",
+        "USAGE_DEPOSIT": "^5deposit^7 <amount|all>",
+        "COMMAND_PAY": "Transfere le montant desire a un joueur",
+        "USAGE_PAY": "^5pay^7 <player> <amount>",
+        "COMMAND_MONEY": "Affiche votre argent",
+        "USAGE_MONEY": "^5money^7",
+        "COMMAND_ZSTATS": "Affiche vos statistiques zombie",
+        "USAGE_ZSTATS": "^5zstats^7 [player]",
+        "COMMAND_LINKS": "Affiche des liens utiles",
+        "USAGE_LINKS": "^5links^7 [name]",
+        "COMMAND_MAP": "Change la map pour celle specifiee",
+        "USAGE_MAP": "^5map^7 <name|alias>",
+        "COMMAND_FASTRESTART": "Redemarrage rapide",
+        "USAGE_FASTRESTART": "^5fastrestart^7",
+        "COMMAND_MAPRESTART": "Redemarrage",
+        "USAGE_MAPRESTART": "^5maprestart^7",
+        "COMMAND_GLOBALCHAT": "Envoie un message global a tout les joueurs sur tout les serveurs",
+        "USAGE_GLOBALCHAT": "^5globalchat^7",
+        "COMMAND_VOTEMAP": "Vote pour changer la map",
+        "USAGE_VOTEMAP": "^5votemap^7 <mapame>",
+        "COMMAND_VOTEKICK": "Vote pour kick un joueur",
+        "USAGE_VOTEKICK": "^5votekick^7 <name>",
+        "COMMAND_YES": "Vote oui pour le vote actuel",
+        "USAGE_YES": "^5yes^7",
+        "COMMAND_STOP": "Stop le vote actuel",
+        "USAGE_STOP": "^5stop^7",
+        "COMMAND_NEXTMAP": "Retournez a l\"ancienne map de la rotation",
+        "USAGE_NEXTMAP": "^5nextmap^7",
+        "COMMAND_REPLY": "Repondre au dernier message prive",
+        "USAGE_REPLY": "^5reply <message>^7",
+        "COMMAND_WHOIS": "Affiche des infos sur un joueur",
+        "USAGE_WHOIS": "^5whois^7 <name>",
+        "COMMAND_TESTPERM": "Test les permissions d\"un role",
+        "USAGE_TESTPERM": "^5testperm^7 <role>",
+        "COMMAND_STAFF_FORMAT": "[^%LEVEL%%ROLE%^7] ^5%NAME%^7 @ ^7%HOSTNAME%",
+        "COMMAND_STAFF_NO_RESULT": "Il n\"y a pas de staff en ligne",
+        "COMMAND_UPTIME_FORMAT": "Ce serveur est en ligne depuis: ^5%UPTIME%",
+        "COMMAND_WHEREIS_FORMAT": "^5%NAME%^7 joue en %GAME%^7 sur %HOSTNAME%^7 (%ADDRESS%)",
+        "COMMAND_CALC_RESULT": "Resultat: %RESULT%",
+        "COMMAND_CALCULATOR": "Faites des math",
+        "USAGE_CALCULATOR": "^5calculator^7 <expression>",
+        "COMMAND_STAFF": "Affiche le staff en ligne",
+        "USAGE_STAFF": "^5staff",
+        "COMMAND_EVAL": "Evaluates javascript (dev only)",
+        "USAGE_EVAL": "^5eval^7 <code>",
+        "COMMAND_WHEREIS": "Affiche sur quel serveur est un joueur",
+        "USAGE_WHEREIS": "^5whereis^7 <player>",
+        "COMMAND_UPTIME": "Affiche depuis combien de temps le serveur est en ligne",
+        "USAGE_UPTIME": "^5uptime",
+        "COMMAND_REPORT": "Report un joueur",
+        "USAGE_REPORT": "^5report^7 <player> <reason>",
+        "COMMAND_REPORT_SUCCESS": "Report envoye",
+        "COMMAND_REPORT_COOLDOWN": "Vous ne pouvez report que toutes les ^5%TIME%^7 minutes",
+        "COMMAND_REPORT_TELL": "[^1Report^7] ^5%ORIGIN%^7 @ ^3%HOSTNAME%^7 => ^1%TARGET%^7 : %REASON%",
+        "COMMAND_REPORTS_TELL": "^5%ORIGIN%^7 => ^1%TARGET%^7 : %REASON%",
+        "COMMAND_REPORTS_CLEAR": "Reports nettoyes",
+        "COMMAND_NO_RESULT": "Aucuns resultats",
+        "COMMAND_CALC_FAIL": "^1Error^2",
+        "AUTO_RECENT_REPORTS": "^5%COUNT%^7 reports on ete recus",
+        "COMMAND_LIST_PAGE": "^3--- Page %CURRENT% / %MAX% ---",
+        "WELCOME_PLAYER": "Bienvenue ^5%PLAYER%^7, c\"est la ^5%CONNECTIONS%^7 fois que vous venez sur ce serveur!",
+        "WELCOME_PLAYER_BROADCAST": "^%LEVEL%%ROLE%^7 ^5%PLAYER%^7 a rejoint depuis ^5%LOCATION%^7",
+        "QUIT_PLAYER_BROADCAST": "^1%NAME%^7 est parti..",
+        "COMMAND_PLAYERS_FORMAT": "[^%LEVEL%%ROLE%^7] ^5%NAME%^7 (^6@%CLIENTID%^7) @ ^3%HOSTNAME%",
+        "NO_PLAYERS_ONLINE": "Aucuns joueurs en ligne",
+        "COMMAND_NOT_SETUP": "Cette commande n\"as pas encore de reponse",
+        "COMMAND_TOKEN_FORMAT": "Your login token is %TOKEN%, valid for 2 minutes, your ClientID is ^2%CLIENTID%^7 { ^5numbers^7, ^3letters^7 }",
+        "COMMAND_PARSE_TIME_ERROR": "Mauvaise utilisation, format: 1d (jour), 2h (heures), 3m (minutes), 10s (secondes)",
+        "RCON_SERVER_NOT_SPECIFIED": "Specifie les serveur sur lequel vous voulez executer la commande",
+        "SERVER_NOT_EXIST": "Specified server doesn\"t exist or is offline, Usage: rcon serverid command",
+        "TOKEN_LOGIN_DISABLED": "Token login is disabled, to re-enable it go to your account settings",
+        "CLIENT_NOT_AUTHORIZED": "You activated in-game login, go to the webfront and authorize the login before executing any commands",
+        "AUDIT_CMD_EXEC": "Execute command %NAME%",
+        "AUDIT_LOGIN_ATTEMPT": "Attempted to login (ClientId: %CLIENTID%)",
+        "AUDIT_LOGIN_SUCCESS": "Successful login",
+        "AUDIT_LOGIN_2FA_FAIL": "Failed login (Invalid 2FA Code)",
+        "AUDIT_LOGIN_CRED_FAIL": "Failed login (Invalid credentials)",
+        "COMMAND_ZSTATS_FORMAT": "^7[ ^5%PLAYER%^7 ] => ^5%SCORE%^7 Score | ^5%KILLS%^7 Kills | ^5%DOWNS%^7 Morts \n ^5%REVIVES%^7 Reanimations | ^5%HEADSHOTS%^7 Headshots | ^5%HIGHESTROUND% ^7Plus grosse manche",
+        "STATS_NOT_EXIST": "Ce joueurs n\"as pas de stats",
+        "COMMAND_LINKS_FORMAT": "^5%NAME%^7 => ^3%URL%",
+        "COMMAND_LINKS_NOT_CONFIG": "Ce serveur n\"as aucuns lien a donner",
+        "COMMAND_LINKS_NOT_FOUND": "Lien non trouve",
+        "COMMAND_FASTRESTART_FORMAT": "^5%NAME%^7 a redemarrer rapidement la map",
+        "COMMAND_MAPRESTART_FORMAT": "^5%NAME%^7 a redemarrer la map",
+        "COMMAND_MAP_FORMAT": "Tentative de changement de map par ^5%NAME%^7 dans ^5%DELAY%^7 secondes",
+        "COMMAND_MAP_NOT_FOUND": "Map non trouvee",
+        "COMMAND_NEXTMAP_NOT_FOUND": "Cette map n\"est pas dans la rotation",
+        "COMMAND_NEXTMAP_FORMAT": "La prochaine map est ^5%NAME%",
+        "COMMAND_GLOBALCHAT_TRUE": "Global chat ^2ON",
+        "COMMAND_GLOBALCHAT_FALSE": "Global chat ^1OFF",
+        "GLOBALCHAT_FORMAT": "%ENABLED% ^5%NAME%^7 @ ^3%HOSTNAME%^7: %MESSAGE%",
+        "COMMAND_REPLY_NOT_CONV": "Aucunes conversations precedentes",
+        "COMMAND_VOTE_COOLDOWN": "Le vote precedent a perdu, [^5%TIME%^7] avant de pouvoir retente",
+        "COMMAND_VOTE_TYPE_ERR": "Un vote est deja en cours pour ^5%ACTION%^7",
+        "COMMAND_VOTEKICK_KICK_MESSAGE": "Vous avez ete kick",
+        "COMMAND_VOTE_ALREADY_VOTED": "Vous avez deja vote",
+        "COMMAND_VOTE_VOTED_TEMPLATE": "^5%NAME%^7 a vote pour ^5%ACTION%^7 tapez ^3%PREFIX%yes^7 pour voter aussi ( ^1%VOTES%^7 / ^2%MINVOTES%^7 )",
+        "COMMAND_VOTEKICK_ACTION": "^1kick^7 ^5%NAME%^7",
+        "COMMAND_VOTEMAP_ACTION": "^5change la map pour^7 ^6%NAME%^7",
+        "COMMAND_VOTE_END": "Le vote pour ^5%ACTION%^7 est termine",
+        "COMMAND_VOTEKICK_HIERARCHY_ERR": "Vous ne pouvez pas kick ce joueur",
+        "COMMAND_VOTE_NO_VOTE": "Aucuns vote en cours",
+        "COMMAND_VOTEMAP_NOT_FOUND": "Map non trouvee",
+        "PENALTY_TEMP_BAN_T": "Tempban",
+        "PENALTY_PERMA_BAN_T": "Ban",
+        "PENALTY_KICK_T": "Kick",
+        "PENALTY_UNBAN_T": "Unban",
+        "PENALTY_TEMP_BAN_MESSAGE": "[^1Sanctions^7] ^5%NAME%^7 a ete ^1tempban^7 par ^5%ORIGIN%^7 pour ^3%REASON%^7 pendant ^5%DURATION%",
+        "PENALTY_PERMA_BAN_MESSAGE": "[^1Sanctions^7] ^5%NAME%^7 a ete ^1ban^7 par ^5%ORIGIN%^7 pour ^3%REASON%",
+        "PENALTY_KICK_MESSAGE": "[^1Sanctions^7] ^5%NAME%^7 a ete ^3kick^7 par ^5%ORIGIN%^7 pour ^3%REASON%",
+        "PENALTY_UNBAN_MESSAGE": "[^1Sanctions^7] ^5%NAME%^7 a ete ^2unban^7 par ^5%ORIGIN%^7 pour ^3%REASON%",
+        "KICK_CLIENTSLOT_RESERVED": "Ce slot est reserve a un joueur special",
+        "COMMAND_TP_FORMAT": "Teleportation de ^5%ORIGIN%^7 ers ^5%TARGET%",
+        "COMMAND_FAILED": "La commande a echouee",
+        "COMMAND_UNAVAILABLE_GAMETYPE": "Cette commande n\"est pas valable dans ce mode de jeu",
+        "COMMAND_GIVEWEAPON": "Vous donne une arme",
+        "ZBANK_PARSE_ERROR": "Mauvaise utilisation",
+        "USAGE_GIVEWEAPON": "^5weapon^7 <weaponname>",
+        "ZBANK_BALANCE_ERROR": "Vous n\"avez pas asser d\"argent",
+        "ZBANK_WITHDRAW_SUCCESS": "Vous venez de retirer ^2$%AMOUNT%^7 de votre compte en banque!",
+        "ZBANK_WITHDRAW_FAIL": "Vous n\"avez pas autant d\"argent",
+        "ZBANK_DEPOSIT_SUCCESS": "Vous venez de deposer ^2$%AMOUNT%^7 sur votre compte en banque!",
+        "ZBANK_DEPOSIT_Fail": "Vous n\"avez pas autant d\"argent",
+        "ZBANK_MONEY_FORMAT_SELF": "Argent: ^2$%AMOUNT%^7",
+        "ZBANK_MONEY_FORMAT": "Compte en banque de ^5%NAME%^7: ^2$%AMOUNT%^7",
+        "ZBANK_RECEIVE_FORMAT": "Vous avez recu ^2$%AMOUNT%^7 de ^5%NAME%^7!",
+        "ZBANK_TRANSFER_FORMAT": "Transfert de ^2$%AMOUNT%^7 sur le compte de ^5%NAME%^7! Vous avez payer une taxe de ^1$%FEE%^7, ID de la transaction: ^6#%ID%",
+        "SETTING_TOGGLE_FORMAT": "%SETTING% %VALUE%",
+        "STRING_HIDDEN": "^0[Redacted]^7",
+        "SETTING_NOT_EXIST": "Ce parametres n\"existe pas",
+        "COMMAND_RCON_FAILED": "L\"execution de la commande a echoue",
+        "COMMAND_ERROR": "Une erreur interne est survenue en executant cette commande",
+        "COMMAND_SERVERS_FORMAT": "^5#%ID%^7 - ^3%HOSTNAME%^7 ^6[%HOST%]^7 - %MAPNAME% ^5%CLIENTS% / %MAXCLIENTS%"
+    },
+    "Games": {
+      "T6": {
+        "CLIENT": "Plutonium T6",
+        "GAMENAME": "Black Ops II",
+        "GAMENAME_FULL": "Call of Duty: Black Ops II",
+        "COLOR": 3,
+        "SUBGAMES": {
+          "ZM": "Zombies",
+          "MP": "Multiplayer"
+        } 
+      },
+      "T5": {
+        "CLIENT": "RektT5",
+        "GAMENAME": "Black Ops I",
+        "GAMENAME_FULL": "Call of Duty: Black Ops I",
+        "COLOR": 3,
+        "SUBGAMES": {
+          "ZM": "Zombies",
+          "MP": "Multiplayer"
+        } 
+      },
+      "T4": {
+        "CLIENT": "World at Wat",
+        "GAMENAME": "World at Wat",
+        "GAMENAME_FULL": "Call of Duty: World at War",
+        "COLOR": 3,
+        "SUBGAMES": {
+          "ZM": "Zombies",
+          "MP": "Multiplayer"
+        } 
+      },
+      "IW6": {
+        "CLIENT": "IW6x",
+        "GAMENAME": "Ghosts",
+        "GAMENAME_FULL": "Call of Duty: Ghosts",
+        "COLOR": 6,
+        "SUBGAMES": {
+          "MP": "Multiplayer",
+          "ALIENS": "Extinction"
+        } 
+      },
+      "IW5": {
+        "CLIENT": "Plutonium IW5",
+        "GAMENAME": "Modern Warfare 3",
+        "GAMENAME_FULL": "Call of Duty: Modern Warfare 3",
+        "COLOR": 2,
+        "SUBGAMES": {
+          "MP": "Multiplayer"
+        } 
+      },
+      "IW4": {
+        "CLIENT": "IW4x",
+        "GAMENAME": "Modern Warfare 2",
+        "GAMENAME_FULL": "Call of Duty: Modern Warfare 2",
+        "COLOR": 2,
+        "SUBGAMES": {
+          "MP": "Multiplayer"
+        } 
+      },
+      "IW3": {
+        "CLIENT": "CoD4x",
+        "GAMENAME": "Modern Warfare",
+        "GAMENAME_FULL": "Call of Duty: Modern Warfare",
+        "COLOR": 2,
+        "SUBGAMES": {
+          "MP": "Multiplayer"
+        } 
+      },
+      "IW2": {
+        "CLIENT": "CoD4x",
+        "GAMENAME": "Call of Duty 2",
+        "GAMENAME_FULL": "Call of Duty 2",
+        "COLOR": 2,
+        "SUBGAMES": {
+          "MP": "Multiplayer"
+        } 
+      }
+    },
+    "Maps": [
+        {
+          "Game": "IW3",
+          "Maps": [
+            {
+              "Alias": "Ambush",
+              "Name": "mp_convoy"
+            },
+            {
+              "Alias": "Backlot",
+              "Name": "mp_backlot"
+            },
+            {
+              "Alias": "Bloc",
+              "Name": "mp_bloc"
+            },
+            {
+              "Alias": "Bog",
+              "Name": "mp_bog"
+            },
+            {
+              "Alias": "Countdown",
+              "Name": "mp_countdown"
+            },
+            {
+              "Alias": "Crash",
+              "Name": "mp_crash"
+            },
+            {
+              "Alias": "Crossfire",
+              "Name": "mp_crossfire"
+            },
+            {
+              "Alias": "District",
+              "Name": "mp_citystreets"
+            },
+            {
+              "Alias": "Downpour",
+              "Name": "mp_farm"
+            },
+            {
+              "Alias": "Overgrown",
+              "Name": "mp_overgrown"
+            },
+            {
+              "Alias": "Pipeline",
+              "Name": "mp_pipeline"
+            },
+            {
+              "Alias": "Shipment",
+              "Name": "mp_shipment"
+            },
+            {
+              "Alias": "Showdown",
+              "Name": "mp_showdown"
+            },
+            {
+              "Alias": "Strike",
+              "Name": "mp_strike"
+            },
+            {
+              "Alias": "Vacant",
+              "Name": "mp_vacant"
+            },
+            {
+              "Alias": "Wet Work",
+              "Name": "mp_cargoship"
+            },
+            {
+              "Alias": "Winter Crash",
+              "Name": "mp_crash_snow"
+            },
+            {
+              "Alias": "Broadcast",
+              "Name": "mp_broadcast"
+            },
+            {
+              "Alias": "Creek",
+              "Name": "mp_creek"
+            },
+            {
+              "Alias": "Chinatown",
+              "Name": "mp_carentan"
+            },
+            {
+              "Alias": "Killhouse",
+              "Name": "mp_killhouse"
+            }
+          ]
+        },
+        {
+          "Game": "T4",
+          "Maps": [
+            {
+              "Alias": "Airfield",
+              "Name": "mp_airfield"
+            },
+            {
+              "Alias": "Asylum",
+              "Name": "mp_asylum"
+            },
+            {
+              "Alias": "Castle",
+              "Name": "mp_castle"
+            },
+            {
+              "Alias": "Cliffside",
+              "Name": "mp_shrine"
+            },
+            {
+              "Alias": "Courtyard",
+              "Name": "mp_courtyard"
+            },
+            {
+              "Alias": "Dome",
+              "Name": "mp_dome"
+            },
+            {
+              "Alias": "Downfall",
+              "Name": "mp_downfall"
+            },
+            {
+              "Alias": "Hanger",
+              "Name": "mp_hangar"
+            },
+            {
+              "Alias": "Makin",
+              "Name": "mp_makin"
+            },
+            {
+              "Alias": "Outskirts",
+              "Name": "mp_outskirts"
+            },
+            {
+              "Alias": "Roundhouse",
+              "Name": "mp_roundhouse"
+            },
+            {
+              "Alias": "Upheaval",
+              "Name": "mp_suburban"
+            },
+            {
+              "Alias": "Knee Deep",
+              "Name": "mp_kneedeep"
+            },
+            {
+              "Alias": "Nightfire",
+              "Name": "mp_nachtfeuer"
+            },
+            {
+              "Alias": "Station",
+              "Name": "mp_subway"
+            },
+            {
+              "Alias": "Banzai",
+              "Name": "mp_kwai"
+            },
+            {
+              "Alias": "Corrosion",
+              "Name": "mp_stalingrad"
+            },
+            {
+              "Alias": "Sub Pens",
+              "Name": "mp_docks"
+            },
+            {
+              "Alias": "Battery",
+              "Name": "mp_drum"
+            },
+            {
+              "Alias": "Breach",
+              "Name": "mp_bgate"
+            },
+            {
+              "Alias": "Revolution",
+              "Name": "mp_vodka"
+            }
+          ]
+        },
+        {
+          "Game": "IW4",
+          "Maps": [
+            {
+              "Alias": "Rust",
+              "Name": "mp_rust"
+            },
+    
+            {
+              "Alias": "Terminal",
+              "Name": "mp_terminal"
+            },
+    
+            {
+              "Alias": "Crash",
+              "Name": "mp_crash"
+            },
+    
+            {
+              "Alias": "Afghan",
+              "Name": "mp_afghan"
+            },
+    
+            {
+              "Alias": "Derail",
+              "Name": "mp_derail"
+            },
+    
+            {
+              "Alias": "Estate",
+              "Name": "mp_estate"
+            },
+    
+            {
+              "Alias": "Favela",
+              "Name": "mp_favela"
+            },
+    
+            {
+              "Alias": "Highrise",
+              "Name": "mp_highrise"
+            },
+    
+            {
+              "Alias": "Invasion",
+              "Name": "mp_invasion"
+            },
+    
+            {
+              "Alias": "Karachi",
+              "Name": "mp_checkpoint"
+            },
+    
+            {
+              "Alias": "Quarry",
+              "Name": "mp_quarry"
+            },
+    
+            {
+              "Alias": "Rundown",
+              "Name": "mp_rundown"
+            },
+    
+            {
+              "Alias": "Scrapyard",
+              "Name": "mp_boneyard"
+            },
+    
+            {
+              "Alias": "Skidrow",
+              "Name": "mp_nightshift"
+            },
+    
+            {
+              "Alias": "Sub Base",
+              "Name": "mp_subbase"
+            },
+    
+            {
+              "Alias": "Underpass",
+              "Name": "mp_underpass"
+            },
+    
+            {
+              "Alias": "Wasteland",
+              "Name": "mp_brecourt"
+            },
+    
+            {
+              "Alias": "Overgrown",
+              "Name": "mp_overgrown"
+            },
+    
+            {
+              "Alias": "Strike",
+              "Name": "mp_strike"
+            },
+    
+            {
+              "Alias": "Vacant",
+              "Name": "mp_vacant"
+            },
+    
+            {
+              "Alias": "Carnival",
+              "Name": "mp_abandon"
+            },
+    
+            {
+              "Alias": "Trailer Park",
+              "Name": "mp_trailerpark"
+            },
+    
+            {
+              "Alias": "Fuel",
+              "Name": "mp_fuel2"
+            },
+    
+            {
+              "Alias": "Storm",
+              "Name": "mp_storm"
+            },
+    
+            {
+              "Alias": "Bailout",
+              "Name": "mp_complex"
+            },
+    
+            {
+              "Alias": "Salvage",
+              "Name": "mp_compact"
+            },
+    
+            {
+              "Alias": "Nuketown",
+              "Name": "mp_nuked"
+            },
+    
+            {
+              "Alias": "Test map",
+              "Name": "iw4_credits"
+            },
+    
+            {
+              "Alias": "Killhouse",
+              "Name": "mp_killhouse"
+            },
+    
+            {
+              "Alias": "Bog",
+              "Name": "mp_bog_sh"
+            },
+    
+            {
+              "Alias": "Freighter",
+              "Name": "mp_cargoship_sh"
+            },
+    
+            {
+              "Alias": "Cargoship",
+              "Name": "mp_cargoship"
+            },
+    
+            {
+              "Alias": "Shipment",
+              "Name": "mp_shipment"
+            },
+    
+            {
+              "Alias": "Shipment - Long",
+              "Name": "mp_shipment_long"
+            },
+    
+            {
+              "Alias": "Rust - Long",
+              "Name": "mp_rust_long"
+            },
+    
+            {
+              "Alias": "Firing Range",
+              "Name": "mp_firingrange"
+            },
+    
+            {
+              "Alias": "Chemical Plant",
+              "Name": "mp_storm_spring"
+            },
+    
+            {
+              "Alias": "Tropical Favela",
+              "Name": "mp_fav_tropical"
+            },
+    
+            {
+              "Alias": "Tropical Estate",
+              "Name": "mp_estate_tropical"
+            },
+    
+            {
+              "Alias": "Tropical Crash",
+              "Name": "mp_crash_tropical"
+            },
+    
+            {
+              "Alias": "Forgotten City",
+              "Name": "mp_bloc_sh"
+            },
+    
+            {
+              "Alias": "Crossfire",
+              "Name": "mp_cross_fire"
+            },
+    
+            {
+              "Alias": "Bloc",
+              "Name": "mp_bloc"
+            },
+    
+            {
+              "Alias": "Oilrig",
+              "Name": "oilrig"
+            },
+    
+            {
+              "Name": "Village",
+              "Alias": "co_hunted"
+            }
+          ]
+        },
+        {
+          "Game": "T5",
+          "Maps": [
+            {
+              "Alias": "Array",
+              "Name": "mp_array"
+            },
+            {
+              "Alias": "Berlin Wall",
+              "Name": "mp_berlinwall2"
+            },
+            {
+              "Alias": "Convoy",
+              "Name": "mp_gridlock"
+            },
+            {
+              "Alias": "Cracked",
+              "Name": "mp_cracked"
+            },
+            {
+              "Alias": "Crisis",
+              "Name": "mp_crisis"
+            },
+            {
+              "Alias": "Discovery",
+              "Name": "mp_discovery"
+            },
+            {
+              "Alias": "Drive-In",
+              "Name": "mp_drivein"
+            },
+            {
+              "Alias": "Firing Range",
+              "Name": "mp_firingrange"
+            },
+            {
+              "Alias": "Grid",
+              "Name": "mp_duga"
+            },
+            {
+              "Alias": "Hangar 18",
+              "Name": "mp_area51"
+            },
+            {
+              "Alias": "Hanoi",
+              "Name": "mp_hanoi"
+            },
+            {
+              "Alias": "Havana",
+              "Name":  "mp_cairo"
+            },
+            {
+              "Alias": "Hazard",
+              "Name": "mp_golfcourse"
+            },
+            {
+              "Alias": "Hotel",
+              "Name": "mp_hotel"
+            },
+            {
+              "Alias": "Jungle",
+              "Name": "mp_havoc"
+            },
+            {
+              "Alias": "Kowloon",
+              "Name": "mp_kowloon"
+            },
+            {
+              "Alias": "Launch",
+              "Name": "mp_cosmodrome"
+            },
+            {
+              "Alias": "Nuketown",
+              "Name": "mp_nuked"
+            },
+            {
+              "Alias": "Radiation",
+              "Name": "mp_radiation"
+            },
+            {
+              "Alias": "Silo",
+              "Name": "mp_silo"
+            },
+            {
+              "Alias": "Stadium",
+              "Name": "mp_stadium"
+            },
+            {
+              "Alias": "Stockpile",
+              "Name": "mp_outskirts"
+            },
+            {
+              "Alias": "Summit",
+              "Name": "mp_mountain"
+            },
+            {
+              "Alias": "Villa",
+              "Name": "mp_villa"
+            },
+            {
+              "Alias": "WMD",
+              "Name": "mp_russianbase"
+            },
+            {
+              "Alias": "Zoo",
+              "Name": "mp_zoo"
+            }
+          ]
+        },
+        {
+          "Game": "IW5",
+          "Maps": [
+            {
+              "Alias": "Rust",
+              "Name": "mp_rust"
+            },
+            {
+              "Alias": "Testmap",
+              "Name": "mp_test"
+            },
+            {
+              "Alias": "Seatown",
+              "Name": "mp_seatown"
+            },
+            {
+              "Alias": "Lockdown",
+              "Name": "mp_alpha"
+            },
+            {
+              "Alias": "Mission",
+              "Name": "mp_bravo"
+            },
+            {
+              "Alias": "Carbon",
+              "Name": "mp_carbon"
+            },
+            {
+              "Alias": "Dome",
+              "Name": "mp_dome"
+            },
+            {
+              "Alias": "Arkaden",
+              "Name": "mp_plaza2"
+            },
+            {
+              "Alias": "Downturn",
+              "Name": "mp_exchange"
+            },
+            {
+              "Alias": "Bootleg",
+              "Name": "mp_bootleg"
+            },
+            {
+              "Alias": "Hardhat",
+              "Name": "mp_hardhat"
+            },
+            {
+              "Alias": "Interchange",
+              "Name": "mp_interchange"
+            },
+            {
+              "Alias": "Fallen",
+              "Name": "mp_lambeth"
+            },
+            {
+              "Alias": "Outpost",
+              "Name": "mp_radar"
+            },
+            {
+              "Alias": "Bakaara",
+              "Name": "mp_mogadishu"
+            },
+            {
+              "Alias": "Resistance",
+              "Name": "mp_paris"
+            },
+            {
+              "Alias": "Underground",
+              "Name": "mp_underground"
+            },
+            {
+              "Alias": "Village",
+              "Name": "mp_village"
+            },
+            {
+              "Alias": "Aground",
+              "Name": "mp_aground_ss"
+            },
+            {
+              "Alias": "Boardwalk",
+              "Name": "mp_boardwalk"
+            },
+            {
+              "Alias": "U-turn",
+              "Name": "mp_burn_ss"
+            },
+            {
+              "Alias": "Foundation",
+              "Name": "mp_cement"
+            },
+            {
+              "Alias": "Erosion",
+              "Name": "mp_courtyard_ss"
+            },
+            {
+              "Alias": "Intersection",
+              "Name": "mp_crosswalk_ss"
+            },
+            {
+              "Alias": "Getaway",
+              "Name": "mp_hillside_ss"
+            },
+            {
+              "Alias": "Piazza",
+              "Name": "mp_italy"
+            },
+            {
+              "Alias": "Sanctuary",
+              "Name": "mp_meteora"
+            },
+            {
+              "Alias": "Gulch",
+              "Name": "mp_moab"
+            },
+            {
+              "Alias": "Black Box",
+              "Name": "mp_morningwood"
+            },
+            {
+              "Alias": "Parish",
+              "Name": "mp_nola"
+            },
+            {
+              "Alias": "Overwatch",
+              "Name": "mp_overwatch"
+            },
+            {
+              "Alias": "Liberation",
+              "Name": "mp_park"
+            },
+            {
+              "Alias": "Oasis",
+              "Name": "mp_qadeem"
+            },
+            {
+              "Alias": "Lookout",
+              "Name": "mp_restrepo_ss"
+            },
+            {
+              "Alias": "Off Shore",
+              "Name": "mp_roughneck"
+            },
+            {
+              "Alias": "Decommission",
+              "Name": "mp_shipbreaker"
+            },
+            {
+              "Alias": "Vortex",
+              "Name": "mp_six_ss"
+            },
+            {
+              "Alias": "Terminal",
+              "Name": "mp_terminal_cls"
+            }
+          ]
+        },
+        {
+          "Game": "T6",
+          "Maps": [
+            {
+              "Alias": "Aftermath",
+              "Name": "mp_la"
+            },
+            {
+              "Alias": "Cargo",
+              "Name": "mp_dockside"
+            },
+            {
+              "Alias": "Carrier",
+              "Name": "mp_carrier"
+            },
+            {
+              "Alias": "Drone",
+              "Name": "mp_drone"
+            },
+            {
+              "Alias": "Express",
+              "Name": "mp_express"
+            },
+            {
+              "Alias": "Hijacked",
+              "Name": "mp_hijacked"
+            },
+            {
+              "Alias": "Meltdown",
+              "Name": "mp_meltdown"
+            },
+            {
+              "Alias": "Overflow",
+              "Name": "mp_overflow"
+            },
+            {
+              "Alias": "Plaza",
+              "Name": "mp_nightclub"
+            },
+            {
+              "Alias": "Raid",
+              "Name": "mp_raid"
+            },
+            {
+              "Alias": "Slums",
+              "Name": "mp_slums"
+            },
+            {
+              "Alias": "Standoff",
+              "Name": "mp_village"
+            },
+            {
+              "Alias": "Turbine",
+              "Name": "mp_turbine"
+            },
+            {
+              "Alias": "Yemen",
+              "Name": "mp_socotra"
+            },
+            {
+              "Alias": "Nuketown 2025",
+              "Name": "mp_nuketown_2020"
+            },
+            {
+              "Alias": "Downhill",
+              "Name": "mp_downhill"
+            },
+            {
+              "Alias": "Mirage",
+              "Name": "mp_mirage"
+            },
+            {
+              "Alias": "Hydro",
+              "Name": "mp_hydro"
+            },
+            {
+              "Alias": "Grind",
+              "Name": "mp_skate"
+            },
+            {
+              "Alias": "Encore",
+              "Name": "mp_concert"
+            },
+            {
+              "Alias": "Magma",
+              "Name": "mp_magma"
+            },
+            {
+              "Alias": "Vertigo",
+              "Name": "mp_vertigo"
+            },
+            {
+              "Alias": "Studio",
+              "Name": "mp_studio"
+            },
+            {
+              "Alias": "Uplink",
+              "Name": "mp_uplink"
+            },
+            {
+              "Alias": "Detour",
+              "Name": "mp_bridge"
+            },
+            {
+              "Alias": "Cove",
+              "Name": "mp_castaway"
+            },
+            {
+              "Alias": "Rush",
+              "Name": "mp_paintball"
+            },
+            {
+              "Alias": "Dig",
+              "Name": "mp_dig"
+            },
+            {
+              "Alias": "Frost",
+              "Name": "mp_frostbite"
+            },
+            {
+              "Alias": "Pod",
+              "Name": "mp_pod"
+            },
+            {
+              "Alias": "Takeoff",
+              "Name": "mp_takeoff"
+            },
+            {
+              "Alias": "Buried/Resolution 1295",
+              "Name": "zm_buried"
+            },
+            {
+              "Alias": "Die Rise/Great Leap Forward",
+              "Name": "zm_highrise"
+            },
+            {
+              "Alias": "Nuketown",
+              "Name": "zm_nuked"
+            },
+            {
+              "Alias": "Mob of the Dead",
+              "Name": "zm_prison"
+            },
+            {
+              "Alias": "Origins",
+              "Name": "zm_tomb"
+            },
+            {
+              "Alias": "Diner",
+              "Name": "zm_transit_dr"
+            },
+            {
+              "Alias": "Green Run/Bus Depot/Farm/Town",
+              "Name": "zm_transit"
+            }
+          ]
+        }
+      ]
+}
