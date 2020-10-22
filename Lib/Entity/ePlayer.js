@@ -29,56 +29,60 @@ class ePlayer extends EventEmitter {
         this.Clientslot = Clientslot
         this.Server = Server
         this.Server.Clients[Clientslot] = this
-      }
-      delete() {
+    }
+    delete() {
         this.removeAllListeners()
-      }
-      async build() {
+    }
+    async build() {
         this.ClientId = await this.Server.DB.addClient(this.Guid)
+
         await this.Server.DB.initializeStats(this.ClientId)
 
         this.PermissionLevel = await this.Server.DB.getClientLevel(this.ClientId)
         this.Server.DB.logConnection(this)
 
-        this.Data = this.Server.clientData.getData(this.ClientId)
-        this.IPAddress.split(':')[0] && (this.Session = this.Server.sessionStore.createSession(this.IPAddress.split(':')[0]))
-        this.Session && (this.Session.Data.Authorized = this.Session.Data.Authorized != undefined ? this.Session.Data.Authorized : false)
-      }
-      Ban (Reason, Origin) {
+        try {
+            this.Data = this.Server.clientData.getData(this.ClientId)
+            this.IPAddress.split(':')[0] && (this.Session = this.Server.sessionStore.createSession(this.IPAddress.split(':')[0]))
+            this.Session && (this.Session.Data.Authorized = this.Session.Data.Authorized != undefined ? this.Session.Data.Authorized : false)
+        }
+        catch(e) {}
+    }
+    Ban (Reason, Origin) {
         this.Server.DB.addPenalty({
-          TargetId: this.ClientId,
-          OriginId: Origin.ClientId,
-          PenaltyType: 'PENALTY_PERMA_BAN',
-          Duration: 0,
-          Reason: Reason
+            TargetId: this.ClientId,
+            OriginId: Origin.ClientId,
+            PenaltyType: 'PENALTY_PERMA_BAN',
+            Duration: 0,
+            Reason: Reason
         })
         this.Server.emit('penalty', 'PENALTY_PERMA_BAN', this, Reason, Origin)
         this.Kick(`You have been permanently banned for: ^5${Reason}`, Origin, false, '')
-      }
-      Tempban (Reason, Origin, Duration) {
+    }
+    Tempban (Reason, Origin, Duration) {
         this.Server.DB.addPenalty({
-          TargetId: this.ClientId,
-          OriginId: Origin.ClientId,
-          PenaltyType: 'PENALTY_TEMP_BAN',
-          Duration: Duration,
-          Reason: Reason
+            TargetId: this.ClientId,
+            OriginId: Origin.ClientId,
+            PenaltyType: 'PENALTY_TEMP_BAN',
+            Duration: Duration,
+            Reason: Reason
         })
         this.Server.emit('penalty', 'PENALTY_TEMP_BAN', this, Reason, Origin, Duration)
         this.Kick(`You have been banned for: ^5${Reason} ${secondsToDhms(Duration)}^7 left`, Origin, false, '')
-      }
-      Tell (text) {
+    }
+    Tell (text) {
         if (!text) return
         this.Server.Rcon.executeCommandAsync(this.Server.Rcon.commandPrefixes.Rcon.Tell
                                             .replace('%CLIENT%', this.Clientslot)
                                             .replace('%MESSAGE%', text))
-      }
-      Kick (Message, Origin = NodeServerManager, Log = true, Basemsg = 'You have been kicked: ^5') {
+    }
+    Kick (Message, Origin = NodeServerManager, Log = true, Basemsg = 'You have been kicked: ^5') {
         this.Server.DB.addPenalty({
-          TargetId: this.ClientId,
-          OriginId: Origin.ClientId,
-          PenaltyType: 'PENALTY_KICK',
-          Duration: 0,
-          Reason: Message
+            TargetId: this.ClientId,
+            OriginId: Origin.ClientId,
+            PenaltyType: 'PENALTY_KICK',
+            Duration: 0,
+            Reason: Message
         })
         Log && this.Server.emit('penalty', 'PENALTY_KICK', this, Message, Origin)
         this.Server.Rcon.executeCommandAsync(this.Server.Rcon.commandPrefixes.Rcon.clientKick

@@ -14,7 +14,7 @@ var wasRunning = true
 class Server extends EventEmitter {
     constructor(IP, PORT, RCON, DATABASE, sessionStore, clientData, Managers, Id, Manager, config) {
         super()
-        this.Clients = new Array(18).fill(null)
+        this.Clients = []
         this.Rcon = RCON
         this.IP = IP
         this.Id = Id
@@ -108,7 +108,9 @@ class Server extends EventEmitter {
 
             this.Mapname = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.mapname)
             await wait(200)
-            this.MaxClients = this.config.maxClientsOverride ? this.config.maxClientsOverride : await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.maxclients)
+            this.MaxClients = parseInt(this.config.maxClientsOverride ? this.config.maxClientsOverride : await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.maxclients))
+
+            this.Clients = new Array(this.MaxClients).fill(null)
 
             this.externalIP = !this.IP.match(/(^127\.)|(localhost)|(^192\.168\.)|(^10\.)|(^172\.1[6-9]\.)|(^172\.2[0-9]\.)|(^172\.3[0-1]\.)|(^::1$)|(^[fF][cCdD])/g) ? this.IP : await ip.v4()
             this.emit('dvars_loaded')

@@ -5,14 +5,17 @@ const fs                = require('fs')
 
 class Rcon {
     constructor (ip, port, password, gamename) {
-      this.ip = ip
-      this.port = port
-      this.password = password
-      this.commandPrefixes = fs.existsSync(path.join(__dirname, `./RconCommandPrefixes/${gamename}.js`)) ? require(`./RconCommandPrefixes/${gamename}.js`) : require(`./RconCommandPrefixes/Default.js`)
-      this.isRunning = true
-      this.commandRetries = 3
-      this.previousClients = []
-      this.client = dgram.createSocket('udp4')
+        this.ip = ip
+        this.port = port
+        this.password = password
+        this.gamename = gamename
+        this.commandPrefixes = fs.existsSync(path.join(__dirname, `./RconCommandPrefixes/${gamename}.js`)) 
+            ? {...require(`./RconCommandPrefixes/Default.js`), ...require(`./RconCommandPrefixes/${gamename}.js`)} 
+            : require(`./RconCommandPrefixes/Default.js`)
+        this.isRunning = true
+        this.commandRetries = 3
+        this.previousClients = []
+        this.client = dgram.createSocket('udp4')
     }
     async sendCommand(command) {
         return new Promise(async (resolve, reject) => {
@@ -128,32 +131,21 @@ class Rcon {
 
             if (status[0].includes('invalid')) return false
 
+
+
             var map = status[0].split(/\s+/g)[1]
             var rawClients = status.slice(3)
             var clients = []
 
             rawClients.forEach(client => {
-                var regex = /^ +([0-9]+) +([0-9]+) +([0-9]+){0,1} +([0-9]+) +((?:[A-Za-z0-9]){8,32}|(?:[A-Za-z0-9]){8,32}|bot[0-9]+|(?:[[A-Za-z0-9]+)) *(.{0,32}) +([0-9]+) +(\d+\.\d+\.\d+.\d+\:-*\d{1,5}|0+.0+:-*\d{1,5}|loopback|unknown|bot) +(-*[0-9]+) +([0-9]+) *$/g
-                
-                if (!client.match(regex)) return
-                var match = regex.exec(client)
+                if (!client.match(this.commandPrefixes.Rcon.statusRegex)) return
+                var match = this.commandPrefixes.Rcon.statusRegex.exec(client)
 
                 for (var i = 0; i < match.length; i++) {
                     match[i] = match[i] ? match[i].trim() : ''
                 }
 
-                clients.push({
-                    num: match[1],
-                    score: match[2],
-                    bot: match[3],
-                    ping: match[4],
-                    guid: Utils.convertGuid(match[5], this.gamename),
-                    name: match[6].replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), ``),
-                    lastmgs: match[7],
-                    address: match[8],
-                    qport: match[9],
-                    rate: match[10]
-                })
+                clients.push(this.commandPrefixes.Rcon.parseStatus(match, Utils, this.gamename))
             })
         }
         catch (e) {
@@ -180,7 +172,7 @@ class Rcon {
         return clients;
     }
     async getClientByGuid(guid) {
-        var clients = (await this.getStatus()).data.clients;
+        var clients = (await this.getStatus()).data.clients
         for (var i = 0; i < clients.length; i++) {
             if (clients[i].guid == guid) {
                 return clients[i]

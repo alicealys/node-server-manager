@@ -48,11 +48,9 @@ class EventDispatcher {
                             this.Server.Clients[i] = null
                         }
                     }
-
                     await wait(100)
-
                     try { 
-                        var IPAddress = (await this.Server.Rcon.getClientByGuid(event.data.Origin.Guid)).address 
+                        var IPAddress = (await this.Server.Rcon.getClientByGuid(event.data.Origin.Guid)).address
                     } 
                     catch (e) {}
 
@@ -63,23 +61,23 @@ class EventDispatcher {
                     this.Server.emit('any_event', {type: 'join', Origin: Player})
               break
               case 'quit':
-                this.Server.emit('event', {type: 'quit', Origin: this.Server.Clients[event.data.Origin.Clientslot]})
+                    this.Server.emit('event', {type: 'quit', Origin: this.Server.Clients[event.data.Origin.Clientslot]})
+                    
+                    if (!event.data.Origin.Clientslot || !this.Server.Clients[event.data.Origin.Clientslot]) return
 
-                if (!event.data.Origin.Clientslot || !this.Server.Clients[event.data.Origin.Clientslot]) return
+                    for (var i = 0; i < this.Server.Clients.length; i++) {
+                        if (!this.Server.Clients[i]) continue
 
-                for (var i = 0; i < this.Server.Clients.length; i++) {
-                    if (!this.Server.Clients[i]) continue
-
-                    if (this.Server.Clients[i].Guid == event.data.Origin.Guid && this.Server.Clients[i].Clientslot != event.data.Origin.Clientslot) {
-                        this.Server.Clients[i].removeAllListeners()
-                        this.Server.Clients[i] = null
+                        if (this.Server.Clients[i].Guid == event.data.Origin.Guid && this.Server.Clients[i].Clientslot != event.data.Origin.Clientslot) {
+                            this.Server.Clients[i].removeAllListeners()
+                            this.Server.Clients[i] = null
+                        }
                     }
-                }
 
-                this.Server.emit('disconnect', Object.assign({}, this.Server.Clients[event.data.Origin.Clientslot]))
+                    this.Server.emit('disconnect', Object.assign({}, this.Server.Clients[event.data.Origin.Clientslot]))
 
-                this.Server.Clients[event.data.Origin.Clientslot].removeAllListeners()
-                this.Server.Clients[event.data.Origin.Clientslot] = null
+                    this.Server.Clients[event.data.Origin.Clientslot].removeAllListeners()
+                    this.Server.Clients[event.data.Origin.Clientslot] = null
               break
 
               case 'kill':

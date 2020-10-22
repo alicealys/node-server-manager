@@ -41,6 +41,7 @@ class EventLogWatcher extends EventParser {
         this.Server.emit('stripped_line', line.trim().replace(new RegExp(/([0-9]+:[0-9]+)\s+/g), ''))
         var event = this.parseEvent(line)
         if (!event) return
+
         this.EventDispatcher.dispatchCallback(event)
     }
 }
