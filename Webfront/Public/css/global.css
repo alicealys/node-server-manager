@@ -3081,8 +3081,10 @@ body {
 }
 .wf-serverlist-map {
   flex-grow: 1;
-  cursor: pointer;
   flex-basis: 1px;
+}
+.wf-serverlist-map span {
+  cursor:pointer;
 }
 .wf-serverlist-hostname {
   flex-basis: 1px;
