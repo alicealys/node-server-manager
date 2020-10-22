@@ -119,6 +119,11 @@ class Plugin {
         logToAudit: false,
         Permission: Permissions.Commands.COMMAND_USER_CMDS,
         callback: async (Player, args) => {
+            if ((new Date() - Player.Data.lastWithdraw) / 1000 < 5) {
+                Player.Tell(Localization['COMMAND_COOLDOWN'])
+                return
+            }
+
             var totalMoney = (await this.getZMStats(Player.ClientId)).Money
             var gameMoney = parseInt(await Player.Server.Rcon.getDvar(`${Player.Clientslot}_money`))
             var withdrawMoney = args[1] == 'all' ? Math.min(parseInt(totalMoney), 1000000 - gameMoney) : Math.min(parseInt(args[1]), 1000000 - gameMoney)
@@ -135,6 +140,7 @@ class Plugin {
             }
             var result = await Player.Server.Rcon.executeCommandAsync(`set bank_withdraw ${Player.Guid};${withdrawMoney}`)
             if (result) {
+                Player.Data.lastWithdraw = new Date()
                 this.setPlayerMoney(Player.ClientId, parseInt(totalMoney) - parseInt(withdrawMoney))
                 Player.Tell(Utils.formatString(Localization['ZBANK_WITHDRAW_SUCCESS'], {amount: withdrawMoney}, '%')[0])
                 return
@@ -148,6 +154,11 @@ class Plugin {
         logToAudit: false,
         Permission: Permissions.Commands.COMMAND_USER_CMDS,
         callback: async (Player, args) => {
+            if ((new Date() - Player.Data.lastDeposit) / 1000 < 5) {
+                Player.Tell(Localization['COMMAND_COOLDOWN'])
+                return
+            }
+
             var totalMoney = (await this.getZMStats(Player.ClientId)).Money
             var gameMoney = parseInt(await Player.Server.Rcon.getDvar(`${Player.Clientslot}_money`))
             var depositMoney = args[1] == 'all' ? parseInt(gameMoney) : parseInt(args[1])
@@ -165,6 +176,7 @@ class Plugin {
             }
             var result = await Player.Server.Rcon.executeCommandAsync(`set bank_deposit ${Player.Guid};${depositMoney}`)
             if (result) {
+                Player.Data.lastDeposit = new Date()
                 Player.Tell(Utils.formatString(Localization['ZBANK_DEPOSIT_SUCCESS'], {amount: depositMoney}, '%')[0])
                 this.setPlayerMoney(Player.ClientId, parseInt(totalMoney) + parseInt(depositMoney))
                 return

@@ -188,7 +188,8 @@
         "COMMAND_ERROR": "Une erreur interne est survenue en executant cette commande",
         "COMMAND_SERVERS_FORMAT": "^5#%ID%^7 - ^3%HOSTNAME%^7 ^6[%HOST%]^7 - %MAPNAME% ^5%CLIENTS% / %MAXCLIENTS%",
         "SERVER_MAP_ROTATE": "Map rotated to ^5%MAPNAME% - %GAMETYPE%",
-        "SERVER_RESTART": "Server restarted"
+        "SERVER_RESTART": "Server restarted",
+        "COMMAND_COOLDOWN": "Please wait a few seconds before executing this again"
     },
     "Games": {
       "T6": {
