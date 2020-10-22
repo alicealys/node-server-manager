@@ -1055,9 +1055,18 @@ class Webfront {
                 return
             }
 
-            res.sendFile(fs.existsSync(path.join(__dirname, `Public/img/maps/${this.Managers[id].Server.Gamename.toLocaleLowerCase()}/${this.Managers[id].Server.Mapname}.png`)) 
-                ? path.join(__dirname, `Public/img/maps/${this.Managers[id].Server.Gamename.toLocaleLowerCase()}/${this.Managers[id].Server.Mapname}.png`) 
-                : path.join(__dirname, `Public/img/maps/default.png`))
+            //cba
+            var existsPng = fs.existsSync(path.join(__dirname, `Public/img/maps/${this.Managers[id].Server.Gamename.toLocaleLowerCase()}/${this.Managers[id].Server.Mapname}.png`))
+            var existsJpg = fs.existsSync(path.join(__dirname, `Public/img/maps/${this.Managers[id].Server.Gamename.toLocaleLowerCase()}/${this.Managers[id].Server.Mapname}.jpg`))
+
+            if (existsPng || existsJpg) { 
+                res.sendFile(existsJpg 
+                                ? path.join(__dirname, `Public/img/maps/${this.Managers[id].Server.Gamename.toLocaleLowerCase()}/${this.Managers[id].Server.Mapname}.jpg`) 
+                                : path.join(__dirname, `Public/img/maps/${this.Managers[id].Server.Gamename.toLocaleLowerCase()}/${this.Managers[id].Server.Mapname}.png`))
+                return
+            }
+
+            res.sendFile(path.join(__dirname, `Public/img/maps/default.png`))
         })
 
         this.app.get('*', async (req, res, next) => {
