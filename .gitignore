@@ -6,6 +6,7 @@ node_modules
 *.db-journal
 *.save
 *.swp
+!Configuration/DefaultGameSettings.json
 !Configuration/Localization-*.json
 Log/*
 Log
