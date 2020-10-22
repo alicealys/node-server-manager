@@ -12,7 +12,7 @@ const ws            = require('ws')
 const Permissions   = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
 const configName    = path.join(__dirname, `../Configuration/NSMConfiguration.json`)
 const config        = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`))
-const Localization  = require(path.join(__dirname, `../Configuration/Localization-${process.env.LOCALE}.json`))
+const Localization  = require(path.join(__dirname, `../Configuration/Localization-${process.env.LOCALE}.json`)).lookup
 const https         = require('https')
 const http          = require('http')
 const rateLimit     = require("express-rate-limit")
@@ -1043,6 +1043,23 @@ class Webfront {
             res.end(JSON.stringify(Messages))
         })
 
+        this.app.get('/api/map', async (req, res, next) => {
+            if (!req.query.ServerId) {
+                res.end()
+                return
+            }
+
+            var id = parseInt(req.query.ServerId)
+            if (!this.Managers[id] || !this.Managers[id].Server.Mapname || !this.Managers[id].Server.Gamename) {
+                res.end()
+                return
+            }
+
+            res.sendFile(fs.existsSync(path.join(__dirname, `Public/img/maps/${this.Managers[id].Server.Gamename.toLocaleLowerCase()}/${this.Managers[id].Server.Mapname}.png`)) 
+                ? path.join(__dirname, `Public/img/maps/${this.Managers[id].Server.Gamename.toLocaleLowerCase()}/${this.Managers[id].Server.Mapname}.png`) 
+                : path.join(__dirname, `Public/img/maps/default.png`))
+        })
+
         this.app.get('*', async (req, res, next) => {
             var header = await this.renderDynamicHTML(req)
 
@@ -1142,56 +1159,94 @@ class Webfront {
 
         var i = 0; this.Managers.forEach(Manager => {
             var id = i++
-            Manager.Server.on('reload', async () => {
+            var reload = async () => {
                 sendToAction('socket_listen_servers', {
                     event: 'event_server_reload',
                         data: {
                             ServerId: id,
                         }
                 })
-            })
-            Manager.Server.on('connect', async ePlayer => {
-                logActivity(Manager, {event: 'event_client_connect', data: { ServerId: id, Client: { Name: ePlayer.Name, ClientId: ePlayer.ClientId, Clientslot: ePlayer.Clientslot } } })
-                sendToAction('socket_listen_servers', {
-                    event: 'event_client_connect',
-                        data: {
-                            ServerId: id,
-                            Hostname: Manager.Server.HostnameRaw,
-                            Client: {
-                                Name: ePlayer.Name,
-                                ClientId: ePlayer.ClientId
-                            }
-                        }
-                })
-            })
-            Manager.Server.on('disconnect', async ePlayer => {
-                logActivity(Manager, {event: 'event_client_disconnect', data: { ServerId: id, Client: { Name: ePlayer.Name, ClientId: ePlayer.ClientId, Clientslot: ePlayer.Clientslot } } })
-                sendToAction('socket_listen_servers', {
-                    event: 'event_client_disconnect',
-                        data: {
-                            ServerId: id,
-                            Hostname: Manager.Server.HostnameRaw,
-                            Client: {
-                                Name: ePlayer.Name,
-                                ClientId: ePlayer.ClientId
-                            }
-                        }
-                })
-            })
-            Manager.Server.on('message', (ePlayer, Message) => {
-                logActivity(Manager, {event: 'event_client_message', data: { ServerId: id, Client: { Name: ePlayer.Name, ClientId: ePlayer.ClientId, Clientslot: ePlayer.Clientslot }, Message} })
-                sendToAction('socket_listen_servers', {
-                    event: 'event_client_message',
+            }
+            Manager.Server.on('map_loaded', reload)
+            Manager.Server.on('reload', reload)
+
+            Manager.Server.on('reload', async () => {
+                var event = {
+                    event: 'event_server_raw', 
                     data: {
                         ServerId: id,
-                        Hostname: Manager.Server.HostnameRaw,
-                        Message: Message,
-                        Client: {
-                            Name: ePlayer.Name,
-                            ClientId: ePlayer.ClientId
-                        }
+                        Message: Localization['SERVER_RESTART']
+                    } 
+                }
+
+                logActivity(Manager, event)
+                sendToAction('socket_listen_servers', event)
+            })
+
+            Manager.Server.on('map_loaded', async () => {
+                if (!Manager.Server.getMapname().Alias || !Manager.Server.getGametype().Alias) return
+
+                var event = {
+                    event: 'event_server_raw', 
+                    data: { 
+                        ServerId: id,
+                        Message: Utils.formatString(Localization['SERVER_MAP_ROTATE'], {mapname: Manager.Server.getMapname().Alias, gametype: Manager.Server.getGametype().Alias }, '%')[0] 
                     }
-                })
+                }
+                
+                logActivity(Manager, event)
+                sendToAction('socket_listen_servers', event)
+            })
+
+            Manager.Server.on('connect', async ePlayer => {
+                var event = {
+                    event: 'event_client_connect',
+                    data: { 
+                        ServerId: id, 
+                        Client: { 
+                            Name: ePlayer.Name, 
+                            ClientId: ePlayer.ClientId, 
+                            Clientslot: ePlayer.Clientslot 
+                        } 
+                    } 
+                }
+
+                logActivity(Manager, event)
+                sendToAction('socket_listen_servers', event)
+            })
+            Manager.Server.on('disconnect', async ePlayer => {
+                var event = {
+                    event: 'event_client_disconnect', 
+                    data: { 
+                        ServerId: id, 
+                        Client: { 
+                            Name: ePlayer.Name, 
+                            ClientId: ePlayer.ClientId, 
+                            Clientslot: ePlayer.Clientslot 
+                        } 
+                    } 
+                }
+
+                logActivity(Manager, event)
+                sendToAction('socket_listen_servers', event)
+            })
+            Manager.Server.on('message', (ePlayer, Message) => {
+                var event = {
+                    event: 'event_client_message', 
+                    data: { 
+                        ServerId: id, 
+                        Client: { 
+                            Name: ePlayer.Name,
+                             ClientId: ePlayer.ClientId, 
+                             Clientslot: ePlayer.Clientslot 
+                        }, 
+                        Message
+                    } 
+                }
+
+                logActivity(Manager, event)
+                sendToAction('socket_listen_servers', event)
+
                 sendToAction('socket_listen_messages', {
                     event: 'event_client_message',
                     ServerId: id,
@@ -1232,7 +1287,15 @@ class Webfront {
             }
 
             var Dvars = {
-                Map: Manager.Server.getMapname().Alias,
+                Map: {
+                    Alias: Manager.Server.getMapname().Alias,
+                    Name: Manager.Server.getMapname().Name
+                },
+                Gametype: {
+                    Alias: Manager.Server.getGametype().Alias,
+                    Name: Manager.Server.getGametype().Name
+                },
+                Gamename: Manager.Server.Gamename,
                 MaxClients: Manager.Server.MaxClients,
                 Hostname: Manager.Server.HostnameRaw,
             }

@@ -16,11 +16,14 @@ class EventDispatcher {
             if (this.Server.previousUptime > this.Server.uptime) {
                 this.Server.previousUptime = this.Server.uptime
                 this.Server.loadClientsAsync()
+                this.Server.emit('reload')
                 return
             }
             switch (event.type) {
                 case 'init':
-                    this.Server.emit('init')
+                    if (this.Server.previousUptime < this.Server.uptime) {
+                        this.Server.emit('init')
+                    }
                 break
                 case 'say':
                     if (!event.data.Origin.Clientslot || !this.Server.Clients[event.data.Origin.Clientslot]) return

@@ -3,7 +3,9 @@ const path              = require('path')
 const Commands          = require(path.join(__dirname, `../Commands.js`))
 const EventEmitter      = require('events')
 const ip                = require('public-ip')
-const Maps              = require(path.join(__dirname, `../../Configuration/Localization-${process.env.LOCALE}.json`)).Maps
+const Game              = require(path.join(__dirname, `../../Configuration/DefaultGameSettings.json`))
+const Maps              = Game.Maps
+const Gametypes         = Game.Gametypes
 const Permissions       = require(path.join(__dirname, `../../Configuration/NSMConfiguration.json`)).Permissions
 const { ChaiscriptApi } = require('../ChaiscriptApi.js')
 const wait              = require('delay')
@@ -31,7 +33,6 @@ class Server extends EventEmitter {
         this.Manager = Manager
         this.previousUptime = 0
         this.previousStatus = null
-        this.setMaxListeners(18)
         this.Heartbeat()
         this.heartbeatRetry = 2
         this.sessionStore = sessionStore
@@ -44,6 +45,9 @@ class Server extends EventEmitter {
     getMap(name) {
       return this.Maps.find(Map => Map.Name.toLocaleLowerCase().startsWith(name) || Map.Alias.toLocaleLowerCase().startsWith(name) )
     }
+    getGametype() {
+        return Gametypes[this.Gametype] ? { Name: this.Gametype, Alias: Gametypes[this.Gametype] } : { Name: this.Gametype, Alias: this.Gametype }
+    }
     getClients() {
         return this.Clients.filter(c => c)
     }
@@ -52,13 +56,18 @@ class Server extends EventEmitter {
         return map ? map : { Name: this.Mapname, Alias: this.Mapname }
     }
     onInitGame() {
-        var onLine = async () => {
+        var loadMap = async () => {
+            clearTimeout(timeout)
             this.Mapname = await this.Rcon.getDvar('mapname')
             this.Gametype = await this.Rcon.getDvar('g_gametype')
             this.emit('map_loaded', this.Mapname, this.Gametype)
-            this.removeListener('line', onLine)
+            this.removeListener('line', loadMap)
+
         }
-        this.on('line', onLine)
+        this.on('line', loadMap)
+        var timeout = setTimeout(() => {
+            loadMap()
+        }, 1000)
     }
     findLocalClient(name) {
         var clientIdRegex = /\@([0-9]+)/g

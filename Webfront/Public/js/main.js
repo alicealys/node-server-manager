@@ -614,4 +614,16 @@ function renderPerformanceChart(id, data, animation, color) {
     });
     chart.render()
     document.getElementById(id).offsetWidth;
-} 
+}
+
+function imagePreview(el, url) {
+    var img = createElementFromHTML(`
+        <div class='wf-img-preview' data-img-preview>
+            <img src='${url}'>
+        </div>
+    `)
+    img.style.top = el.offsetTop + img.offsetHeight 
+    img.style.left = el.offsetLeft + el.offsetWidth + 10 + img.offsetWidth / 2
+    document.body.appendChild(img)
+    return img
+}

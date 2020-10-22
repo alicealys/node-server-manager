@@ -3081,6 +3081,7 @@ body {
 }
 .wf-serverlist-map {
   flex-grow: 1;
+  cursor: pointer;
   flex-basis: 1px;
 }
 .wf-serverlist-hostname {
@@ -4267,4 +4268,18 @@ select option:hover {
   display:flex;
   font-size:20px;
   flex-flow:column;
+}
+.wf-img-preview img {
+  width: 400px;
+  height: 225px;
+}
+.wf-img-preview {
+  position: absolute;
+}
+.wf-text {
+  height: 1em;
+  max-width: 100px;
+  overflow: hidden;
+  word-break: keep-all;
+  text-overflow: ellipsis;
 }

@@ -3,7 +3,7 @@ class EventParser {
         this.Server = Server
     }
     getEventData(eventString) {
-        eventString = eventString.trim().replace(new RegExp(/([0-9]+:[0-9]+)\s+/g), '$1;')
+        eventString = eventString.trim().replace(/([0-9]+:[0-9]+)\s+/g, '$1;')
         var eventRegex = {
           /* https://github.com/RaidMax/IW4M-Admin/blob/2.4-pr/Application/EventParsers/BaseEventParser.cs :) */
           say: /^([0-9]+:[0-9]+);(say|sayteam);(-?[A-Fa-f0-9_]{1,32}|bot[0-9]+|0);([0-9]+);([^;]*);(.*)$/g,
@@ -11,7 +11,7 @@ class EventParser {
           quit: /^([0-9]+:[0-9]+);(Q);(-?[A-Fa-f0-9_]{1,32}|bot[0-9]+|0);([0-9]+);(.*)$/g,
           damage: /^([0-9]+:[0-9]+);(D);(-?[A-Fa-f0-9_]{1,32}|bot[0-9]+|0);(-?[0-9]+);(axis|allies|world|none)?;([^;]{1,24});(-?[A-Fa-f0-9_]{1,32}|bot[0-9]+|0)?;(-?[0-9]+);(axis|allies|world|none)?;([^;]{1,24})?;((?:[0-9]+|[a-z]+|_|\+)+);([0-9]+);((?:[A-Z]|_)+);((?:[a-z]|_)+)$/g,
           kill: /^([0-9]+:[0-9]+);(K);(-?[A-Fa-f0-9_]{1,32}|bot[0-9]+|0);(-?[0-9]+);(axis|allies|world|none)?;([^;]{1,24});(-?[A-Fa-f0-9_]{1,32}|bot[0-9]+|0)?;(-?[0-9]+);(axis|allies|world|none)?;([^;]{1,24})?;((?:[0-9]+|[a-z]+|_|\+)+);([0-9]+);((?:[A-Z]|_)+);((?:[a-z]|_)+)$/g,
-          init: /^([0-9]+:[0-9]+);InitGame$/g
+          init: /^([0-9]+:[0-9]+);(InitGame|InitGame(.+))$/g
         }
         var eventData = {type: null, data: null}
         Object.entries(eventRegex).forEach((r) => {

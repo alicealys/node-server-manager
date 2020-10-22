@@ -32,6 +32,7 @@ function escapeHtml(text) {
   }
 
 function logMessage(msg, refresh) {
+    console.log(msg)
     if (!msg.data || msg.data.private || msg.data.ServerId == undefined) return
     var feed = document.querySelector(`*[data-serverid='${msg.data.ServerId}']`).querySelector('.wf-more-feed')
     switch (msg.event) {
@@ -44,7 +45,7 @@ function logMessage(msg, refresh) {
                 <div class='wf-message-message'>${COD2HTML(escapeHtml(msg.data.Message), 'var(--color-text)')}</div>
             </div>
             `))
-        break;
+        break
         case 'event_client_connect':
             refresh && refreshClientList(msg.data.ServerId)
             feed.appendChild(parseHTML(
@@ -56,9 +57,20 @@ function logMessage(msg, refresh) {
                     </div>
                 `
             ))
+        break
+        case 'event_server_raw':
+            console.log('fewfefwe')
+            feed.appendChild(parseHTML(
+                `
+                <div class='wf-message'>
+                    <div class='wf-message-sender'>${COD2HTML(escapeHtml(msg.data.Message), 'var(--color-text)')}</div>
+                </div>
+                `
+            ))
+        break
         case 'event_server_reload':
             refresh && refreshClientList(msg.data.ServerId)
-        break;
+        break
         case 'event_client_disconnect':
             refresh && refreshClientList(msg.data.ServerId)
             feed.appendChild(parseHTML(
@@ -70,7 +82,7 @@ function logMessage(msg, refresh) {
                     </div>
                 `
             ))
-        break;
+        break
     }
     feed.scrollTop = feed.scrollHeight
 }
@@ -78,8 +90,11 @@ function logMessage(msg, refresh) {
 async function refreshClientList(serverId) {
     var clientCount = document.querySelector(`*[data-serverid='${serverId}']`).querySelector('*[data-playercount]')
     var uptime = document.querySelector(`*[data-serverid='${serverId}']`).querySelector('*[data-uptime]')
+    var Mapname = document.querySelector(`*[data-serverid='${serverId}']`).querySelector('*[data-mapname]')
     var clientList = document.querySelector(`*[data-serverid='${serverId}']`).querySelector('.wf-more-player-list')
     var Status = JSON.parse(await makeRequest('GET', `/api/players?ServerId=${serverId}`, null))
+
+    Mapname.children[0].innerHTML = `${Status.Dvars.Map.Alias} - ${Status.Dvars.Gametype.Alias}`
     uptime.innerHTML = `<i class="fas fa-history"></i> ${time2str(Status.Uptime)}`
     clientList.querySelectorAll('*[data-clientslot]').forEach(c => c.style.display = 'none')
     clientCount.innerHTML = `<i class="fas fa-users"></i> ${Status.Clients.length} / ${Status.Dvars.MaxClients}`
@@ -149,7 +164,7 @@ async function renderServerList() {
             <div data-serverid='${server.ServerId}' class='wf-serverlist-server'>
                 <div class='wf-serverlist-server-info'>
                     <div class='wf-serverlist-hostname'>${COD2HTML(status.Dvars.Hostname, 'var(--color-text)')}</div>
-                    <div class='wf-serverlist-map hide-mobile'>${status.Dvars.Map}</div>
+                    <div class='wf-serverlist-map hide-mobile' data-mapname><span class='wf-text  wf-link'>${status.Dvars.Map.Alias} - ${status.Dvars.Gametype.Alias}</span></div>
                     <div class='wf-serverlist-uptime hide-mobile' data-uptime><i class="fas fa-history"></i> ${time2str(status.Uptime)}</div>
                     <div class='wf-serverlist-players hide-mobile' data-playercount><i class="fas fa-users"></i> ${status.Clients.length} / ${status.Dvars.MaxClients} </div>
                     <div class='wf-serverlist-button hide-mobile' ><i class='fas fa-sort-up an' onclick='prependServer(${server.ServerId})'></i></div>
@@ -165,7 +180,7 @@ async function renderServerList() {
                             </div>
                             <div class='server-info-dvar'>
                                 <div class='wf-default server-info-dvar-name'>Map</div>
-                                <div class='wf-default server-info-dvar-name'>${status.Dvars.Map}</div>
+                                <div class='wf-default server-info-dvar-name'>${status.Dvars.Map.Alias}</div>
                             </div>
                             <div class='server-info-dvar'>
                                 <div class='wf-default server-info-dvar-name'>Players</div>
@@ -181,6 +196,18 @@ async function renderServerList() {
                 </div>
             </div>`)
 
+        var hoverOut = null
+        var img = null
+        var mapNameDiv = serverCard.querySelector('*[data-mapname]').children[0]
+        mapNameDiv.addEventListener('mouseover', () => {
+            hoverOut = setTimeout(() => {
+                img = imagePreview(mapNameDiv, `/api/map?ServerId=${status.ServerId}&_=${btoa(mapNameDiv.innerHTML)}`)
+            }, 1)
+        })
+        serverCard.querySelector('*[data-mapname]').addEventListener('mouseout', () => {
+            clearTimeout(hoverOut)
+            img && img.remove()
+        })
         serverCard.querySelector('*[data-more-button]').addEventListener('click', (e) => {
             var shown = (e.target.getAttribute('data-shown')) == 'true'
             e.target.setAttribute('data-shown', (!shown).toString())
