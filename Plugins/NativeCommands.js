@@ -433,7 +433,7 @@ class Plugin {
                             case (!Permission):
                                 Player.Tell(Localization.ROLE_NOT_EXIST)
                                 return
-                            case (Permission.Level > Player.PermissionLevel || Permission.Level >= Permissions.Levels.ROLE_OWNER):
+                            case (Permission.Level >= Player.PermissionLevel):
                                 Player.Tell(Localization.ROLE_HIERARCHY_ERROR)
                                 return
                             case (Player.ClientId == Client.ClientId):

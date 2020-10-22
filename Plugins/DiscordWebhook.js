@@ -37,8 +37,13 @@ class Plugin {
             this.Url = this.Url
         }
         catch (e) {
-            var hostname = (await (await fetch('https://api.ipify.org/?format=json')).json()).ip
-            this.Url = `${config.WebfrontSSL ? 'https://' : 'http://'}${hostname}`
+            try {
+                var hostname = (await (await fetch('https://api.ipify.org/?format=json')).json()).ip
+                this.Url = `${config.WebfrontSSL ? 'https://' : 'http://'}${hostname}`
+            }
+            catch (e) {
+                return null
+            }
         }
 
         return this.Url

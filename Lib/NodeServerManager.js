@@ -38,27 +38,28 @@ function COD2BashColor(string) {
 }
 
 class NSM extends EventEmitter{
-    constructor (configuration) {
+    constructor (config) {
         super()
-        this.configuration = configuration
+        this.config = config
         this.Version = Info.Version
         this.Author = Info.Author
-        this.IP = configuration.IP
-        this.PORT = configuration.PORT
-        this.PASSWORD = configuration.PASSWORD
-        this.LOGFILE = configuration.LOGFILE
-        this.LOGSERVERURI = configuration.LOGSERVERURI
+        this.IP = config.IP
+        this.PORT = config.PORT
+        this.PASSWORD = config.PASSWORD
+        this.LOGFILE = config.LOGFILE
+        this.LOGSERVERURI = config.LOGSERVERURI
         this.logger = new Logger(path.join(__dirname, `../Log/`), `NSM-${this.IP}:${this.PORT}.log`)
         this.Server = null
-        this.loadedPlugins = {}
-        this.StartAsync()
+        this.startAsync()
     }
-    async StartAsync() {
-        this.RconConnection = new RconConnection(this.IP, this.PORT, this.PASSWORD)
-        this.Server = new Server(this.IP, this.PORT, this.RconConnection, Database, sessionStore, clientData, Managers, Id++, this, this.configuration)
-        this._EventLogWatcher = this.LOGFILE ? new EventLogWatcher(this.LOGFILE, this.Server, this) : new ServerLogWatcher(this.LOGSERVERURI, this.Server, this)
+    async startAsync() {
+        this.RconConnection = new RconConnection(this.IP, this.PORT, this.PASSWORD, this.config.Gamename)
+        this.Server = new Server(this.IP, this.PORT, this.RconConnection, Database, sessionStore, clientData, Managers, Id++, this, this.config)
+        this.eventLogWatcher = this.LOGFILE ? new EventLogWatcher(this.LOGFILE, this.Server, this) : new ServerLogWatcher(this.LOGSERVERURI, this.Server, this)
 
+        this.loadRconSettings()
         this.loadPlugins()
+        
         await this.Server.setDvarsAsync()
 
         if (this.Server.Hostname) {
@@ -66,11 +67,11 @@ class NSM extends EventEmitter{
         } else {
             console.log(`Not watching \x1b[35m${this.IP}:${this.PORT}\x1b[0m: communication failed`)
             clearInterval(this.Server.HeartbeatInt)
-        return
+            return
         }
 
         await this.Server.loadClientsAsync()
-        this._EventLogWatcher.init()
+        this.eventLogWatcher.init()
         this.emit('ready')
     }
     log(string) {
@@ -87,6 +88,25 @@ class NSM extends EventEmitter{
                 this.logger.writeLn(`Loading plugin \x1b[33m${file}\x1b[0m for server ${this.Server.IP}:${this.Server.PORT}`)
                 try {
                     let plugin = require(path.join(__dirname, `../Plugins/${file}`))
+                    new plugin(this.Server, this, Managers)
+                }
+                catch (e) {
+                    console.log(`Error evaluating plugin \x1b[33m${file}\x1b[0m: \x1b[31m${e.toString()}\x1b[0m`)
+                }
+            })
+        })
+    }
+    loadRconSettings() {
+        const directoryPath = path.join(__dirname, '../Plugins/Rcon');
+        fs.readdir(directoryPath, (err, files) => {
+            if (err) {
+                return console.log('Unable to scan directory: ' + err);
+            } 
+            files.forEach( (file) => {
+                if (!file.match(/.+\.js/g)) return
+                this.logger.writeLn(`Loading plugin \x1b[33m${file}\x1b[0m for server ${this.Server.IP}:${this.Server.PORT}`)
+                try {
+                    let plugin = require(path.join(__dirname, `../Plugins/Rcon/${file}`))
                     new plugin(this.Server, this, Managers)
                 }
                 catch (e) {

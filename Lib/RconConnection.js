@@ -1,15 +1,14 @@
-const dgram             = require('dgram');
+const dgram             = require('dgram')
 const path              = require('path')
-const commandPrefixes   = require('./RconCommandPrefixes')
 const Utils             = new (require(path.join(__dirname, '../Utils/Utils.js')))()
-const wait              = require('delay')
+const fs                = require('fs')
 
 class Rcon {
-    constructor (ip, port, password) {
+    constructor (ip, port, password, gamename) {
       this.ip = ip
       this.port = port
       this.password = password
-      this.commandPrefixes = commandPrefixes
+      this.commandPrefixes = fs.existsSync(path.join(__dirname, `./RconCommandPrefixes/${gamename}.js`)) ? require(`./RconCommandPrefixes/${gamename}.js`) : require(`./RconCommandPrefixes/Default.js`)
       this.isRunning = true
       this.commandRetries = 3
       this.previousClients = []
@@ -102,11 +101,21 @@ class Rcon {
     async setDvar(dvarName, value) {
         await this.executeCommandAsync(this.commandPrefixes.Rcon.setDvar.replace('%DVAR%', dvarName).replace('%VALUE%', value))
     }
-    async getDvar(dvarName) {
-        for (var i = 0; i < 3; i++) {
+    async getDvarRaw(dvarName) {
+        for (var i = 0; i < this.commandRetries; i++) {
             var dvar = await this.executeCommandAsync(this.commandPrefixes.Rcon.getDvar.replace('%DVAR%', dvarName))
-            if (!dvar || !dvar.match(/"(.*?)"/g)) continue
-            return dvar.match(/"(.*?)"/g)[0].slice(1, -1)
+
+            if (!dvar || !dvar.match(/ "(.*?)"/g)) continue
+            return dvar.match(/ "(.*?)"/g)[0].trim().slice(1, -1)
+        }
+        return false
+    }
+    async getDvar(dvarName) {
+        for (var i = 0; i < this.commandRetries; i++) {
+            var dvar = await this.executeCommandAsync(this.commandPrefixes.Rcon.getDvar.replace('%DVAR%', dvarName))
+
+            if (!dvar || !dvar.match(/ "(.*?)"/g)) continue
+            return Utils.stripString(dvar.match(/ "(.*?)"/g)[0].trim().slice(1, -1))
         }
         return false
     }
@@ -122,16 +131,15 @@ class Rcon {
             var map = status[0].split(/\s+/g)[1]
             var rawClients = status.slice(3)
             var clients = []
-            var gamename = await this.getDvar('gamename')
 
             rawClients.forEach(client => {
-                var regex = /^ *([0-9]+) +-?([0-9]+) +-?([0-9]+) +-?([0-9]+) +((?:[A-Za-z0-9]){8,32}|(?:[A-Za-z0-9]){8,32}|bot[0-9]+|(?:[[A-Za-z0-9]+)) *(.{0,32}) +([0-9]+) +(\d+\.\d+\.\d+.\d+\:-*\d{1,5}|0+.0+:-*\d{1,5}|loopback|unknown|bot) +(-*[0-9]+) +([0-9]+) *$/g
+                var regex = /^ +([0-9]+) +([0-9]+) +([0-9]+){0,1} +([0-9]+) +((?:[A-Za-z0-9]){8,32}|(?:[A-Za-z0-9]){8,32}|bot[0-9]+|(?:[[A-Za-z0-9]+)) *(.{0,32}) +([0-9]+) +(\d+\.\d+\.\d+.\d+\:-*\d{1,5}|0+.0+:-*\d{1,5}|loopback|unknown|bot) +(-*[0-9]+) +([0-9]+) *$/g
                 
                 if (!client.match(regex)) return
                 var match = regex.exec(client)
 
                 for (var i = 0; i < match.length; i++) {
-                    match[i] = match[i].trim()
+                    match[i] = match[i] ? match[i].trim() : ''
                 }
 
                 clients.push({
@@ -139,7 +147,7 @@ class Rcon {
                     score: match[2],
                     bot: match[3],
                     ping: match[4],
-                    guid: Utils.convertGuid(match[5], gamename),
+                    guid: Utils.convertGuid(match[5], this.gamename),
                     name: match[6].replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), ``),
                     lastmgs: match[7],
                     address: match[8],
@@ -151,7 +159,7 @@ class Rcon {
         catch (e) {
             return false
         }
-
+        
         return {success: true, data : { map, clients }}
     }
     async getClients() {

@@ -28,12 +28,12 @@ class Server extends EventEmitter {
         this.Gametype = 'UNKNOWN'
         this.HostnameRaw = `[${this.IP}:${this.PORT}]`
         this.uptime = 0
+        this.configGamename = config.Gamename
         this.Gamename = 'UNKNOWN'
         this.Managers = Managers
         this.Manager = Manager
         this.previousUptime = 0
         this.previousStatus = null
-        this.Heartbeat()
         this.heartbeatRetry = 2
         this.sessionStore = sessionStore
         this.on('init', this.onInitGame.bind(this))
@@ -106,7 +106,7 @@ class Server extends EventEmitter {
             this.mapRotation = (await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.maprotation)).match(/((?:gametype|exec) +(?:([a-z]{1,4})(?:.cfg)?))? *map ([a-z|_|\d]+)/gi).map(x => x.trim().split(/\s+/g)[1])
             await wait(200)
 
-            this.Hostname = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.hostname)
+            this.Hostname = await this.Rcon.getDvarRaw(this.Rcon.commandPrefixes.Dvars.hostname)
             this.HostnameRaw = this.Hostname
             await wait(200)
 

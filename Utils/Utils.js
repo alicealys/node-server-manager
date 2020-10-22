@@ -22,7 +22,10 @@ class Utils {
         Client = Manager.Server.Clients.find(x => x && x.ClientId == ClientId)
       })
       return Client
-    } 
+    }
+    stripString(string) {
+      return string.replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), '')
+    }
     secondsToDhms (seconds) {
       seconds = Number(seconds);
       var d = Math.floor(seconds / (3600*24));

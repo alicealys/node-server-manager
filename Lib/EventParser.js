@@ -4,8 +4,8 @@ class EventParser {
     }
     getEventData(eventString) {
         eventString = eventString.trim().replace(/([0-9]+:[0-9]+)\s+/g, '$1;')
+
         var eventRegex = {
-          /* https://github.com/RaidMax/IW4M-Admin/blob/2.4-pr/Application/EventParsers/BaseEventParser.cs :) */
           say: /^([0-9]+:[0-9]+);(say|sayteam);(-?[A-Fa-f0-9_]{1,32}|bot[0-9]+|0);([0-9]+);([^;]*);(.*)$/g,
           join: /^([0-9]+:[0-9]+);(J);(-?[A-Fa-f0-9_]{1,32}|bot[0-9]+|0);([0-9]+);(.*)$/g,
           quit: /^([0-9]+:[0-9]+);(Q);(-?[A-Fa-f0-9_]{1,32}|bot[0-9]+|0);([0-9]+);(.*)$/g,
@@ -13,21 +13,23 @@ class EventParser {
           kill: /^([0-9]+:[0-9]+);(K);(-?[A-Fa-f0-9_]{1,32}|bot[0-9]+|0);(-?[0-9]+);(axis|allies|world|none)?;([^;]{1,24});(-?[A-Fa-f0-9_]{1,32}|bot[0-9]+|0)?;(-?[0-9]+);(axis|allies|world|none)?;([^;]{1,24})?;((?:[0-9]+|[a-z]+|_|\+)+);([0-9]+);((?:[A-Z]|_)+);((?:[a-z]|_)+)$/g,
           init: /^([0-9]+:[0-9]+);(InitGame|InitGame(.+))$/g
         }
-        var eventData = {type: null, data: null}
+
+        var eventData = { type: null, data: null }
         Object.entries(eventRegex).forEach((r) => {
           if (eventString.match(r[1])) {
             var eventVars = eventString.split(';')
             eventVars[0] = parseInt(eventVars[0].split(':')[0]) * 60 + parseInt(eventVars[0].split(':')[1]),
-            eventData = {type: r[0], vars: eventVars}
+            eventData = { type: r[0], vars: eventVars }
           }
         })
-        return eventData;
 
+        return eventData
     }
     parseEvent(eventString) {
-        var eventData = this.getEventData(eventString);
-        if (eventData.type == null) return;
-        var parsedEvent = {type: eventData.type, data: null};
+        var eventData = this.getEventData(eventString)
+        if (eventData.type == null) return
+
+        var parsedEvent = { type: eventData.type, data: null }
         switch (eventData.type) {
             case 'init': {
                 parsedEvent.data = {
@@ -40,7 +42,7 @@ class EventParser {
                     Origin: this.Server.Clients[eventData.vars[3]],
                     Message: eventData.vars[5]
                 }
-            break;
+            break
             case 'quit':
             case 'join':
                 parsedEvent.data = {
@@ -51,7 +53,7 @@ class EventParser {
                         Name: eventData.vars[4].replace(/\[.*\]/g, '')
                     },
                 }
-            break;
+            break
             case 'kill':
                 var Weapon = eventData.vars[10]
                 var BaseWeapon = Weapon
@@ -71,9 +73,10 @@ class EventParser {
                         BaseWeapon: BaseWeapon
                     }
                 } 
-            break;
+            break
         }
-        return parsedEvent;
+        
+        return parsedEvent
     }
 }
 module.exports = EventParser
