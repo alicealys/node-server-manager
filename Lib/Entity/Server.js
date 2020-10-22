@@ -57,12 +57,12 @@ class Server extends EventEmitter {
     }
     onInitGame() {
         var loadMap = async () => {
+            this.removeListener('line', loadMap)
             this.Mapname = await this.Rcon.getDvar('mapname')
             this.Gametype = await this.Rcon.getDvar('g_gametype')
             this.emit('map_loaded', this.Mapname, this.Gametype)
-            this.removeListener('line', loadMap)
         }
-        
+
         this.on('line', loadMap)
     }
     findLocalClient(name) {
