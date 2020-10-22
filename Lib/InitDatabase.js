@@ -97,7 +97,7 @@ class Database {
                 await Models.NSMClients.build({
                     Guid: 'Node',
                     PermissionLevel: 6
-                }, {transaction: this.transaction}, {transaction: this.transaction}).save()
+                }, {transaction: this.transaction}).save()
             }
             catch (e) { }
         }
@@ -110,7 +110,7 @@ class Database {
 
         var Client = await Models.NSMClients.build({
             Guid: Guid
-        }, {transaction: this.transaction}, {transaction: this.transaction}).save()
+        }, {transaction: this.transaction}).save()
 
         return Client.dataValues.ClientId
     }

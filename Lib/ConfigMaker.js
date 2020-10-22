@@ -15,6 +15,8 @@ class ConfigMaker {
                 fs.mkdirSync(path.join(__dirname, `../Configuration`))
             }
 
+            var Gamenames = ['Default', 'IW3', 'IW4', 'IW5', 'T6']
+
             var configTemplate = [
                 {Question: 'Enable Webfront [true / false]', value: true},
                 {Question: 'Webfront bind port: [0-65536]', value: 8000},
@@ -29,6 +31,7 @@ class ConfigMaker {
                 {Question: 'Server Port', value: 27016},
                 {Question: 'Server Rcon Password', value: ''},
                 {Question: 'Server Log file path', value: '/pluto/storage/iw5/games_mp.log'},
+                {Question: 'Server Gamename (0: Default, 1: IW3, 2: IW4, 3: IW5, 4: T6', value: '0'},
                 {Question: 'Reserved slots:', value: 0},
             ]
             
@@ -81,7 +84,8 @@ class ConfigMaker {
                             'PORT' : configTemplate[10].value,
                             'PASSWORD' : configTemplate[11].value,
                             'LOGFILE' : configTemplate[12].value,
-                            'reservedSlots' : configTemplate[13].value,
+                            'Gamename' : Gamenames[parseInt(configTemplate[13].value)],
+                            'reservedSlots' : configTemplate[14].value,
                         }
             
                     ],
