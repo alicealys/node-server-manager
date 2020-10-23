@@ -472,14 +472,14 @@ class Webfront {
 
             switch (true) {
                 case (!passwordResult && !tokenResult):
-                    await db.logActivity(ip, Localization.lookup['AUDIT_LOGIN_ATTEMPT'].replace('%CLIENTID%', req.body.ClientId), Localization.lookup['AUDIT_LOGIN_CRED_FAIL'])
+                    await db.logActivity(ip, Localization['AUDIT_LOGIN_ATTEMPT'].replace('%CLIENTID%', req.body.ClientId), Localization['AUDIT_LOGIN_CRED_FAIL'])
                     res.end(JSON.stringify({
                         success: false,
                         error: 'Invalid credentials'
                     }))
                 return
                 case (!twoFactorResult):
-                    await db.logActivity(ip, Localization.lookup['AUDIT_LOGIN_ATTEMPT'].replace('%CLIENTID%', req.body.ClientId), Localization.lookup['AUDIT_LOGIN_2FA_FAIL'])
+                    await db.logActivity(ip, Localization['AUDIT_LOGIN_ATTEMPT'].replace('%CLIENTID%', req.body.ClientId), Localization['AUDIT_LOGIN_2FA_FAIL'])
                     res.end(JSON.stringify({
                         success: false,
                         error: 'Invalid 2FA code'
@@ -487,7 +487,7 @@ class Webfront {
                 return
             }
 
-            db.logActivity(ip, Localization.lookup['AUDIT_LOGIN_ATTEMPT'].replace('%CLIENTID%', req.body.ClientId), Localization.lookup['AUDIT_LOGIN_SUCCESS'])
+            db.logActivity(ip, Localization['AUDIT_LOGIN_ATTEMPT'].replace('%CLIENTID%', req.body.ClientId), Localization['AUDIT_LOGIN_SUCCESS'])
             req.session.ClientId = req.body.ClientId
             res.end(JSON.stringify({
                 success: true
@@ -817,7 +817,7 @@ class Webfront {
                     return
         
                 }
-                db.logActivity(`@${req.session.ClientId}`, Localization.lookup['AUDIT_CMD_EXEC'].replace('%NAME%', command), args.join(' '))
+                db.logActivity(`@${req.session.ClientId}`, Localization['AUDIT_CMD_EXEC'].replace('%NAME%', command), args.join(' '))
                 await this.Managers[0].commands[command].callback(Player, args, false)
                 end()
             } else {
