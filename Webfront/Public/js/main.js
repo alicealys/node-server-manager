@@ -664,10 +664,16 @@ function cursorOnElement(el, offset) {
         y1: rect.y - offset.y1,
         x2: rect.x + rect.width + offset.x2,
         y2: rect.y + rect.height + offset.y2
-
     }
 
-    return coords.x >= rectangle.x1 && coords.x <= rectangle.x2 && coords.y >= rectangle.y1 && coords.y <= rectangle.y2; 
+    return (coords.x > rectangle.x1 && coords.x < rectangle.x2) && (coords.y > rectangle.y1 && coords.y < rectangle.y2)
+}
+
+function guidGenerator() {
+    var S4 = function() {
+       return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+    };
+    return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
 }
 
 async function profileHover(el, ClientId = null) {
@@ -675,9 +681,15 @@ async function profileHover(el, ClientId = null) {
     var profile = null
     var offset = { x1: 20, y1: 0, x2: 0, y2: 0 }
     var onElement = false
+    el.id = el.id.length > 1 ? el.id : guidGenerator()
 
     el.addEventListener('mouseover', async () => {
-        document.querySelectorAll('*[data-profile]').forEach(profile => { profile.remove() })
+        document.querySelectorAll('*[data-profile]').forEach(profile => {
+            if (!profile) return
+            if (profile.id != el.id && !cursorOnElement(profile, offset) && !cursorOnElement(el, {x1: 20, y1: 20, x2: 20, y2: 20})) {
+                profile.remove() 
+            }
+        })
         timeout = setTimeout(async () => {
             onElement = true
             profile = await profilePreview({ x: coords.x + offset.x1, y: coords.y }, ClientId ? ClientId : el.getAttribute('data-clientid'))
@@ -689,8 +701,10 @@ async function profileHover(el, ClientId = null) {
     })
 
     window.addEventListener('mousemove', async () => {
-        if (profile && !cursorOnElement(profile, offset) && !cursorOnElement(el, {x1: 0, y1: 0, x2: 0, y2: 0})) {
+        if (!profile) return
+        if (!cursorOnElement(profile, offset) && !cursorOnElement(el, {x1: 20, y1: 20, x2: 20, y2: 20})) {
             profile.remove()
+            profile = null
         }
     })
 }

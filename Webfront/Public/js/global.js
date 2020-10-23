@@ -233,6 +233,7 @@ async function renderServerList() {
 
         status.Clients.forEach(Client => {
             serverCard.querySelector(`*[data-clientslot='${Client.Clientslot}'`).href = `/id/${Client.ClientId}`
+            serverCard.querySelector(`*[data-clientslot='${Client.Clientslot}'`).setAttribute('data-clientid', Client.ClientId)
             serverCard.querySelector(`*[data-clientslot='${Client.Clientslot}'`).children[0].innerHTML = Client.Name
             serverCard.querySelector(`*[data-clientslot='${Client.Clientslot}'`).style.display = ''
         })

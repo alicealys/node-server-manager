@@ -4284,7 +4284,8 @@ select option:hover {
   overflow:hidden;
 }
 .wf-profle-preview {
-  position: absolute;
-  width: 300px;
+  position: fixed;
+  max-width: 500px;
+  min-width: 300px;
   color: var(--color-text)
 }
