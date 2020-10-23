@@ -39,6 +39,7 @@ StartNSM.bat
 | Server Port | Port of the server |
 | Server Rcon password | Password for the rcon (remote console) of the server |
 | Server Log File path | Path of the server's logfile |
+| Server Gamename | Server's gamename (ex IW3, T6, IW5...) |
 
 Other optional parameters
 | Paramter | Description |
