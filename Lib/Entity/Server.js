@@ -200,10 +200,14 @@ class Server extends EventEmitter {
         }
         catch (e) {}
     }
-    async loadClientsAsync() {
+    async loadClientsAsync(retry = 1) {
         var status = await this.Rcon.getStatus()
 
-        if (!status) return
+        if (!status) {
+            await wait(1000 * retry)
+            this.loadClientsAsync(++retry)
+            return
+        }
 
         for (var i = 0; i < this.Clients.length; i++) {
             if (!this.Clients[i]) continue

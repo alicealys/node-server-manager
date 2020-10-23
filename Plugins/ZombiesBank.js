@@ -21,11 +21,11 @@ class Plugin {
         switch (bankAction.event) {
             case 'bank_withdraw':
                 var Player = this.Server.Clients.find(Client => Client && Client.Guid == bankAction.player.Guid)
-                await this.addPlayerMoney(Player.ClientId, -1 * bankAction.amount)
+                Player && (await this.addPlayerMoney(Player.ClientId, -1 * bankAction.amount))
             break
             case 'bank_deposit':
                 var Player = this.Server.Clients.find(Client => Client && Client.Guid == bankAction.player.Guid)
-                await this.addPlayerMoney(Player.ClientId, bankAction.amount)
+                Player && (await this.addPlayerMoney(Player.ClientId, bankAction.amount))
             break
         }
     }

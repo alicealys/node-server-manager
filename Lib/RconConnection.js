@@ -131,8 +131,6 @@ class Rcon {
 
             if (status[0].includes('invalid')) return false
 
-
-
             var map = status[0].split(/\s+/g)[1]
             var rawClients = status.slice(3)
             var clients = []
