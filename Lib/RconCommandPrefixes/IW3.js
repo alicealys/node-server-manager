@@ -8,6 +8,7 @@ module.exports = {
         Tell: `tell %CLIENT% "%MESSAGE%"`,
         Say: `say "%MESSAGE%"`,
         statusRegex: /^ +([0-9]+) +([0-9]+) () +([0-9]+) +([0-9]+) +((?:[A-Za-z0-9]){8,32}|(?:[A-Za-z0-9]){8,32}|bot[0-9]+|(?:[[A-Za-z0-9]+)) *(.{0,32}) +([0-9]+) +(\d+\.\d+\.\d+.\d+\:-*\d{1,5}|0+.0+:-*\d{1,5}|loopback|unknown|bot) +(-*[0-9]+) +([0-9]+) *$/g,
+        dvarRegex: /\"(.*?)\" +(is:|is) +\"(.*?)\"/g,
         parseStatus: (match, Utils, gamename) => {
             return {
                 num: match[1],

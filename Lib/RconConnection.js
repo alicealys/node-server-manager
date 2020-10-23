@@ -108,8 +108,8 @@ class Rcon {
         for (var i = 0; i < this.commandRetries; i++) {
             var dvar = await this.executeCommandAsync(this.commandPrefixes.Rcon.getDvar.replace('%DVAR%', dvarName))
 
-            if (!dvar || !dvar.match(/ "(.*?)"/g)) continue
-            return dvar.match(/ "(.*?)"/g)[0].trim().slice(1, -1)
+            if (!dvar || !dvar.match(this.commandPrefixes.Rcon.dvarRegex)) continue
+            return this.commandPrefixes.Rcon.dvarRegex.exec(dvar)[3].trim()
         }
         return false
     }
@@ -117,8 +117,8 @@ class Rcon {
         for (var i = 0; i < this.commandRetries; i++) {
             var dvar = await this.executeCommandAsync(this.commandPrefixes.Rcon.getDvar.replace('%DVAR%', dvarName))
 
-            if (!dvar || !dvar.match(/ "(.*?)"/g)) continue
-            return Utils.stripString(dvar.match(/ "(.*?)"/g)[0].trim().slice(1, -1))
+            if (!dvar || !dvar.match(this.commandPrefixes.Rcon.dvarRegex)) continue
+            return Utils.stripString(this.commandPrefixes.Rcon.dvarRegex.exec(dvar)[3].trim())
         }
         return false
     }
@@ -151,7 +151,7 @@ class Rcon {
         catch (e) {
             return false
         }
-        
+
         return {success: true, data : { map, clients }}
     }
     async getClients() {
@@ -169,7 +169,7 @@ class Rcon {
             clients[client.Clientslot] = client
         }
         this.previousClients = clients
-        return clients;
+        return clients
     }
     async getClientByGuid(guid) {
         var clients = (await this.getStatus()).data.clients

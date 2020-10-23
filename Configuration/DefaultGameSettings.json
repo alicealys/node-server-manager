@@ -27,7 +27,16 @@
       "zclassic": "Classic",
       "zstandard": "Survival",
       "zgrief": "Grief",
-      "zcleansed": "Turned"
+      "zcleansed": "Turned",
+      "cranked": "Cranked",
+      "sr": "Search and Rescue",
+      "grind": "Grind",
+      "blitz": "Blitz",
+      "sotf": "Hunted",
+      "horde": "Safeguard",
+      "sotf_ffa": "Hunted FFA",
+      "aliens": "Extinction",
+      "mugger": "Mugger"
     },
     "Maps": [
         {
@@ -789,6 +798,155 @@
             {
               "Alias": "Terminal",
               "Name": "mp_terminal_cls"
+            }
+          ]
+        },
+        {
+          "Game": "IW6",
+          "Maps": [
+            {
+              "Alias": "Prison Break",
+              "Name": "mp_prisonbreak"
+            },
+            {
+              "Alias": "Octane",
+              "Name": "mp_dart"
+            },
+            {
+              "Alias": "Tremor",
+              "Name": "mp_lonestar"
+            },
+            {
+              "Alias": "mp_chasm",
+              "Name": "mp_frag"
+            },
+            {
+              "Alias": "Freight",
+              "Name": "mp_hashima"
+            },
+            {
+              "Alias": "Whiteout",
+              "Name": "mp_snow"
+            },
+            {
+              "Alias": "Stormfront",
+              "Name": "mp_fahrenheit"
+            },
+            {
+              "Alias": "Siege",
+              "Name": "mp_hasima"
+            },
+            {
+              "Alias": "Warhawk",
+              "Name": "mp_warhawk"
+            },
+            {
+              "Alias": "Sovereign",
+              "Name": "mp_sovereign"
+            },
+            {
+              "Alias": "Overlord",
+              "Name": "mp_zebra"
+            },
+            {
+              "Alias": "Stonehaven",
+              "Name": "mp_skeleton"
+            },
+            {
+              "Alias": "Chasm",
+              "Name": "mp_chasm"
+            },
+            {
+              "Alias": "Flooded",
+              "Name": "mp_flooded"
+            },
+            {
+              "Alias": "Strikezone",
+              "Name": "mp_strikezone"
+            },
+            {
+              "Alias": "Free Fall",
+              "Name": "mp_descent"
+            },
+            {
+              "Alias": "Free Fall",
+              "Name": "mp_descent_new"
+            },
+            {
+              "Alias": "Contaiment",
+              "Name": "mp_ca_red_river"
+            },
+            {
+              "Alias": "BayView",
+              "Name": "mp_ca_rumble"
+            },
+            {
+              "Alias": "Fog",
+              "Name": "mp_swamp"
+            },
+            {
+              "Alias": "Ignition",
+              "Name": "mp_boneyard_ns"
+            },
+            {
+              "Alias": "Point of Contact",
+              "Name": "mp_alien_town"
+            },
+            {
+              "Alias": "Point",
+              "Name": "mp_alien_town"
+            },
+            {
+              "Alias": "NightFall",
+              "Name": "mp_alien_armory"
+            },
+            {
+              "Alias": "Favela",
+              "Name": "mp_favela_iw6"
+            },
+            {
+              "Alias": "Mutiny",
+              "Name": "mp_pirate"
+            },
+            {
+              "Alias": "Pharaoh",
+              "Name": "mp_dig"
+            },
+            {
+              "Alias": "Departed",
+              "Name": "mp_zulu"
+            },
+            {
+              "Alias": "Behemoth",
+              "Name": "mp_ca_behemoth"
+            },
+            {
+              "Alias": "Dynasty",
+              "Name": "mp_conflict"
+            },
+            {
+              "Alias": "Subzero",
+              "Name": "mp_zerosub"
+            },
+            {
+              "Alias": "Goldrush",
+              "Name": "mp_mine"
+            },
+            {
+              "Alias": "Unearthed",
+              "Name": "mp_dome_ns"
+            },
+            {
+              "Alias": "Ruins",
+              "Name": "mp_battery_3"
+            },
+            {
+              "Alias": "Collision",
+              "Name": "mp_ca_impact"
+            },
+            {
+              "Alias": "Showtime",
+              "Name": "mp_shipment_ns"
             }
           ]
         },
