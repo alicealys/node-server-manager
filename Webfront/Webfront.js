@@ -29,6 +29,7 @@ var lookup = {
     }
 }
 
+var infoCache = {}
 const jsonReturns = {
     success: JSON.stringify({
         success: true,
@@ -909,17 +910,21 @@ class Webfront {
         var apiCache = {}
         var getFlag = async (IPAddress) => {
             if (apiCache[IPAddress] != undefined) return apiCache[IPAddress]
-            
+
             var result = (await (await fetch(`https://extreme-ip-lookup.com/json/${IPAddress}`)).json()).countryCode.toLocaleLowerCase()
             apiCache[IPAddress] = result
             return result
         }
 
         this.app.get('/api/info', async (req, res, next) => {
-
             if (!req.query.id) {
                 res.status(400)
                 res.end(JSON.stringify({ error: 'Parameters missing' }))
+                return
+            }
+
+            if (infoCache[parseInt(req.query.id)]) {
+                res.end(infoCache[parseInt(req.query.id)])
                 return
             }
 
@@ -929,6 +934,7 @@ class Webfront {
                 res.end(JSON.stringify({ error: 'Not found' }))
                 return
             }
+            
             var locationSetting = (await this.db.metaService.getPersistentMeta('location', Client.ClientId))
             locationSetting = locationSetting ? locationSetting.Value : locationSetting
 
@@ -951,7 +957,7 @@ class Webfront {
                 break
             }
 
-            res.end(JSON.stringify({
+            var info = JSON.stringify({
                 Name: Client.Name,
                 ClientId: Client.ClientId,
                 Description: Client.Description,
@@ -961,7 +967,10 @@ class Webfront {
                 Role: Utils.getRoleFrom(Client.PermissionLevel, 1).Name,
                 Flag: locationSetting == null || locationSetting == '0' ? Client.IPAddress ? await getFlag(Client.IPAddress.split(':')[0]) : null : null,
                 Status
-            }))
+            })
+
+            infoCache[parseInt(req.query.id)] = info
+            res.end(info)
         })
 
         this.app.get('/api/whoami', async (req, res, next) => {
@@ -1294,6 +1303,7 @@ class Webfront {
             })
 
             Manager.Server.on('connect', async ePlayer => {
+                infoCache[parseInt(ePlayer.ClientId)] = undefined
                 var event = {
                     event: 'event_client_connect',
                     data: { 
@@ -1310,6 +1320,7 @@ class Webfront {
                 sendToAction('socket_listen_servers', event)
             })
             Manager.Server.on('disconnect', async ePlayer => {
+                infoCache[parseInt(ePlayer.ClientId)] = undefined
                 var event = {
                     event: 'event_client_disconnect', 
                     data: { 
