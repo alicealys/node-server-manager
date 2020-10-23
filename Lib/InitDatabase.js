@@ -1,6 +1,8 @@
 const Sequelize         = require('sequelize')
 const bcrypt            = require('bcrypt')
 const Models            = require('./DatabaseModels.js')
+const path              = require('path')
+const Permissions       = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
 
 class MetaService {
     constructor(Models) {
@@ -333,6 +335,7 @@ class Database {
             return {
                 Name: 'Node Server Manager',
                 ClientId: 1,
+                PermissionLevel: Permissions.Levels['ROLE_MANAGER'],
                 Guid: 'node',
                 IPAddress: '127.0.0.1',
                 Settings: await this.getClientSettings(1)

@@ -168,14 +168,32 @@ function kickClient() {
         messageBox.querySelector('*[data-text-label]').innerHTML = 'Please provide a reason'
       return
     }
-    var result = JSON.parse(await makeRequest('GET', `/api/mod?command=.kick ${Profile.ClientId} ${params.Reason}`))
+    var result = JSON.parse(await makeRequest('GET', `/api/mod?command=${btoa(`command=kick @${Profile.ClientId} ${params.Reason}`)}`))
     notifyMe(null, Profile, result.result.join(' '))
     close()
-  } 
-  )
+  })
 }
 
-function banClient() {
+function unBanClient(el) {
+  messageBox(`Unban ${Profile.Name}`, 
+  [
+    {type: 'text', name: 'Reason', placeholder: 'Reason'}
+  ], 'Cancel', 'Unban', async (params, messageBox, close) => {
+    switch (true) {
+      case (params.Reason.length <= 0):
+        messageBox.querySelector('*[data-text-label]').innerHTML = 'Please provide a reason'
+      return
+    }
+    var result = JSON.parse(await makeRequest('GET', `/api/mod?command=${btoa(`command=unban @${Profile.ClientId} ${params.Reason}`)}`))
+    el.setAttribute('onclick', null)
+    el.onclick = function () { banClient(el) }
+    el.children[0].className = 'fas fa-lock-open'
+    notifyMe(null, Profile, result.result.join(' '))
+    close()
+  })
+}
+
+function banClient(el) {
   messageBox(`Ban ${Profile.Name}`, 
   [
     {type: 'text', name: 'Reason', placeholder: 'Reason'}
@@ -185,11 +203,14 @@ function banClient() {
         messageBox.querySelector('*[data-text-label]').innerHTML = 'Please provide a reason'
       return
     }
-    var result = JSON.parse(await makeRequest('GET', `/api/mod?command=.ban ${Profile.ClientId} ${params.Reason}`))
+    var result = JSON.parse(await makeRequest('GET', `/api/mod?command=${btoa(`command=ban @${Profile.ClientId} ${params.Reason}`)}`))
+    el.setAttribute('onclick', null)
+    el.onclick = function () { unBanClient(el) }
+    console.log(el)
+    el.children[0].className = 'fas fa-lock'
     notifyMe(null, Profile, result.result.join(' '))
     close()
-  } 
-  )
+  })
 }
 
 var nextPage = 1

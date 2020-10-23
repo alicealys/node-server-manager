@@ -4279,9 +4279,12 @@ select option:hover {
   position: absolute;
 }
 .wf-text {
-  height: 1em;
-  max-width: 100px;
-  overflow: hidden;
-  word-break: keep-all;
+  height: 1.2em;
   text-overflow: ellipsis;
+  overflow:hidden;
+}
+.wf-profle-preview {
+  position: absolute;
+  width: 300px;
+  color: var(--color-text)
 }

@@ -37,18 +37,20 @@ function logMessage(msg, refresh) {
     var feed = document.querySelector(`*[data-serverid='${msg.data.ServerId}']`).querySelector('.wf-more-feed')
     switch (msg.event) {
         case 'event_client_message':
-            feed.appendChild(parseHTML(
+            var message = parseHTML(
             `
             <div class='wf-message'>
                 <div class='wf-message-sender'>
                     <a class='wf-link wf-message-sender' href='/id/${msg.data.Client.ClientId}'>${msg.data.Client.Name}</a>:</div>
                 <div class='wf-message-message'>${COD2HTML(escapeHtml(msg.data.Message), 'var(--color-text)')}</div>
             </div>
-            `))
+            `)
+            profileHover(message.querySelector('a'), msg.data.Client.ClientId)
+            feed.appendChild(message)
         break
         case 'event_client_connect':
             refresh && refreshClientList(msg.data.ServerId)
-            feed.appendChild(parseHTML(
+            var connect = parseHTML(
                 `
                     <div class='wf-message'>
                         <div class='wf-message-connect'>
@@ -56,10 +58,11 @@ function logMessage(msg, refresh) {
                         </div>
                     </div>
                 `
-            ))
+            )
+            profileHover(connect.querySelector('a'), msg.data.Client.ClientId)
+            feed.appendChild(connect)
         break
         case 'event_server_raw':
-            console.log('fewfefwe')
             feed.appendChild(parseHTML(
                 `
                 <div class='wf-message'>
@@ -73,7 +76,7 @@ function logMessage(msg, refresh) {
         break
         case 'event_client_disconnect':
             refresh && refreshClientList(msg.data.ServerId)
-            feed.appendChild(parseHTML(
+            var disconnect = parseHTML(
                 `
                     <div class='wf-message'>
                         <div class='wf-message-quit'>
@@ -81,7 +84,9 @@ function logMessage(msg, refresh) {
                         </div>
                     </div>
                 `
-            ))
+            )
+            profileHover(disconnect.querySelector('a'), msg.data.Client.ClientId)
+            feed.appendChild(disconnect)
         break
     }
     feed.scrollTop = feed.scrollHeight
@@ -102,6 +107,7 @@ async function refreshClientList(serverId) {
         var slot = clientList.querySelector(`*[data-clientslot='${Client.Clientslot}']`)
         slot.style.display = ''
         slot.children[0].innerHTML = Client.Name
+        slot.setAttribute('data-clientid', Client.ClientId)
         slot.href = `/id/${Client.ClientId}`
     })
 
@@ -220,11 +226,12 @@ async function renderServerList() {
         serverCard = document.querySelector(`*[data-serverid='${server.ServerId}']`)
 
         for (var i = 0; i < status.Dvars.MaxClients; i++) {
-            serverCard.querySelector('.wf-more-player-list').appendChild(parseHTML(`<a data-clientslot='${i}' class='wf-client-wrap' style='display:none'><div class='wf-client-name'></div></a>`))
+            var slot = createElementFromHTML(`<a data-clientslot='${i}' data-clientid='${status.Clients[i] ? status.Clients[i].ClientId : null}' class='wf-client-wrap' style='display:none'><div class='wf-client-name'></div></a>`)
+            serverCard.querySelector('.wf-more-player-list').appendChild(slot)
+            profileHover(slot)
         }
 
         status.Clients.forEach(Client => {
-            console.log(Client.ClientSlot)
             serverCard.querySelector(`*[data-clientslot='${Client.Clientslot}'`).href = `/id/${Client.ClientId}`
             serverCard.querySelector(`*[data-clientslot='${Client.Clientslot}'`).children[0].innerHTML = Client.Name
             serverCard.querySelector(`*[data-clientslot='${Client.Clientslot}'`).style.display = ''

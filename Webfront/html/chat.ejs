@@ -33,7 +33,7 @@
                     <% } } %>
                             <div class='wf-message'>
                                 <div class='wf-message-sender'>
-                                    <a class='wf-link wf-message-sender' href='/id/<%= Message.OriginId %>' colorcode><%= Message.Name %></a> @ <span class='api-data-type' colorcode> <%=Message.Hostname%> </span>:</div>
+                                    <a data-profile-preview data-clientid='<%= Message.OriginId %>' class='wf-link wf-message-sender' href='/id/<%= Message.OriginId %>' colorcode><%= Message.Name %></a> @ <span class='api-data-type' colorcode> <%=Message.Hostname%> </span>:</div>
                                 <div class='wf-message-message'><%= Message.Message %></div>
                                 <div class='wf-default wf-message-date' date-moment><%= Message.Date %></div>
                             </div>

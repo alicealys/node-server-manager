@@ -35,7 +35,7 @@ window.addEventListener('load', async () => {
         }, 1000)
     }
 
-    document.getElementById('client-search').addEventListener('keydown', (e) => {
+    document.getElementById('client-search').addEventListener('keydown', async (e) => {
         if (e.keyCode == 13) {
             e.preventDefault()
             if (e.target.textContent.length > 0) {
@@ -49,7 +49,7 @@ window.addEventListener('load', async () => {
     })
 
     servers = JSON.parse(await makeRequest('GET', '/api/servers', null))
-    document.getElementById('client-search').addEventListener('input', (e) => {
+    document.getElementById('client-search').addEventListener('input', async (e) => {
         (e.target.textContent.length > 0) && e.target.parentNode.classList.add('wf-shadow-default')
     })
 
@@ -65,7 +65,7 @@ window.addEventListener('load', async () => {
         <div id='wf-overlay' class='wf-overlay'></div>
     `))
 
-    document.getElementById('login-btn') && document.getElementById('login-btn').addEventListener('click', () => {
+    document.getElementById('login-btn') && document.getElementById('login-btn').addEventListener('click', async () => {
         messageBox(
             'Hello!\nYou can find your credentials by typing .token in game!', 
         [
@@ -209,7 +209,7 @@ function createElementFromHTML(htmlString) {
     return div.firstChild; 
   }
 
-var messageBox = (text, params, deny, accept, callback) => {
+var messageBox = async (text, params, deny, accept, callback) => {
     document.querySelector('.wf-overlay').style.display = 'flex'
     var messageBox = createElementFromHTML(`
         <div class='an file-preview' style='display:block'>
@@ -526,6 +526,18 @@ function dragElement(elmnt) {
     }
 }
 
+async function xbbParse(xbb) {
+    xbb.style.display = 'none'
+    var rawText = await replacePlaceholders(xbb.textContent.trim())
+    var result = XBBCODE.process({
+      text: rawText,
+      removeMisalignedTags: true,
+      addInLineBreaks: false
+    })
+    xbb.innerHTML = result.html
+    xbb.style.display = ''
+}
+
 window.addEventListener('load', async () => {
     document.querySelectorAll(`*[data-xbbcode]`).forEach(async xbb => {
         xbb.style.display = 'none'
@@ -537,6 +549,9 @@ window.addEventListener('load', async () => {
         })
         xbb.innerHTML = result.html
         xbb.style.display = ''
+    })
+    document.querySelectorAll(`*[data-profile-preview]`).forEach(async link => {
+        profileHover(link, link.getAttribute('data-clientid'))
     })
     document.querySelectorAll('*[data-textbox]').forEach(div => {
         div.addEventListener('keydown', (e) => {
@@ -553,18 +568,23 @@ window.addEventListener('load', async () => {
     })
 })
 
+let placeHolderCache = {}
 async function replacePlaceholders(text) {
+    if (placeHolderCache[text]) return placeHolderCache[text]
+
     var statistics = JSON.parse(await makeRequest('GET', '/api/statistics', null))
-    text = text.replace('{PLAYERCOUNT}', statistics.playerCount)
+    replaced = text.replace('{PLAYERCOUNT}', statistics.playerCount)
                .replace('{SERVERCOUNT}', statistics.serverCount)
                .replace('{TOPSERVER-IP}', statistics.topServer.IP)
                .replace('{TOPSERVER-PORT}', statistics.topServer.PORT)
                .replace('{TOPSERVER-HOSTNAME}', statistics.topServer.Hostname)
                .replace('{TOPSERVER-PLAYERS}', statistics.topServer.playerCount)
-    return text
+
+    placeHolderCache[text] = replaced
+    return replaced
 }
 
-function renderPerformanceChart(id, data, animation, color) {
+async function renderPerformanceChart(id, data, animation, color) {
     var chart = new CanvasJS.Chart(id, {
         theme: "dark1", // "light1", "light2", "dark1", "dark2"
         defaultFontFamily: "codef",
@@ -627,3 +647,230 @@ function imagePreview(el, url) {
     document.body.appendChild(img)
     return img
 }
+
+let coords = { x: 0, y: 0 }
+let permissions = null
+let client = null
+
+window.addEventListener('mousemove', async (e) => {
+    coords.x = e.clientX
+    coords.y = e.clientY
+})
+
+function cursorOnElement(el, offset) {
+    var rect = el.getBoundingClientRect()
+    var rectangle = {
+        x1: rect.x - offset.x1,
+        y1: rect.y - offset.y1,
+        x2: rect.x + rect.width + offset.x2,
+        y2: rect.y + rect.height + offset.y2
+
+    }
+
+    return coords.x >= rectangle.x1 && coords.x <= rectangle.x2 && coords.y >= rectangle.y1 && coords.y <= rectangle.y2; 
+}
+
+async function profileHover(el, ClientId = null) {
+    var timeout = null
+    var profile = null
+    var offset = { x1: 20, y1: 0, x2: 0, y2: 0 }
+    var onElement = false
+
+    el.addEventListener('mouseover', async () => {
+        document.querySelectorAll('*[data-profile]').forEach(profile => { profile.remove() })
+        timeout = setTimeout(async () => {
+            onElement = true
+            profile = await profilePreview({ x: coords.x + offset.x1, y: coords.y }, ClientId ? ClientId : el.getAttribute('data-clientid'))
+        }, 500)
+    })
+
+    el.addEventListener('mouseout', async () => {
+        clearTimeout(timeout)
+    })
+
+    window.addEventListener('mousemove', async () => {
+        if (profile && !cursorOnElement(profile, offset) && !cursorOnElement(el, {x1: 0, y1: 0, x2: 0, y2: 0})) {
+            profile.remove()
+        }
+    })
+}
+
+function setElementCoords(el, coords) {
+    el.style.top = coords.y
+    el.style.left = coords.x
+}
+
+async function _kickClient(Client) {
+    messageBox(`Kick ${Client.Name}`, 
+    [
+      {type: 'text', name: 'Reason', placeholder: 'Reason'}
+    ], 'Cancel', 'Kick', async (params, messageBox, close) => {
+      switch (true) {
+        case (params.Reason.length <= 0):
+          messageBox.querySelector('*[data-text-label]').innerHTML = 'Please provide a reason'
+        return
+      }
+      var result = JSON.parse(await makeRequest('GET', `/api/mod?command=${btoa(`command=kick @${Client.ClientId} ${params.Reason}`)}`))
+      notifyMe(null, Client, result.result.join(' '))
+      close()
+    })
+}
+
+async function _unBanClient(Client) {
+    messageBox(`Unban ${Client.Name}`, 
+    [
+      {type: 'text', name: 'Reason', placeholder: 'Reason'}
+    ], 'Cancel', 'Unban', async (params, messageBox, close) => {
+      switch (true) {
+        case (params.Reason.length <= 0):
+          messageBox.querySelector('*[data-text-label]').innerHTML = 'Please provide a reason'
+        return
+      }
+      var result = JSON.parse(await makeRequest('GET', `/api/mod?command=${btoa(`command=unban @${Client.ClientId} ${params.Reason}`)}`))
+      notifyMe(null, Client, result.result.join(' '))
+      close()
+    })
+}
+
+async function _banClient(Client) {
+    messageBox(`Ban ${Client.Name}`, 
+    [
+      {type: 'text', name: 'Reason', placeholder: 'Reason'}
+    ], 'Cancel', 'Ban', async (params, messageBox, close) => {
+      switch (true) {
+        case (params.Reason.length <= 0):
+          messageBox.querySelector('*[data-text-label]').innerHTML = 'Please provide a reason'
+        return
+      }
+      var result = JSON.parse(await makeRequest('GET', `/api/mod?command=${btoa(`command=ban @${Client.ClientId} ${params.Reason}`)}`))
+      notifyMe(null, Client, result.result.join(' '))
+      close()
+    })
+}
+
+function parseHTML(html) {
+    var t = document.createElement('template');
+    t.innerHTML = html;
+    return t.content.cloneNode(true);
+}
+
+async function profilePreview(coords, ClientId) {
+    document.querySelectorAll('*[data-profile]').forEach(profile => { profile.remove() })
+
+    !document.getElementById("notifications-cont") && document.body.appendChild(parseHTML(`<div id="notifications-cont" class='notification-cont'></div>`))
+
+    permissions = permissions ? permissions : JSON.parse(await makeRequest('GET', '/api/permissions'))
+    client = client ? client : JSON.parse(await makeRequest('GET', '/api/whoami'))
+
+    var info = await makeRequest('GET', `/api/info?id=${ClientId}`)
+
+    if (!info) return
+    info = JSON.parse(info)
+
+    var profile = createElementFromHTML(`
+    <div class='wf-profle-preview wf-profile-header' data-profile='${ClientId}'>
+        <div class='wf-profile-header-name'>
+            <div class='profile-header-left'>
+                ${info.Flag ? `<div class='wf-profile-header-online'></div><div class='flag-icon wf-profile-flag flag-icon-${info.Flag}'></div>` : ''}
+                <span class='wf-text'>${info.Name}</span>
+                <i class='fas fa-circle fa-xs wf-profile-status iw-${info.Status.Color}'></i>
+                <div class='wf-profile-header-online'>${info.Status.String}</div>
+            </div>
+            <div class='profile-header-right'>
+            ${permissions.Commands && client.PermissionLevel > info.PermissionLevel && client.PermissionLevel >= permissions.Levels[permissions.Commands.COMMAND_KICK] && info.inGame.Online 
+                ? `<div title='Kick' data-kick-btn class='wf-profile-header-button'><i class="fas fa-times"></i></div>` 
+                : ''}
+            ${!info.Ban.Banned && permissions.Commands && client.PermissionLevel > info.PermissionLevel && client.PermissionLevel >= permissions.Levels[permissions.Commands.COMMAND_BAN]
+                ? `<div title='Ban' data-ban-btn class='wf-profile-header-button'><i class="fas fa-lock-open"></i></div>` 
+                : ''}
+            ${info.Ban.Banned && permissions.Commands && client.PermissionLevel > info.PermissionLevel && client.PermissionLevel >= permissions.Levels[permissions.Commands.COMMAND_BAN]
+                ? `<div title='Unban' data-unban-btn class='wf-profile-header-button'><i class="fas fa-lock"></i></div>` 
+                : ''}
+            </div>
+        </div>
+        <div class='wf-profile-role'>
+            ${info.Ban.Banned ? `<div class='iw-red'>Banned - ${info.Ban.Reason}</div>` : `<div>${info.Role}</div>`}
+        </div>
+        <div class='wf-profile-description-wrap'>
+            <div class='wf-profile-description-line'>
+                <pre class='wf-profile-description-inline' data-description>
+                    ${info.Description ? info.Description : 'No info'}
+                </pre>
+            </div>
+        </div>
+    </div>
+    `)
+
+    profile.querySelector('*[data-kick-btn]') && profile.querySelector('*[data-kick-btn]').addEventListener('click', async () => {
+        _kickClient({ClientId: info.ClientId, Name: info.Name})
+    })
+
+    profile.querySelector('*[data-ban-btn]') && profile.querySelector('*[data-ban-btn]').addEventListener('click', async () => {
+        _banClient({ClientId: info.ClientId, Name: info.Name})
+    })
+
+    profile.querySelector('*[data-unban-btn]') && profile.querySelector('*[data-unban-btn]').addEventListener('click', async () => {
+        _unBanClient({ClientId: info.ClientId, Name: info.Name})
+    })
+
+    document.body.appendChild(profile)
+    xbbParse(profile.querySelector('*[data-description]'))
+    setElementCoords(profile, coords)
+    return profile
+}
+
+async function notifyMe(ServerId, Client, Message) {
+    const notifications = document.getElementById("notifications-cont")
+    var n = document.createDocumentFragment()
+    var status = ServerId ? JSON.parse(await makeRequest('GET', `/api/players?ServerId=${ServerId}`)) : null
+    console.log(Message)
+    Message = escapeHtml(Message)
+    var notif = createElementFromHTML(`
+    <div class='notification-notif notifFadeIn notifFadeOut'>
+        <div class='notification-icon'></div>
+        <div class='notification-textcontent'>
+            <div class='notification-user'><div><a href='/id/${Client.ClientId}' class='wf-link wf-bold'>${status ? Client.Name : ''}</a> ${status ? '@' : ''} <div class='wf-notif-hostname' data-colorcode>${status ? COD2HTML(status.Dvars.Hostname, 'var(--color-text)') : 'Penalties'}</div></div></div>
+            <pre class='notification-text'>${COD2HTML(Message)}</pre>
+        </div>
+        <div notification-dismiss class='notification-btn'>
+            <i class='fas fa-lg fa-times'></i>
+        </div>
+    </div>`);
+    n.appendChild(notif);
+    var elements = notif.children;
+    var notifyText = elements[1].children;
+    elements[0].addEventListener("click", function() {
+        showProfile(user, elements[0])
+    })
+    var notifTimeout = setTimeout(() => {
+      notif.classList.remove("notifFadeIn");
+      notif.style.opacity = "1";
+      notif.style.transform = "translateX(0px)";
+      setTimeout(() => {
+          notif.remove();
+      }, 300)
+  }, 3000)
+  notif.addEventListener("mouseover", function() {
+      clearTimeout(notifTimeout);
+  })
+  notif.addEventListener("mouseout", function() {
+      notifTimeout = setTimeout(() => {
+          notif.classList.remove("notifFadeIn");
+          notif.style.opacity = "1";
+          notif.style.transform = "translateX(0px)";
+          setTimeout(() => {
+              notif.remove();
+          }, 300)
+      }, 3000)
+  })
+    notif.querySelector("*[notification-dismiss]").addEventListener("click", function() {
+        clearTimeout(notifTimeout);
+        notif.classList.remove("notifFadeIn");
+        notif.style.opacity = "1";
+        notif.style.transform = "translateX(0px)";
+        setTimeout(() => {
+            notif.remove();
+        }, 300)
+    })
+    notifications.appendChild(n);
+  }

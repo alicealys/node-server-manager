@@ -42,6 +42,9 @@ class Utils {
     capitalizeFirstLetter(string) {
       return string.charAt(0).toUpperCase() + string.slice(1);
     }
+    str2bool(string) {
+      return string ? string == '1' || string == 'true' : null
+    }
     getRoleFrom (Value, Type) {
         switch (Type) {
           case 0:

@@ -40,11 +40,14 @@
                         <div class='wf-profile-header-online'><%= Client.Status.String %></div>
                     </div>
                     <div class='profile-header-right'>
-                        <% if ( self && self.PermissionLevel >= Permissions.Levels[Permissions.Commands.COMMAND_KICK] && Client.InGame.Online ) {%>
+                        <% if ( self && self.PermissionLevel > Client.PermissionLevel && self.PermissionLevel >= Permissions.Levels[Permissions.Commands.COMMAND_KICK] && Client.InGame.Online ) {%>
                             <div title='Kick' onclick='kickClient()' class='wf-profile-header-button'><i class="fas fa-times"></i></div>
                         <% } %>
-                        <% if ( self && self.PermissionLevel >= Permissions.Levels[Permissions.Commands.COMMAND_BAN] ) {%>
-                            <div title='Ban' onclick='banClient()' class='wf-profile-header-button'><i class="fas fa-gavel"></i></div>
+                        <% if ( !Client.Ban.Banned && self && self.PermissionLevel > Client.PermissionLevel && self.PermissionLevel >= Permissions.Levels[Permissions.Commands.COMMAND_BAN] ) {%>
+                            <div title='Ban' onclick='banClient(this)' class='wf-profile-header-button'><i class="fas fa-lock-open"></i></div>
+                        <% } %>
+                        <% if ( Client.Ban.Banned && self && self.PermissionLevel > Client.PermissionLevel && self.PermissionLevel >= Permissions.Levels[Permissions.Commands.COMMAND_BAN] ) {%>
+                            <div title='Ban' onclick='unBanClient(this)' class='wf-profile-header-button'><i class="fas fa-lock"></i></div>
                         <% } %>
                         <% if ( self && self.ClientId == Client.ClientId ) {%>
                             <div title='Edit Profile' onclick='editProfile()' class='wf-profile-header-button'><i class="fas fa-edit"></i></div>

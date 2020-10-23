@@ -69,6 +69,7 @@ function logMessage(Message, Name, ClientId, Hostname, Date, Append) {
             <div class='wf-default wf-message-date' date-moment>${moment(Date).calendar()}</div>
         </div>`
     )
+    profileHover(msg.querySelector('a'), ClientId)
     Append ? document.getElementById('message-log').appendChild(msg) : document.getElementById('message-log').prepend(msg) 
 }
 
@@ -76,4 +77,4 @@ function createElementFromHTML(htmlString) {
     var div = document.createElement('div');
     div.innerHTML = htmlString.trim();
     return div.firstChild; 
-  }
+}

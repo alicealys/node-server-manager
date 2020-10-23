@@ -20,6 +20,7 @@ const db            = new (require(path.join(__dirname, '../Lib/InitDatabase.js'
 const Utils         = new(require(path.join(__dirname, '../Utils/Utils.js')))()
 const Auth          = new (require('./api/Auth.js'))(db)
 const twoFactor     = require('node-2fa')
+const { stringify } = require('querystring')
 const jsdom         = new require('jsdom')
 
 var lookup = {
@@ -776,7 +777,7 @@ class Webfront {
 
             var command = Buffer.from(req.query.command, 'base64').toString()
 
-            if (config.commandPrefixes.includes(command[0])) {
+            if (config.commandPrefixes.includes(command[0]) || command.startsWith('command=')) {
                 var result = []
 
                 var Player = {
@@ -795,7 +796,7 @@ class Webfront {
                     }))
                 }
 
-                var args = command.substr(1).split(/\s+/)
+                var args = command.startsWith('command=') ? command.substr('command='.length).split(/\s+/) : command.substr(1).split(/\s+/)
                 var command = Utils.getCommand(this.Managers[0].commands, args[0])
                 
                 switch (true) {
@@ -905,9 +906,91 @@ class Webfront {
             return false
         }
         
+        var apiCache = {}
         var getFlag = async (IPAddress) => {
-            return (await (await fetch(`https://extreme-ip-lookup.com/json/${IPAddress}`)).json()).countryCode.toLocaleLowerCase()
+            if (apiCache[IPAddress] != undefined) return apiCache[IPAddress]
+            
+            var result = (await (await fetch(`https://extreme-ip-lookup.com/json/${IPAddress}`)).json()).countryCode.toLocaleLowerCase()
+            apiCache[IPAddress] = result
+            return result
         }
+
+        this.app.get('/api/info', async (req, res, next) => {
+
+            if (!req.query.id) {
+                res.status(400)
+                res.end(JSON.stringify({ error: 'Parameters missing' }))
+                return
+            }
+
+            var Client = await db.getClient(req.query.id)
+            if (!Client) {
+                res.status(400)
+                res.end(JSON.stringify({ error: 'Not found' }))
+                return
+            }
+            var locationSetting = (await this.db.metaService.getPersistentMeta('location', Client.ClientId))
+            locationSetting = locationSetting ? locationSetting.Value : locationSetting
+
+            var inGame = await this.getClientStatus(Client.Guid)
+            var webStatus = getClientWebStatus(Client.ClientId)
+            var Status = {}
+
+            switch (true) {
+                case (!inGame.Online && !webStatus):
+                    Status.String = 'OFFLINE'
+                    Status.Color = 'red'
+                break
+                case (!inGame.Online && webStatus):
+                    Status.String = 'NOT-INGAME'
+                    Status.Color = 'yellow'
+                break
+                case (inGame.Online):
+                    Status.String = 'INGAME'
+                    Status.Color = 'green'
+                break
+            }
+
+            res.end(JSON.stringify({
+                Name: Client.Name,
+                ClientId: Client.ClientId,
+                Description: Client.Description,
+                inGame,
+                Ban: await db.isBanned(Client.ClientId),
+                PermissionLevel: Client.PermissionLevel,
+                Role: Utils.getRoleFrom(Client.PermissionLevel, 1).Name,
+                Flag: locationSetting == null || locationSetting == '0' ? Client.IPAddress ? await getFlag(Client.IPAddress.split(':')[0]) : null : null,
+                Status
+            }))
+        })
+
+        this.app.get('/api/whoami', async (req, res, next) => {
+            if (!req.session || !req.session.ClientId) {
+                res.end(JSON.stringify({
+                    Name: 'Guest',
+                    ClientId: 0,
+                    PermissionLevel: 0
+                }))
+                return
+            }
+
+            var Client = await db.getClient(req.session.ClientId)
+
+            res.end(JSON.stringify({
+                Name: Client.Name,
+                ClientId: Client.ClientId,
+                PermissionLevel: Client.PermissionLevel
+            }))
+        })
+
+        this.app.get('/api/permissions', async (req, res, next) => {
+            if (!req.session || !req.session.ClientId) {
+                res.end(JSON.stringify({}))
+                return
+            }
+
+            res.end(JSON.stringify(Permissions))
+        })
 
         this.app.get('/id/:id', async (req, res, next) => {
             res.setHeader('Content-type', 'text/html')
@@ -922,13 +1005,16 @@ class Webfront {
                 return
             }
 
+            var locationSetting = (await this.db.metaService.getPersistentMeta('location', Client.ClientId))
+            locationSetting = locationSetting ? locationSetting.Value : locationSetting
+
             Client.clientMeta = await this.db.getClientProfileMeta(Client.ClientId)  
             Client.Role = Utils.getRoleFrom(Client.PermissionLevel, 1).Name
             Client.InGame = await this.getClientStatus(Client.Guid)
             Client.WebStatus = getClientWebStatus(Client.ClientId)
             Client.Messages = await db.getMessages(Client.ClientId, 0, 20)
             Client.Ban = await db.isBanned(Client.ClientId)
-            Client.Flag = Client.IPAddress ? await getFlag(Client.IPAddress.split(':')[0]) : null
+            Client.Flag = locationSetting == null || locationSetting == '0' ? Client.IPAddress ? await getFlag(Client.IPAddress.split(':')[0]) : null : null
             Client.Status = {}
 
             switch (true) {
