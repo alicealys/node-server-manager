@@ -176,7 +176,7 @@ class Server extends EventEmitter {
     }
     async Heartbeat() {
         try {
-            var status = await this.Rcon.sendCommand('pingreq')
+            var status = await this.Rcon.executeCommandAsync('status')
 
             if (!status) {
                 if (this.heartbeatRetry <= 0) {
