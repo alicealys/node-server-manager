@@ -221,12 +221,21 @@ async function renderServerList() {
             }, 1)
         })
 
+        var lastMsg = new Date()
         var textBox = serverCard.querySelector('*[data-text]')
         textBox && textBox.addEventListener('keydown', (e) => {
             if (e.keyCode == 13) {
                 e.preventDefault()
+                
+                if (new Date() - lastMsg < 1000) {
+                    return
+                }
+
+                lastMsg = new Date()
+
                 var Message = e.target.textContent
                 e.target.innerHTML = null
+
                 socket.send(JSON.stringify({
                     action: 'message',
                     data: {
