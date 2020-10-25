@@ -170,7 +170,7 @@ class Plugin {
                     Player.Tell(Localization['ZBANK_PARSE_ERROR'])
                 return
                 case (depositMoney <= 0):
-                case (gameMoney < depositMoney):
+                case (!gameMoney || !Number.isInteger(gameMoney) || gameMoney < depositMoney):
                     Player.Tell(Localization['ZBANK_BALANCE_ERROR'])
                 return
             }
