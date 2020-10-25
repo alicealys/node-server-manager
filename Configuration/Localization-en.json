@@ -190,7 +190,8 @@
         "COMMAND_SERVERS_FORMAT": "^5#%ID%^7 - ^3%HOSTNAME%^7 ^6[%HOST%]^7 - %MAPNAME% ^5%CLIENTS% / %MAXCLIENTS%",
         "SERVER_MAP_ROTATE": "Map rotated to ^5%MAPNAME% - %GAMETYPE%",
         "SERVER_RESTART": "Server restarted",
-        "COMMAND_COOLDOWN": "Please wait a few seconds before executing this again"
+        "COMMAND_COOLDOWN": "Please wait a few seconds before executing this again",
+        "SOCKET_MSG_FORMAT": "[^5%NAME%^7]: %MESSAGE%"
     },
     "Games": {
       "T6": {

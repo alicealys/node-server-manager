@@ -1,6 +1,8 @@
+var socket = null
+
 window.addEventListener('load', () => {
     var wsProtocol = location.protocol === 'https:' ? 'wss' : 'ws'
-    var socket = new WebSocket(`${wsProtocol}://${window.location.host}/?action=socket_listen_servers`)
+    socket = new WebSocket(`${wsProtocol}://${window.location.host}/?action=socket_listen_servers`)
 
     socket.addEventListener('connect', (e) => {
         console.log('%c[ NSMSocket ]%c Connected', 'color:cyan, color: white')
@@ -8,7 +10,7 @@ window.addEventListener('load', () => {
 
     socket.onopen = (e) => {
         setInterval(() => {
-            socket.send('heartbeat')
+            socket.send(JSON.stringify({action: 'heartbeat'}))
         }, 1000)
     }
 
@@ -186,7 +188,7 @@ async function renderServerList() {
                             </div>
                             <div class='server-info-dvar'>
                                 <div class='wf-default server-info-dvar-name'>Map</div>
-                                <div class='wf-default server-info-dvar-name'>${status.Dvars.Map.Alias}</div>
+                                <div class='wf-default server-info-dvar-name'><div>${status.Dvars.Map.Alias}</div></div>
                             </div>
                             <div class='server-info-dvar'>
                                 <div class='wf-default server-info-dvar-name'>Players</div>
@@ -196,7 +198,15 @@ async function renderServerList() {
                     </div>
                     <div class='wf-serverlist-server-more-top'>
                         <div class='wf-more-player-list nice-scrollbar'></div>
-                        <div class='wf-more-feed nice-scrollbar'></div>
+                        <div class='wf-serverchat'>
+                            <div class='wf-more-feed nice-scrollbar'></div>
+                            <div class="wf-chat-textbox-cont">
+                            ${Self.PermissionLevel >= permissions.Levels['ROLE_MODERATOR'] ? `<div class="wf-chat-textbox-wrap">
+                                <div class="wf-rcon-textbox" data-text data-placeholder="Type a message..." contenteditable="true"></div>
+                            </div>
+                            <div class="wf-chat-textbox-line"></div>` : ''}
+                        </div>
+                    </div>
                     </div>
                     <div class='wf-clienthistory' id='${server.ServerId}_chart'></div>
                 </div>
@@ -209,6 +219,22 @@ async function renderServerList() {
             hoverOut = setTimeout(() => {
                 img = imagePreview(mapNameDiv, `/api/map?ServerId=${status.ServerId}&_=${btoa(mapNameDiv.innerHTML)}`)
             }, 1)
+        })
+
+        var textBox = serverCard.querySelector('*[data-text]')
+        textBox && textBox.addEventListener('keydown', (e) => {
+            if (e.keyCode == 13) {
+                e.preventDefault()
+                var Message = e.target.textContent
+                e.target.innerHTML = null
+                socket.send(JSON.stringify({
+                    action: 'message',
+                    data: {
+                        ServerId: status.ServerId,
+                        Message
+                    }
+                }))
+            }
         })
         serverCard.querySelector('*[data-mapname]').addEventListener('mouseout', () => {
             clearTimeout(hoverOut)

@@ -2446,6 +2446,9 @@
     font-family:codef;
     margin:auto;
     width:100%;
+    overflow:hidden;
+    text-overflow: ellipsis;
+    height: 1em;
     border-radius:5px;
     text-align: center;
     padding:10px;
@@ -2461,6 +2464,20 @@
     flex: 1 1 0px;
     padding:5px;
     background-color: var(--color-4);
+    padding:5px;
+    color: var(--color-text);
+    text-decoration:none;
+    align-items: center;
+    text-align:center;
+  }
+  .server-info-dvar-name div {
+    margin-left: 10px;
+    margin-right:10px;
+    overflow:hidden;
+    background-color: transparent!important;
+    text-overflow: ellipsis;
+    text-align: center;
+    height: 1.2em;
   }
   .server-info-player-name {
     flex: 3 3 0px!important;
@@ -3133,6 +3150,7 @@ body {
   padding-right:50px;
   margin:auto;
   margin-top:20px;
+  transition: all 0.20s ease-in-out;
   -webkit-transition: all 0.20s ease-in-out;
   -moz-transition: all 0.20s ease-in-out;
   -ms-transition: all 0.20s ease-in-out;
@@ -3161,7 +3179,7 @@ body {
   flex-basis: 1px;
   flex-grow: 1;
   overflow-x:hidden;
-  max-height:200px;
+  max-height:300px;
   overflow-y:scroll;
 }
 .wf-client-name {
@@ -3173,12 +3191,20 @@ body {
   width:calc(50% - 20px);
   display:inline-block;
 }
+.wf-serverchat {
+  flex-grow: 1;
+  overflow-x:hidden;
+  flex-basis: 1px;
+  max-height: 300px;
+  overflow-y:hidden;
+}
 .wf-more-feed {
   flex-grow: 1;
   margin:5px;
   overflow-x:hidden;
   flex-basis: 1px;
-  max-height: 200px;
+  min-height: 100px;
+  max-height: 140px;
   overflow-y:scroll;
 }
 .wf-message div {
@@ -3907,6 +3933,19 @@ a {
   height: 1em!important;
   background-color: var(--color-1);
 }
+.wf-chat-textbox-wrap {
+  overflow:hidden;
+  padding:10px;
+  border-radius:5px;
+  height: 1em!important;
+  background-color: var(--color-1);
+}
+.wf-chat-textbox-line {
+  height: 5px;
+  background-color: var(--color-2);
+  width: 100%;
+  border-radius:5px;
+}
 .wf-rcon-textbox {
   color:var(--color-text);
   font-family:codef;
@@ -3936,6 +3975,8 @@ a {
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
   background-color: var(--color-2);
+}
+.wf-chat-textbox-cont {
 }
 .wf-rcon-line {
   padding:5px;

@@ -154,12 +154,17 @@ class Webfront {
 
         this.app.get('/', async (req, res, next) => {
             res.setHeader('Content-type', 'text/html')
-            var Client = null
+            var Client = {
+                Name: 'Guest',
+                ClientId: 0,
+                PermissionLevel: 0
+            }
+
             if (req.session.ClientId) {
                 Client = await db.getClient(req.session.ClientId)
             }
 
-            ejs.renderFile(path.join(__dirname, '/html/index.ejs'), {header: await this.renderDynamicHTML(req), session: req.session, Client: Client}, (err, str) => {
+            ejs.renderFile(path.join(__dirname, '/html/index.ejs'), {header: await this.renderDynamicHTML(req), session: req.session, Client: Client, Permissions}, (err, str) => {
                 res.end(str)
             })
         })
@@ -1233,11 +1238,79 @@ class Webfront {
                     var index = this.socketClients.push({ action: null, conn: conn }) - 1
                     conn.resourceID = index
                 }
-                conn.on('message', (msg) => {
+
+                var clientInfo = {}
+                conn.on('message', async (msg) => {
                     try {
                         this.socketClients[conn.resourceID].conn.heartbeat = new Date()
                     }
                     catch (e){}
+                    
+                    try {
+                        var event = JSON.parse(msg)
+                        switch (event.action) {
+                            case 'heartbeat':
+                            break
+                            case 'message':
+                                if (!this.Managers[event.data.ServerId] 
+                                    || !conn.session.ClientId
+                                    || !event.data.Message 
+                                    || !event.data.Message.length) {
+                                    return
+                                }
+
+                                conn.session.Client = conn.session.Client 
+                                    ? conn.session.Client 
+                                    : await this.db.getClient(conn.session.ClientId)
+
+                                if (conn.session.Client.PermissionLevel < Permissions.Levels['ROLE_MODERATOR']
+                                    || clientInfo[conn.session.ClientId] 
+                                        && clientInfo[conn.session.ClientId].lastMsg
+                                        && (new Date() - clientInfo[conn.session.ClientId].lastMsg) / 1000 < 1) {
+                                    return  
+                                }
+
+                                clientInfo[conn.session.ClientId] 
+                                    ? clientInfo[conn.session.ClientId].lastMsg = new Date() 
+                                    : clientInfo[conn.session.ClientId] = {lastMsg: new Date()}
+
+                                var _event = {
+                                    event: 'event_client_message', 
+                                    data: { 
+                                        ServerId: event.data.ServerId, 
+                                        Client: { 
+                                            Name: conn.session.Client.Name,
+                                             ClientId: conn.session.Client.ClientId, 
+                                             Clientslot: -1
+                                        }, 
+                                        Message: event.data.Message
+                                    } 
+                                }
+
+                                this.Managers[event.data.ServerId].Server.Broadcast(Utils.formatString(Localization['SOCKET_MSG_FORMAT'], {
+                                    Name: conn.session.Client.Name,
+                                    Message: event.data.Message
+                                }, '%')[0])
+
+                                sendToAction('socket_listen_servers', _event)
+                                logActivity(this.Managers[event.data.ServerId], _event)
+                                sendToAction('socket_listen_messages', {
+                                    event: 'event_client_message',
+                                    ServerId: event.data.ServerId,
+                                    Hostname: this.Managers[event.data.ServerId].Server.HostnameRaw,
+                                    Message: event.data.Message,
+                                    Client: {
+                                        Name: conn.session.Client.Name,
+                                        ClientId: conn.session.Client.ClientId
+                                    }
+                                })
+
+                            break
+                        }
+                    }
+                    catch (e) {
+                        
+                    }
                 })
             })
         })
