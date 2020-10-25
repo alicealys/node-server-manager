@@ -3179,7 +3179,7 @@ body {
   flex-basis: 1px;
   flex-grow: 1;
   overflow-x:hidden;
-  max-height:300px;
+  max-height:250px;
   overflow-y:scroll;
 }
 .wf-client-name {
@@ -3203,8 +3203,8 @@ body {
   margin:5px;
   overflow-x:hidden;
   flex-basis: 1px;
-  min-height: 100px;
-  max-height: 140px;
+  min-height: 150px;
+  max-height: 200px;
   overflow-y:scroll;
 }
 .wf-message div {
