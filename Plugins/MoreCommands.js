@@ -144,6 +144,7 @@ class Plugin {
             let command = new Command()
             .setName('report')
             .setAlias('rep')
+            .setInGame(true)
             .addParams([
                 {
                     index: 0,
@@ -311,7 +312,7 @@ class Plugin {
                     uniqueToday: (await this.Server.DB.getLastUniques()).length,
                     onlineClients: this.Managers.reduce((a, {Server}) => a + Server.getClients().length, 0),
                     totalSlots: this.Managers.reduce((a, {Server}) => a + Server.Clients.length, 0)
-                }, '%'))
+                }, '%')[0])
             })
             this.Manager.Commands.add(command)
         })(this);

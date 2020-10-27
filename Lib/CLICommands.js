@@ -53,7 +53,7 @@ class CLICommands {
         }
 
         var executedMiddleware = await this.Manager.Commands.executeMiddleware(args[0], this.Player, args)
-        if (this.Manager.Commands.execute(args[0], this.Player, args)) return
+        if (await this.Manager.Commands.execute(args[0], this.Player, args)) return
 
         var command = Utils.getCommand(this.Manager.commands, args[0])
         switch (true) {
@@ -66,8 +66,8 @@ class CLICommands {
           case (args.length - 1 < this.Manager.commands[command].ArgumentLength):
             this.Player.Tell(Localization['COMMAND_ARGUMENT_ERROR'])
             return
-
         }
+
         this.Manager.Server.DB.logActivity(`@${this.Player.ClientId}`, Localization['AUDIT_CMD_EXEC'].replace('%NAME%', command), args.join(' '))
         this.Manager.commands[command].callback(this.Player, args)
     }

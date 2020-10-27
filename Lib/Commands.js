@@ -26,11 +26,11 @@ class Commands {
             Object.entries(this.Commands).forEach(command => {
                 if (!command[1].isMiddleware) return
     
-                this.execute(command[1].name, Player, args, options = { delay: true, broadcast: false }, next)
+                this.execute(command[1].name, Player, args, options, next)
             })
         })
     }
-    execute (name, Player, args, options = { delay: true, broadcast: false }, next = null) {
+    async execute (name, Player, args, options = { delay: true, broadcast: false }, next = null) {
         var command = this.findCommand(name)
 
         var funcs = {
@@ -85,7 +85,7 @@ class Commands {
         }
 
         for (var i = 0; i < command.callbacks.length; i++) {
-            command.callbacks[i](Player, params, args, options, funcs, next)
+            await command.callbacks[i](Player, params, args, options, funcs, next)
         }
 
         return 1

@@ -146,11 +146,13 @@ class Plugin {
                     Player.Tell(Localization['COMMAND_CLIENT_NOT_FOUND'])
                     return
                 }
+                
                 var Stats = await this.getZStats(Client.ClientId)
                 if (!Stats) {
                     Player.Tell(Localization['STATS_NOT_EXIST'])
                     return
                 }
+
                 Stats.Player = Client.Name
                 var formattedStats = Utils.formatString(Localization['COMMAND_ZSTATS_FORMAT'], Stats, '%');
                 formattedStats.forEach(async line => {

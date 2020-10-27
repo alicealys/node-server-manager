@@ -20,7 +20,6 @@ const db            = new (require(path.join(__dirname, '../Lib/InitDatabase.js'
 const Utils         = new(require(path.join(__dirname, '../Utils/Utils.js')))()
 const Auth          = new (require('./api/Auth.js'))(db)
 const twoFactor     = require('node-2fa')
-const { stringify } = require('querystring')
 const jsdom         = new require('jsdom')
 
 var lookup = {
@@ -775,12 +774,6 @@ class Webfront {
                 return
             }
 
-            var lookup = {
-                'COMMAND_NOT_FOUND' : 'Command not found, use ^3help^7 for a list of commands',
-                'COMMAND_ARGUMENT_ERROR' : 'Not enough arguments supplied',
-                'COMMAND_ENV_ERROR': 'This command can only be executed in-game'
-            }
-
             var command = Buffer.from(req.query.command, 'base64').toString()
 
             if (config.commandPrefixes.includes(command[0]) || command.startsWith('command=')) {
@@ -788,11 +781,11 @@ class Webfront {
 
                 var Player = {
                     Name: Client.Name,
-                    ClientId: req.session.ClientId,
+                    ClientId: parseInt(req.session.ClientId),
                     PermissionLevel : Client.PermissionLevel,
                     inGame: false,
                     Tell: (text) => {
-                        result.push(text)
+                        result.push(text.toString())
                     }
                 }
                 var end = () => {
@@ -803,27 +796,35 @@ class Webfront {
                 }
 
                 var args = command.startsWith('command=') ? command.substr('command='.length).split(/\s+/) : command.substr(1).split(/\s+/)
+
+                var executedMiddleware = await this.Managers[0].Commands.executeMiddleware(args[0], Player, args)
+
+                if (await this.Managers[0].Commands.execute(args[0], Player, args, {wait: true})) {
+                    end()
+                    return
+                }
+
                 var command = Utils.getCommand(this.Managers[0].commands, args[0])
                 
                 switch (true) {
                   case (!this.Managers[0].commands[command]):
-                    Player.Tell(lookup.COMMAND_NOT_FOUND)
+                    !executedMiddleware && Player.Tell(Localization['COMMAND_NOT_FOUND'])
                     end()
                     return
                   case (this.Managers[0].commands[command].inGame || this.Managers[0].commands[command].inGame == undefined):
-                    Player.Tell(lookup.COMMAND_ENV_ERROR)
+                    Player.Tell(Localization['COMMAND_ENV_ERROR'])
                     end()
                     return
                   case (Player.PermissionLevel < Permissions.Levels[this.Managers[0].commands[command].Permission]):
-                    Player.Tell(lookup.COMMAND_FORBIDDEN)
-                    end()
-                    return;
-                  case (args.length - 1 < this.Managers[0].commands[command].ArgumentLength):
-                    Player.Tell(lookup.COMMAND_ARGUMENT_ERROR)
+                    Player.Tell(Localization['COMMAND_FORBIDDEN'])
                     end()
                     return
-        
+                  case (args.length - 1 < this.Managers[0].commands[command].ArgumentLength):
+                    Player.Tell(Localization['COMMAND_ARGUMENT_ERROR'])
+                    end()
+                    return
                 }
+
                 db.logActivity(`@${req.session.ClientId}`, Localization['AUDIT_CMD_EXEC'].replace('%NAME%', command), args.join(' '))
                 await this.Managers[0].commands[command].callback(Player, args, false)
                 end()
