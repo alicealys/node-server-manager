@@ -99,9 +99,9 @@ class NSM extends EventEmitter{
     loadRconSettings() {
         const directoryPath = path.join(__dirname, '../Plugins/Rcon');
         fs.readdir(directoryPath, (err, files) => {
-            if (err) {
-                return console.log('Unable to scan directory: ' + err);
-            } 
+            if (err)
+                return
+            
             files.forEach( (file) => {
                 if (!file.match(/.+\.js/g)) return
                 this.logger.writeLn(`Loading plugin \x1b[33m${file}\x1b[0m for server ${this.Server.IP}:${this.Server.PORT}`)
