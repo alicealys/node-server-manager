@@ -66,6 +66,16 @@ class Plugin {
 
         (() => {
             let command = new Command({
+                name: 'reload'
+            })
+            .setPermission('ROLE_OWNER')
+            .addCallback(async (Player) => {
+                Player.Server.loadClientsAsync()
+            })
+        })(this);
+
+        (() => {
+            let command = new Command({
                 isMiddleware: true
             })
             .addCallback(async (Player, params, args, options, funcs, next) => {

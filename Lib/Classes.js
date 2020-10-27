@@ -55,7 +55,7 @@ class Command {
         return this
     }
     setPermission(perm) {
-        this.PermissionLevel = Permissions.Levels[perm]
+        this.permission = Permissions.Levels[perm]
         return this
     }
 }

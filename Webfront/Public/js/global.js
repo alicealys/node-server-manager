@@ -249,6 +249,7 @@ async function renderServerList() {
             clearTimeout(hoverOut)
             img && img.remove()
         })
+        
         serverCard.querySelector('*[data-more-button]').addEventListener('click', (e) => {
             var shown = (e.target.getAttribute('data-shown')) == 'true'
             e.target.setAttribute('data-shown', (!shown).toString())
