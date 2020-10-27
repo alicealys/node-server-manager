@@ -614,6 +614,19 @@ class Database {
         }))[0].dataValues.totalClients
     }
 
+    async getLastConnections() {
+        return await Models.NSMConnections.findAll({
+            where: {
+                Date: {
+                    [Sequelize.Op.lt]: new Date(),
+                    [Sequelize.Op.gt]: new Date(new Date().setDate(new Date().getDate() - 1))
+                }
+            },
+            group: ['ClientId'],
+            raw: true
+        })
+    }
+
     async getAllConnections(ClientId) {
         var Connections = await Models.NSMConnections.findAll({
             where: {
@@ -623,8 +636,16 @@ class Database {
         return Connections.length > 0 ? Connections : false
     }
 
+    async updateLastConnection(ClientId) {
+        Models.NSMClients.update(
+            { 'LastConnection' : Sequelize.literal(`datetime('now')`)},
+            {where: {ClientId}}, {transaction: this.transaction})
+    }
+
     async logConnection(ePlayer) {
         var ClientId = await this.getClientId(ePlayer.Guid)
+
+        this.updateLastConnection(ClientId)
         
         var Connection = await Models.NSMConnections.build({
             ClientId: ClientId,
@@ -632,7 +653,6 @@ class Database {
             Guid: ePlayer.Guid,
             Name: ePlayer.Name
         }, {transaction: this.transaction}).save()
-        // await this.transaction.commit()
 
         return Connection.dataValues
     }

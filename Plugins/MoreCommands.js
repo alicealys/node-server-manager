@@ -299,6 +299,21 @@ class Plugin {
             })
             this.Manager.Commands.add(command)
         })(this);
+
+        (() => {
+            let command = new Command()
+            .setName('summary')
+            .addCallback(async (Player, params, args, options, funcs) => {
+                funcs.Tell(Utils.formatString(Localization['COMMAND_SUMMARY_FORMAT'], {
+                    totalClients: await this.Server.DB.getAllClients(),
+                    totalServers: this.Managers.filter(m => m.Server.Rcon.isRunning).length,
+                    clientsToday: (await this.Server.DB.getLastConnections()).length,
+                    onlineClients: this.Managers.reduce((a, {Server}) => a + Server.getClients().length, 0),
+                    totalSlots: this.Managers.reduce((a, {Server}) => a + Server.Clients.length, 0)
+                }, '%'))
+            })
+            this.Manager.Commands.add(command)
+        })(this);
     }
 }
 
