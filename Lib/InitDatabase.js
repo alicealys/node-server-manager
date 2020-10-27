@@ -615,9 +615,22 @@ class Database {
     }
 
     async getLastConnections() {
-        return await Models.NSMConnections.findAll({
+        return await Models.NSMClients.findAll({
             where: {
-                Date: {
+                LastConnection: {
+                    [Sequelize.Op.lt]: new Date(),
+                    [Sequelize.Op.gt]: new Date(new Date().setDate(new Date().getDate() - 1))
+                }
+            },
+            group: ['ClientId'],
+            raw: true
+        })
+    }
+    
+    async getLastUniques() {
+        return await Models.NSMClients.findAll({
+            where: {
+                FirstConnection: {
                     [Sequelize.Op.lt]: new Date(),
                     [Sequelize.Op.gt]: new Date(new Date().setDate(new Date().getDate() - 1))
                 }

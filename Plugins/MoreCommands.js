@@ -308,6 +308,7 @@ class Plugin {
                     totalClients: await this.Server.DB.getAllClients(),
                     totalServers: this.Managers.filter(m => m.Server.Rcon.isRunning).length,
                     clientsToday: (await this.Server.DB.getLastConnections()).length,
+                    uniqueToday: (await this.Server.DB.getLastUniques()).length,
                     onlineClients: this.Managers.reduce((a, {Server}) => a + Server.getClients().length, 0),
                     totalSlots: this.Managers.reduce((a, {Server}) => a + Server.Clients.length, 0)
                 }, '%'))
