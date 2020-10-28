@@ -191,7 +191,10 @@
         "SERVER_RESTART": "Server restarted",
         "COMMAND_COOLDOWN": "Please wait a few seconds before executing this again",
         "SOCKET_MSG_FORMAT": "[^5%NAME%^7]: %MESSAGE%",
-        "COMMAND_SUMMARY_FORMAT": "^5%ONLINECLIENTS%/%TOTALSLOTS%^7 clients online across ^5%TOTALSERVERS%^7 servers, ^5%CLIENTSTODAY%^7 clients seen today ^7(^5%UNIQUETODAY%^7 new), ^5%TOTALCLIENTS%^7 total clients"
+        "COMMAND_SUMMARY_FORMAT": "^5%ONLINECLIENTS%/%TOTALSLOTS%^7 clients online across ^5%TOTALSERVERS%^7 servers, ^5%CLIENTSTODAY%^7 clients seen today ^7(^5%UNIQUETODAY%^7 new), ^5%TOTALCLIENTS%^7 total clients",
+        "COMMAND_LOCKER_EMPTY": "Your locker is empty",
+        "COMMAND_LOCKER_FORMAT": "Weapon: ^3%WEAPONNAME%^7, ^3%CLIP%/%STOCK%^7",
+        "LOCKER_WEAPON_SAVED": "^1Locker weapon saved"
     },
     "Games": {
       "T6": {

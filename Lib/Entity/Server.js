@@ -34,7 +34,7 @@ class Server extends EventEmitter {
         this.Manager = Manager
         this.previousUptime = 0
         this.previousStatus = null
-        this.heartbeatRetry = 2
+        this.heartbeatRetry = 1
         this.sessionStore = sessionStore
         this.on('init', this.onInitGame.bind(this))
         this.config = config

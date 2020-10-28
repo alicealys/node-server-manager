@@ -35,7 +35,9 @@ class EventDispatcher {
                     this.Server.emit('any_event', {type: 'say', Origin: this.Server.Clients[event.data.Origin.Clientslot], Data: event.data.Message})
                 break
                 case 'join':
-                    if (this.Server.Clients[event.data.Origin.Clientslot] != null && this.Server.Clients[event.data.Origin.Clientslot].Guid == event.data.Origin.Guid) {
+                    if (this.Server.Clients[event.data.Origin.Clientslot] != null 
+                        && this.Server.Clients[event.data.Origin.Clientslot].Guid == event.data.Origin.Guid) {
+                        this.Server.emit('preconnect', this.Server.Clients[event.data.Origin.Clientslot])
                         this.Server.emit('any_event', {type: 'join', Origin: this.Server.Clients[event.data.Origin.Clientslot]})
                         return
                     }

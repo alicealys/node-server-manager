@@ -117,5 +117,14 @@ class Utils {
 
         return chunks;
     }
+    isJson(data) {
+      try {
+          JSON.parse(data)
+      }
+      catch (e) {
+          return false
+      }
+      return true
+    }
 }
 module.exports = Utils;
