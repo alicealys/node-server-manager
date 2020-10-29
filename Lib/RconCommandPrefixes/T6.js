@@ -27,7 +27,7 @@ module.exports = {
     getInfo: '\xff\xff\xff\xffgetinfo',
     getStatus: '\xff\xff\xff\xffgetstatus',
     Dvars: {
-        maxclients: 'com_maxclients',
+        maxclients: 'sv_maxclients',
         mapname: 'mapname',
         hostname: 'sv_hostname',
         gametype: 'g_gametype',

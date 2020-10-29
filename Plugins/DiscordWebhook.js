@@ -31,7 +31,7 @@ class Plugin {
 
         try {
             var result = (await fetch(`${config.WebfrontSSL ? 'https://' : 'http://'}${config.webfrontHostname}/api/verify`))
-            var hostname = result ? config.webfrontHostname : (await fetch('https://api.ipify.org/?format=json')).json().ip
+            var hostname = result ? config.webfrontHostname : `${(await fetch('https://api.ipify.org/?format=json')).json().ip}:${config.WebfrontPort}`
             this.Url = `${config.WebfrontSSL ? 'https://' : 'http://'}${hostname}`
     
             this.Url = this.Url
@@ -39,7 +39,7 @@ class Plugin {
         catch (e) {
             try {
                 var hostname = (await (await fetch('https://api.ipify.org/?format=json')).json()).ip
-                this.Url = `${config.WebfrontSSL ? 'https://' : 'http://'}${hostname}`
+                this.Url = `${config.WebfrontSSL ? 'https://' : 'http://'}${hostname}:${config.WebfrontPort}`
             }
             catch (e) {
                 return null
