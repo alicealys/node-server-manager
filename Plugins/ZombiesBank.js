@@ -224,7 +224,7 @@ class Plugin {
         ArgumentLength: 2,
         inGame: false,
         logToAudit: false,
-        Permission: Permission.Commands.COMMAND_RCON,
+        Permission: Permissions.Commands.COMMAND_RCON,
         callback: async (Player, args) => {
             var Target = await this.Server.getClient(args[1])
             switch (true) {
