@@ -160,18 +160,22 @@ class Server extends EventEmitter {
     }
     findClientByName(Name) {
         var Client = null
+
         this.Managers.forEach(Manager => {
             if (Client) return
             Client = Manager.Server.Clients.find(x => x && x.Name.toLocaleLowerCase().startsWith(Name.toLocaleLowerCase()))
         })
+
         return Client
     }
     findClient(ClientId) {
         var Client = null
+
         this.Managers.forEach(Manager => {
             if (Client) return
             Client = Manager.Server.Clients.find(x => x && x.ClientId == ClientId)
         })
+
         return Client
     }
     async Heartbeat() {
@@ -231,5 +235,6 @@ class Server extends EventEmitter {
     Broadcast (string) {
         this.Rcon.executeCommandAsync(this.Rcon.commandPrefixes.Rcon.Say.replace('%MESSAGE%', string))
     }
-  }
+}
+
 module.exports = Server
