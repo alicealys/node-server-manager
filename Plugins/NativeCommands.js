@@ -654,12 +654,18 @@ class Plugin {
         try {
             if (!Player) return
 
+            var Client = await this.Server.DB.getClient(Player.ClientId)
+
+            if (Client.Settings.InGameLogin && !Player.Session.Data.Authorized) {
+                Player.Tell(Localization['CLIENT_NOT_AUTHORIZED'])
+                return
+            }
+
             var isBroadcast = config.broadcastCommandPrefixes.includes(prefix)
             
             var executedMiddleware = await this.Manager.Commands.executeMiddleware(args[0], Player, args, { broadcast: isBroadcast })
             if (await this.Manager.Commands.execute(args[0], Player, args, { broadcast: isBroadcast })) return
         
-            var Client = await this.Server.DB.getClient(Player.ClientId)
             var command = Utils.getCommand(this.Manager.commands, args[0])
     
             switch (true) {
