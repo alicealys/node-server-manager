@@ -24,7 +24,10 @@ class Plugin {
 
             switch (lockerEvent.event) {
                 case 'locker_set':
+                    if (!lockerEvent.player) return
+
                     var Player = this.Server.Clients.find(c => c.Guid == lockerEvent.player.Guid)
+                    
                     if (!Player) return
 
                     if (!lockerEvent.weapondata) {
