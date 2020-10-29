@@ -220,6 +220,32 @@ class Plugin {
             Target.inGame && Target.inGame.Tell(Utils.formatString(Localization['ZBANK_RECEIVE_FORMAT'], {amount: moneyToGive, name: Player.Name}, '%')[0])
         }
     }
+    this.Manager.commands['setmoney'] = {
+        ArgumentLength: 2,
+        inGame: false,
+        logToAudit: false,
+        Permission: Permission.Commands.COMMAND_RCON,
+        callback: async (Player, args) => {
+            var Target = await this.Server.getClient(args[1])
+            switch (true) {
+                case (!Target):
+                    Player.Tell(Localization['COMMAND_CLIENT_NOT_FOUND'])
+                return
+            }
+
+            var moneyToSet = parseInt(args[2])
+            switch(true){
+                case (!Number.isInteger(moneyToSet)):
+                    Player.Tell(Localization['ZBANK_PARSE_ERROR'])
+                return
+            }
+
+            await this.setPlayerMoney(Target.ClientId, moneyToSet)
+            Player.Tell(Utils.formatString(Localization['ZBANK_SETMONEY_FORMAT'], {amount: moneyToSet, name: Target.Name}, '%')[0])
+            Target.inGame = Utils.findClient(Target.ClientId, this.Managers)
+            Target.inGame && Target.inGame.Tell(Utils.formatString(Localization['ZBANK_NEWBALANCE_FORMAT'], {amount: moneyToGive}, '%')[0])
+        }
+    }
     this.Manager.commands['money'] = {
         ArgumentLength: 0,
         inGame: false,
