@@ -26,7 +26,7 @@ class Plugin {
                 case 'locker_set':
                     if (!lockerEvent.player) return
 
-                    var Player = this.Server.Clients.find(c => c.Guid == lockerEvent.player.Guid)
+                    var Player = this.Server.Clients.find(c => c && c.Guid == lockerEvent.player.Guid)
                     
                     if (!Player) return
 
