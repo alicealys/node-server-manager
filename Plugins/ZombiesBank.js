@@ -48,7 +48,7 @@ class Plugin {
   }
   async onPlayerConnect(Player) {
     if (!(await this.getZMStats(Player.ClientId))) {
-        await this.NSMZombiesStats.build({
+        await this.Server.DB.Models.NSMZombiesStats.build({
             ClientId: Player.ClientId
         }).save()
     }
@@ -56,7 +56,7 @@ class Plugin {
     this.setBalanceDvar(Player)
   }
   async createTable() {
-    this.NSMZombiesStats = Models.DB.define('NSMZombiesStats', 
+    this.Server.DB.Models.NSMZombiesStats = this.Server.DB.Models.DB.define('NSMZombiesStats', 
     {
         ClientId: {
             type: Sequelize.INTEGER,
@@ -81,7 +81,7 @@ class Plugin {
     }, {
         timestamps: false
     })
-    this.NSMZombiesStats.sync()
+    this.Server.DB.Models.NSMZombiesStats.sync()
   }
   async getZMStats(ClientId) {
       if (ClientId == 1) {
@@ -90,7 +90,7 @@ class Plugin {
               LockerWeapon: 'none'
           }
       }
-    var ZMStats = await this.NSMZombiesStats.findAll({
+    var ZMStats = await this.Server.DB.Models.NSMZombiesStats.findAll({
         where: {
             ClientId: ClientId
         }
@@ -98,7 +98,7 @@ class Plugin {
     return ZMStats.length > 0 ?ZMStats[0].dataValues : false
   }
   async setPlayerMoney(ClientId, Money) {
-      await this.NSMZombiesStats.update(
+      await this.Server.DB.Models.NSMZombiesStats.update(
         {Money : Money},
         {where: {ClientId: ClientId}})
   }
@@ -107,10 +107,10 @@ class Plugin {
     Player.Server.Rcon.setDvar(`${Player.Guid}_balance`, (await this.getZMStats(Player.ClientId)).Money)
   }
   async addPlayerMoney(ClientId, Money) {
-    return await this.NSMZombiesStats.update(
+    return await this.Server.DB.Models.NSMZombiesStats.update(
       {Money : Sequelize.literal(`Money + ${Money}`)},
       {where: {ClientId: ClientId}})
-}
+  }
   async init () {
     await this.createTable()
     this.Manager.commands['withdraw'] = {
@@ -126,7 +126,11 @@ class Plugin {
 
             var totalMoney = (await this.getZMStats(Player.ClientId)).Money
             var gameMoney = parseInt(await Player.Server.Rcon.getDvar(`${Player.Clientslot}_money`))
-            var withdrawMoney = args[1] == 'all' ? Math.min(parseInt(totalMoney), 1000000 - gameMoney) : Math.min(parseInt(args[1]), 1000000 - gameMoney)
+
+            var withdrawMoney = args[1].toLocaleLowerCase() == 'all' 
+                ? Math.min(parseInt(totalMoney), 1000000 - gameMoney) 
+                : Math.min(parseInt(args[1]), 1000000 - gameMoney)
+            
             switch (true) {
                 case (!this.Server.Mapname.startsWith('zm_')):
                     Player.Tell(Localization['COMMAND_UNAVAILABLE_GAMETYPE'])
@@ -162,6 +166,7 @@ class Plugin {
             var totalMoney = (await this.getZMStats(Player.ClientId)).Money
             var gameMoney = parseInt(await Player.Server.Rcon.getDvar(`${Player.Clientslot}_money`))
             var depositMoney = args[1] == 'all' ? parseInt(gameMoney) : parseInt(args[1])
+
             switch (true) {
                 case (!this.Server.Mapname.startsWith('zm_')):
                     Player.Tell(Localization['COMMAND_UNAVAILABLE_GAMETYPE'])
