@@ -14,6 +14,7 @@
 init()
 {
 	level thread playerBank(); // Bank plugin
+	level thread onPlayerConnect();
 	level thread roundLogger();	// Stats plugin
 }
 
@@ -29,10 +30,32 @@ onPlayerConnect()
 		player thread downLogger();
 		player thread reviveLogger();
 		// --- end stats plugin ---
+
+		// --- start bank plugin ---
+		player thread setPlayerMoney();
+		player thread endPlayerMoney();
+		player thread endPlayerMoney2();
+		// --- end bank plugin ---
 	}
 }
 
 // --- start bank plugin ---
+endPlayerMoney() {
+	self endon("disconnect");
+	for (;;) {
+		level waittill("end_game");
+		setDvar(self getEntityNumber() + "_money", 0);
+	}
+}
+
+endPlayerMoney2() {
+	self endon("disconnect");
+	for (;;) {
+		level waittill("_zombie_game_over");
+		setDvar(self getEntityNumber() + "_money", 0);
+	}
+}
+
 setPlayerMoney() {
 	level endon("end_game");
 	self endon("disconnect");
