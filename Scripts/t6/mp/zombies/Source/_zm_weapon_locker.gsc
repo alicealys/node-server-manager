@@ -45,16 +45,56 @@ main()
 	array_thread( weapon_lockers, ::triggerweaponslockerwatch );
 }
 
+updateLockerWeapon() {
+	level endon("end_game");
+	self endon("disconnect");
+	for (;;) {
+		if (getDvar(self getGuid() + "_update") != "") {
+			dvar = getDvar(self getGuid() + "_update");
+			setDvar(self getGuid() + "_update", "");
+
+			self._weapondata = parseWeaponData(dvar);
+			self thread triggerweaponslockerweaponchangethink();
+		}
+		wait 0.5;
+	}
+}
+
 wl_has_stored_weapondata()
 {
 	if (!isDefined(self.gotweapondata)) {
 		self wl_get_stored_weapondata();
 		self.changedWeaponData = false;
+		self thread updateLockerWeapon();
 		self thread saveLockerWeapon();
 		self.gotweapondata = true;
 	}
 
 	return isDefined(self._weapondata);
+}
+
+parseWeaponData(string) {
+	weaponraw = strTok(string, ",");
+
+	if (weaponraw.size < 11) {
+		return undefined;
+	}
+
+	weapondata = [];
+
+	weapondata["alt_stock"] = weaponraw[0];
+	weapondata["alt_clip"] = weaponraw[1];
+	weapondata["lh_clip"] = weaponraw[2];
+	weapondata["overheat"] = weaponraw[3];
+	weapondata["heat"] = weaponraw[4];
+	weapondata["fuel"] = weaponraw[5];
+	weapondata["stock"] = weaponraw[6];
+	weapondata["clip"] = weaponraw[7];
+	weapondata["alt_name"] = weaponraw[8];
+	weapondata["dw_name"] = weaponraw[9];
+	weapondata["name"] = weaponraw[10];
+
+	return weapondata;
 }
 
 wl_get_stored_weapondata()
@@ -71,22 +111,7 @@ wl_get_stored_weapondata()
 		return self._weapondata;
 	}
 
-	weaponraw = strTok(dvarValue, ",");
-	weapondata = [];
-
-	weapondata["alt_stock"] = weaponraw[0];
-	weapondata["alt_clip"] = weaponraw[1];
-	weapondata["lh_clip"] = weaponraw[2];
-	weapondata["overheat"] = weaponraw[3];
-	weapondata["heat"] = weaponraw[4];
-	weapondata["fuel"] = weaponraw[5];
-	weapondata["stock"] = weaponraw[6];
-	weapondata["clip"] = weaponraw[7];
-	weapondata["alt_name"] = weaponraw[8];
-	weapondata["dw_name"] = weaponraw[9];
-	weapondata["name"] = weaponraw[10];
-
-	self._weapondata = weapondata;
+	self._weapondata = parseWeaponData(dvarValue);
 
 	return self._weapondata;
 }
@@ -94,13 +119,22 @@ wl_get_stored_weapondata()
 wl_clear_stored_weapondata()
 {
 	self._weapondata = undefined;
-	self.changedWeaponData = true;
+	self.canuselocker = false;
+	self logWeaponData();
+	self thread resetLockerUse();
+}
+
+resetLockerUse() {
+	wait 3;
+	self.canuselocker = true;
 }
 
 wl_set_stored_weapondata( weapondata )
 {
-	self.changedWeaponData = true;
 	self._weapondata = weapondata;
+	self.canuselocker = false;
+	self logWeaponData();
+	self thread resetLockerUse();
 }
 
 triggerweaponslockerwatch()
@@ -184,6 +218,11 @@ get_nonalternate_weapon( altweapon ) //checked changed to match cerberus output
 
 triggerweaponslockerisvalidweaponpromptupdate( player, weaponname )
 {
+	if (isDefined(player.canuselocker) && !player.canuselocker) {
+		self sethintstring( &"ZOMBIE_WEAPON_LOCKER_DENY" );
+		return;
+	}
+
 	retrievingweapon = player wl_has_stored_weapondata();
 	if ( !retrievingweapon )
 	{
@@ -208,7 +247,7 @@ triggerweaponslockerisvalidweaponpromptupdate( player, weaponname )
 		primaries = player getweaponslistprimaries();
 		maxweapons = get_player_weapon_limit( player );
 		weaponname = player get_nonalternate_weapon( weaponname );
-		if ( isDefined( primaries ) || primaries.size >= maxweapons && weapontogive == weaponname )
+		if (isDefined( primaries ) && primaries.size >= maxweapons)
 		{
 			if ( !triggerweaponslockerisvalidweapon( weaponname ) )
 			{
@@ -323,12 +362,21 @@ triggerweaponslockerthink()
 	while ( 1 )
 	{
 		self waittill( "trigger", player );
+
+		if (!isDefined(player.canuselocker)) {
+			player.canuselocker = true;
+		}
+
+		if (!player.canuselocker) {
+			continue;
+		}
+
 		retrievingweapon = player wl_has_stored_weapondata();
 		if ( !retrievingweapon )
 		{
 			curweapon = player getcurrentweapon();
 			curweapon = player maps/mp/zombies/_zm_weapons::switch_from_alt_weapon( curweapon );
-			while ( !triggerweaponslockerisvalidweapon( curweapon ) )
+			if ( !triggerweaponslockerisvalidweapon( curweapon ) )
 			{
 				continue;
 			}
