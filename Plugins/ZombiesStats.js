@@ -3,7 +3,6 @@ const path              = require('path')
 const Permissions       = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
 const Localization      = require(path.join(__dirname, `../Configuration/Localization-${process.env.LOCALE}.json`)).lookup
 const Utils             = new (require(path.join(__dirname, '../Utils/Utils.js')))()
-const wait              = require('delay')
 
 class Plugin {
     constructor (Server, Manager, Managers) {
@@ -78,9 +77,11 @@ class Plugin {
                 ['Score', 'desc']
             ]
         })).map(x => x = x.dataValues)
+
         for (var i = 0; i < Stats.length; i++) {
             Stats[i].Name = await this.Server.DB.getName(Stats[i].ClientId)
         }
+
         return Stats
     }
     async updateStats(Client, Stats, Round = 0) {
@@ -115,6 +116,7 @@ class Plugin {
             Headshots: Sequelize.literal(`Headshots + ${newStats.Headshots}`)
         },
         {where: {ClientId: Client.ClientId}})
+
         if (Round) {
             this.NSMZStats.update({
                 HighestRound: Round,
@@ -134,6 +136,7 @@ class Plugin {
         this.Manager.on('webfront-ready', (Webfront) => {
             Webfront.addHeaderHtml(`<a href='/zstats' class='wf-header-link'><i class="fas fa-skull"></i></a>`, 3)
         })
+
         await this.createTable()
         this.Manager.commands['zstats'] = {
             ArgumentLength: 0,
@@ -160,6 +163,7 @@ class Plugin {
                 })
             }
         }
+
         this.Server.on('connect', async (Client) => {
             Client.previousStats = null
             Client.on('round_start', async (Round, Stats) => {
@@ -169,9 +173,10 @@ class Plugin {
                 await this.updateStats(Client, Stats, Round)
             })
         })
+
         this.Server.on('line', async (data) => {
             data = data.trim().replace(new RegExp(/([0-9]+:[0-9]+)\s+/g), '')
-            if (this.isJson(data) && JSON.parse(data).event) {
+            if (Utils.isJson(data) && JSON.parse(data).event) {
                 var event = JSON.parse(data)
                 switch (event.event) {
                     case 'round_start':
@@ -197,15 +202,6 @@ class Plugin {
                 }
             }
         })
-    }
-    isJson(data) {
-        try {
-            JSON.parse(data)
-        }
-        catch (e) {
-            return false
-        }
-        return true
     }
 }
 

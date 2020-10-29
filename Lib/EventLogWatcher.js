@@ -44,4 +44,5 @@ class EventLogWatcher extends EventParser {
         this.EventDispatcher.dispatchCallback(event)
     }
 }
+
 module.exports = EventLogWatcher

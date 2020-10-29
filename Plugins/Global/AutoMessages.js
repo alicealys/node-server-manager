@@ -27,7 +27,7 @@ class Plugin {
             this.Managers.forEach(Manager => {
                 Manager.Server.Broadcast(Message)
             })
-        }, config.autoMessagesInterval * 1000);
+        }, config.autoMessagesInterval * 1000)
     }
     async replacePlaceholders(text) {
         var placeholders = {
@@ -63,6 +63,7 @@ class Plugin {
                 }
             }
         }
+        
         placeholders.Managers = this.Managers
         var entries = Object.entries(placeholders)
 
@@ -78,20 +79,6 @@ class Plugin {
 
         return text.join(' ')
     }
-    
-    ordinalSuffix(i) {
-        var j = i % 10,
-            k = i % 100;
-        if (j == 1 && k != 11) {
-            return i + "st";
-        }
-        if (j == 2 && k != 12) {
-            return i + "nd";
-        }
-        if (j == 3 && k != 13) {
-            return i + "rd";
-        }
-        return i + "th";
-    }
 }
+
 module.exports = Plugin

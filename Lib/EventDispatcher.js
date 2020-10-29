@@ -19,6 +19,7 @@ class EventDispatcher {
                 this.Server.emit('reload')
                 return
             }
+
             switch (event.type) {
                 case 'init':
                     if (this.Server.previousUptime < this.Server.uptime) {
@@ -50,7 +51,9 @@ class EventDispatcher {
                             this.Server.Clients[i] = null
                         }
                     }
+
                     await wait(100)
+
                     try { 
                         var IPAddress = (await this.Server.Rcon.getClientByGuid(event.data.Origin.Guid)).address
                     } 
@@ -104,4 +107,5 @@ class EventDispatcher {
         }
     }
 }
+
 module.exports = EventDispatcher

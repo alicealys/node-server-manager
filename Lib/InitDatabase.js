@@ -853,4 +853,5 @@ class Database {
         return Kill.dataValues
     }
 }
+
 module.exports = Database

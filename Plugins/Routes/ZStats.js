@@ -23,6 +23,7 @@ module.exports = (app, db, Webfront) => {
         res.setHeader('Content-type', 'text/html')
         var Stats = await db.getTopZStats(0, 10)
         var header = null
+        
         ejs.renderFile(path.join(__dirname, '../../Webfront/html/header.ejs'), {session: req.session, Permissions: Permissions, Motd: Motd, Client: Client, config: config}, (err, str) => {
             var dom = new jsdom.JSDOM(str)
             for (var i = 0; i < Webfront.headerExtraHtml.length; i++) {

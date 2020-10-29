@@ -14,6 +14,7 @@ class EventLogWatcher extends EventParser {
     init () {
         try {
             var socket = new ws(this.logServerURI)
+            
             socket.onmessage = (msg) => {
                 this.onLine(msg.data)
             }
@@ -30,9 +31,11 @@ class EventLogWatcher extends EventParser {
         this.Server.emit('line', line)
         this.Server.emit('stripped_line', line.trim().replace(new RegExp(/([0-9]+:[0-9]+)\s+/g), ''))
         var event = this.parseEvent(line)
+
         if (!event) return
 
         this.EventDispatcher.dispatchCallback(event)
     }
 }
+
 module.exports = EventLogWatcher

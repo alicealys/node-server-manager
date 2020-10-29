@@ -30,6 +30,7 @@ class Plugin {
 
     async startVote() {
         await wait(this.voteTime * 1000)
+        
         if (this.currentVote.Type) {
             this.Server.Broadcast(Utils.formatString(Localization['COMMAND_VOTE_END'], { Action: this.currentVote.actionString }, '%')[0])
             this.currentVote.Origin.cooldownStart = new Date()
@@ -47,6 +48,7 @@ class Plugin {
                 return true
             }
         }
+
         return false
     }
 

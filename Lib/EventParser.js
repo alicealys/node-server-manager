@@ -79,4 +79,5 @@ class EventParser {
         return parsedEvent
     }
 }
+
 module.exports = EventParser

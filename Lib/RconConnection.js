@@ -12,6 +12,7 @@ class Rcon {
         this.commandPrefixes = fs.existsSync(path.join(__dirname, `./RconCommandPrefixes/${gamename}.js`)) 
             ? {...require(`./RconCommandPrefixes/Default.js`), ...require(`./RconCommandPrefixes/${gamename}.js`)} 
             : require(`./RconCommandPrefixes/Default.js`)
+            
         this.isRunning = true
         this.commandRetries = 3
         this.previousClients = []
@@ -21,7 +22,7 @@ class Rcon {
         return new Promise(async (resolve, reject) => {
             var client =  dgram.createSocket('udp4')
             var message = new Buffer.from(command, 'binary')
-        try {
+
             client.on('listening', async () => {
                 client.send(message, 0, message.length, this.port, this.ip, async (err) => {
                     if (err) {
@@ -31,26 +32,21 @@ class Rcon {
                     }
                 })
             })
-        }
-        catch (e) {
-            console.log(`Error sending udp packet: ${e.toString()}`)
-            resolve(false)
-        }
 
-        client.bind()
+            client.bind()
 
-        var resolved = false;
-        var onMessage = (msg) => {
-            client.removeAllListeners()
-            client.close()
-            resolved = true
-            resolve(msg.toString())
-        }
+            var resolved = false;
+            var onMessage = (msg) => {
+                client.removeAllListeners()
+                client.close()
+                resolved = true
+                resolve(msg.toString())
+            }
 
-        client.on('message', onMessage);
+            client.on('message', onMessage);
 
-        setTimeout(() => {
-            if (!resolved) {
+            setTimeout(() => {
+                if (!resolved) {
                     client.removeAllListeners()
                     client.close()
                     resolve(false)
@@ -62,9 +58,9 @@ class Rcon {
         return new Promise(async (resolve, reject) => {
             var client =  dgram.createSocket('udp4')
             var message = new Buffer.from(this.commandPrefixes.Rcon.prefix
-                                        .replace('%PASSWORD%', this.password)
-                                        .replace('%COMMAND%', command), 'binary')
-        try {
+                .replace('%PASSWORD%', this.password)
+                .replace('%COMMAND%', command), 'binary')
+
             client.on('listening', async () => {
                 client.send(message, 0, message.length, this.port, this.ip, async (err) => {
                     if (err) {
@@ -74,26 +70,21 @@ class Rcon {
                     }
                 })
             })
-        }
-        catch (e) {
-            console.log(`Error sending udp packet: ${e.toString()}`)
-            resolve(false)
-        }
 
-        client.bind()
+            client.bind()
 
-        var resolved = false;
-        var onMessage = (msg) => {
-            client.close()
-            client.removeAllListeners()
-            resolved = true
-            resolve(msg.toString())
-        }
+            var resolved = false;
+            var onMessage = (msg) => {
+                client.close()
+                client.removeAllListeners()
+                resolved = true
+                resolve(msg.toString())
+            }
 
-        client.on('message', onMessage);
+            client.on('message', onMessage);
 
-        setTimeout(() => {
-            if (!resolved) {
+            setTimeout(() => {
+                if (!resolved) {
                     client.close()
                     client.removeAllListeners()
                     resolve(false)
@@ -178,4 +169,5 @@ class Rcon {
         } 
     }
 }
+
 module.exports = Rcon

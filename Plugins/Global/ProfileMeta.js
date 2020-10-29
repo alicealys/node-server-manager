@@ -10,7 +10,9 @@ class Plugin {
     async addClientMeta() {
         this.DB.clientProfileMeta.push(async (ClientId) => {
             var stats = await this.getZStats(ClientId)
+            
             if (!stats || stats.Score <= 500) return {}
+
             return {
                 name: 'Zombies Stats',
                 data: {

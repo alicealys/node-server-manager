@@ -18,9 +18,10 @@ class CLICommands {
             inGame: false,
             PermissionLevel: Permissions.Levels['ROLE_MANAGER'],
             Tell: (msg) => {
-                console.log(this.COD2BashColor(`^7${msg}^7`))
+                console.log(Utils.COD2BashColor(`^7${msg}^7`))
             }
         }
+
         this.Manager = Manager
         this.customCommands = {
             'chat': {
@@ -30,20 +31,25 @@ class CLICommands {
                 }
             }
         }
+
         this.streamChat()
         rl.on('line', this.processCommand.bind(this))
     }
     streamChat() {
         this.Managers.forEach(Manager => {
             Manager.Server.on('message', async (Player, Message) => {
-                if (this.chatEnabled)
-                    this.Player.Tell(Utils.formatString(Localization['GLOBALCHAT_FORMAT'], {Enabled: '', Name: Player.Name, Message, Hostname: Player.Server.HostnameRaw}, '%')[0])
+                if (this.chatEnabled) {
+                    this.Player.Tell(Utils.formatString(Localization['GLOBALCHAT_FORMAT'], {
+                        Enabled: '', 
+                        Name: Player.Name, 
+                        Message, 
+                        Hostname: Player.Server.HostnameRaw
+                    }, '%')[0])
+                }
             })
         })
     }
-    COD2BashColor(string) {
-        return string.replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), `\x1b[3$1m`)
-    }
+
     async processCommand(line) {
         var args = line.split(/\s+/)
 
@@ -56,6 +62,7 @@ class CLICommands {
         if (await this.Manager.Commands.execute(args[0], this.Player, args)) return
 
         var command = Utils.getCommand(this.Manager.commands, args[0])
+
         switch (true) {
           case (!this.Manager.commands[command]):
             !executedMiddleware && this.Player.Tell(Localization['COMMAND_NOT_FOUND'])
