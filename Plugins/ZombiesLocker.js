@@ -175,8 +175,10 @@ class Plugin {
 
             Player.Tell(Utils.formatString(Localization['LOCKER_UNK_SLOT'], { cost: this.lockerCost * Math.pow(2, Player.locker.weapons.length) }, '%')[0])
         })
+        
         if (this.Server.Gametype == 'zclassic')
             this.Manager.Commands.add(lockerCmd)
     }
 }
+
 module.exports = Plugin
