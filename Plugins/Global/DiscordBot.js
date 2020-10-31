@@ -114,7 +114,12 @@ class Plugin {
         }
 
         this.Managers.forEach(Manager => {
-            this.serverLogger(Manager.Server)
+            if (Manager.Server.dvarsLoaded) {
+                this.serverLogger(Manager.Server)
+                return
+            }
+
+            Manager.Server.on('dvars_loaded', this.serverLogger.bind(this))
         })
         
         modifiedConfig && this.saveConfig()

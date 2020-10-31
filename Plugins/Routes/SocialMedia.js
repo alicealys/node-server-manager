@@ -5,7 +5,7 @@ const config            = require(path.join(__dirname, `../../Configuration/NSMC
 module.exports = (app, db, Webfront) => {
     if (!config.socialMedia) return
 
-    var validLinks = config.socialMedia.filter(link => link[1].match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g))
+    var validLinks = config.socialMedia.filter(link => link[1].toString().match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g))
 
     app.get('/links', async (req, res, next) => {
         var header = await Webfront.renderDynamicHTML(req)
@@ -18,8 +18,8 @@ module.exports = (app, db, Webfront) => {
     })
     
     validLinks.forEach(link => {
-        app.get(`/${link[0]}`, async (req, res, next) => {
-            res.status(301).redirect(link[1])
+        app.get(`/${link[0].toString()}`, async (req, res, next) => {
+            res.status(301).redirect(link[1].toString())
         })
     })
 
