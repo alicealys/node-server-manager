@@ -257,3 +257,19 @@ playerBank() {
 	}
 }
 ```
+
+# Discord Integration
+To enable this simply create an app on the discord developer site, then to your configuration add
+| Name | Description |
+| --- | --- |
+| discordSecret | What it says |
+| discordClientId | ^ |
+| discordOAuth2Url | A url that points to your webfront's discord callback (eg. https://webfront.com/api/discord/callback) |
+| discordBotToken | What it says |
+| discordSecret | ^ |
+
+This will create a category named "NSM-Servers" on your discord server, then it will create a channel on that category for each server and stream the chat there.
+
+Players who have connected their discord account will have their profile picture show up when they send a message on a server and will be able to send messages to the server's chat from the discord channel. 
+
+In addition their profile picture and discord id (name#discriminator) will show up on their profile
