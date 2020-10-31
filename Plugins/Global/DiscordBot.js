@@ -150,6 +150,10 @@ class Plugin {
 
         return {...discordUser, ...Client}
     }
+    censorIp(string) {
+        return string.replace(new RegExp(/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})\:?([0-9]{1,5})?/g), '**[redacted]**')
+        .replace(new RegExp(/\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b/g), '**[redacted]**')
+    }
     async onCommand(msg) {
         try {
             var ClientId = await this.Server.DB.metaService.reversePersistentMeta('discord_id', msg.author.id)
@@ -163,7 +167,7 @@ class Plugin {
                 ClientId: 0,
                 inGame: false,
                 Tell: (msg) => {
-                    buffer.push(msg.toString().replace(/\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b/g), '**[redacted]**')
+                    buffer.push(this.censorIp(msg.toString()))
                 }
             }
 
