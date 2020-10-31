@@ -193,13 +193,13 @@ class Plugin {
             var command = Utils.getCommand(this.Manager.commands, args[0])
         
             switch (true) {
-                case (this.Manager.commands[command].inGame || this.Manager.commands[command].inGame == undefined):
-                    Player.Tell(Localization['COMMAND_ENV_ERROR'])
-                    end()
-                return
                 case (!this.Manager.commands[command]):
                 case (this.Manager.commands[command].gameTypeExclusions && this.Manager.commands[command].gameTypeExclusions.includes(this.Server.Gametype)):
                     !executedMiddleware && Player.Tell(Localization.COMMAND_NOT_FOUND)
+                    end()
+                return
+                case (this.Manager.commands[command].inGame || this.Manager.commands[command].inGame == undefined):
+                    Player.Tell(Localization['COMMAND_ENV_ERROR'])
                     end()
                 return
                 case (Player.PermissionLevel < Permissions.Levels[this.Manager.commands[command].Permission]):
