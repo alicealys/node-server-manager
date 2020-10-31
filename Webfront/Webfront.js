@@ -51,6 +51,29 @@ class Webfront {
         if (!this.headerExtraHtml.find(x => x.html == html && x.index == index))
             this.headerExtraHtml.push({ html, index })
     }
+    async getUrl() {
+        if (this.Url) return this.Url
+
+        try {
+            var result = (await fetch(`${config.WebfrontSSL ? 'https://' : 'http://'}${config.webfrontHostname}/api/verify`))
+            var hostname = result ? config.webfrontHostname : `${(await fetch('https://api.ipify.org/?format=json')).json().ip}:${config.WebfrontPort}`
+            this.Url = `${config.WebfrontSSL ? 'https://' : 'http://'}${hostname}`
+    
+            this.Url = this.Url
+        }
+        catch (e) {
+            try {
+                var hostname = (await (await fetch('https://api.ipify.org/?format=json')).json()).ip
+                this.Url = `${config.WebfrontSSL ? 'https://' : 'http://'}${hostname}:${config.WebfrontPort}`
+            }
+            catch (e) {
+                return null
+            }
+        }
+
+        process.env.webfrontUrl = this.Url
+        return this.Url
+    }
     async getClientStatus(Guid) {
         var Status = { Online: false }
 
@@ -90,7 +113,7 @@ class Webfront {
             })
         })
     }
-    Start() {
+    async Start() {
         this.app = express()
 
         const server = this.Config.SSL ? https.createServer({
@@ -143,13 +166,11 @@ class Webfront {
             cookie: {
                 secure: this.Config.SSL,
                 maxAge: 7 * 24 * 60 * 60 * 1000,
-                sameSite: 'Strict'
+                sameSite: 'Lax'
             }
         })
 
         this.app.use(this.sessionParser)
-
-        require(path.join(__dirname, `../Plugins/Routes`))(this.app, this.Managers[0].Server.DB, this)
 
         this.app.get('/', async (req, res, next) => {
             res.setHeader('Content-type', 'text/html')
@@ -166,10 +187,6 @@ class Webfront {
             ejs.renderFile(path.join(__dirname, '/html/index.ejs'), {header: await this.renderDynamicHTML(req), session: req.session, Client: Client, Permissions}, (err, str) => {
                 res.end(str)
             })
-        })
-
-        this.app.get('/api/discord/callback', async (req, res, next) => {
-            
         })
 
         this.app.post('/auth/logout', async (req, res, next) => {
@@ -241,6 +258,10 @@ class Webfront {
         this.app.get('/api/verify', async (req, res, next) => {
             res.end(jsonReturns.success)
         })
+
+        await this.getUrl()
+
+        require(path.join(__dirname, `../Plugins/Routes`))(this.app, this.Managers[0].Server.DB, this)
         
         this.app.get('/api/audit', async (req, res, next) => {
             switch (true) {
@@ -606,8 +627,12 @@ class Webfront {
 
             var Client = await db.getClient(req.session.ClientId)
             Client.hasPassword = await db.getClientField(Client.ClientId, 'Password') != null
+            var discordUser = await this.db.metaService.getPersistentMeta('discord_user', Client.ClientId)
+
+            discordUser = discordUser ? JSON.parse(discordUser.Value) : false
+
             res.setHeader('Content-type', 'text/html')
-            ejs.renderFile(path.join(__dirname, `/html/settings.ejs`), {header: header, Client: Client}, (err, str) => {
+            ejs.renderFile(path.join(__dirname, `/html/settings.ejs`), {header: header, Client: Client, discordUser}, (err, str) => {
                 res.end(str)
             })
         })
@@ -1020,6 +1045,7 @@ class Webfront {
                 return
             }
 
+            var discordUser = await this.db.metaService.getPersistentMeta('discord_user', Client.ClientId)
             var locationSetting = (await this.db.metaService.getPersistentMeta('location', Client.ClientId))
             locationSetting = locationSetting ? locationSetting.Value : locationSetting
 
@@ -1031,6 +1057,7 @@ class Webfront {
             Client.Ban = await db.isBanned(Client.ClientId)
             Client.Flag = locationSetting == null || locationSetting == '0' ? Client.IPAddress ? await getFlag(Client.IPAddress.split(':')[0]) : null : null
             Client.Status = {}
+            Client.discordUser = discordUser ? JSON.parse(discordUser.Value) : false
 
             switch (true) {
                 case (!Client.InGame.Online && !Client.WebStatus):

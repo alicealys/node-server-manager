@@ -81,6 +81,20 @@
                     </div>
                 </div>
             </div>
+            <div class='wf-settings-sub'>
+                <div class='api-category-name'>
+                    Discord
+                </div>
+                <div class='wf-settings-desc'>
+                    <div class='api-category-endpoint-values-desc'>
+                        <%- !discordUser ? `Connect your profile to your discord account` : `Logged in as ${discordUser.username}#${discordUser.discriminator}` %>
+                        <br><span class='api-endpoint-parameter'>Status</span>: <span class='api-data-type'><%= discordUser ? 'Enabled' : 'Disabled'%></span>
+                    </div>
+                    <a class='wf-settings-button <%= Client.hasPassword ? '' : 'wf-settings-button-disabled' %>' <%= Client.hasPassword ? 'enabled' : 'disabled' %> <%= Client.hasPassword ? 'enabled' : 'disabled' %> href='<%= discordUser ? '/api/discord/disconnect' : '/api/discord/login' %>'>
+                        <%= discordUser ? 'Disconnect' : 'Connect'%>
+                    </a>
+                </div>
+            </div>
         </div>
     </body>
 </html>

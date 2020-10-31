@@ -183,6 +183,7 @@ class Plugin {
                     this.Managers.forEach(Manager => {
                         Manager.Server.Broadcast(`^7[^1Broadcast ^7(^5${Player.Name}^7)] ${args.slice(1).join(' ')}`)
                     })
+                    Player.Tell(`^1Broadcasted^7: ${args.slice(1).join(' ')}`)
                 }
             },
             'tell': {
@@ -273,6 +274,12 @@ class Plugin {
                 inGame: false,
                 callback: async (Player) => {
                     var info = await this.Server.DB.getClient(Player.ClientId)
+                    
+                    if (!info) {
+                        Player.Tell(Localization['COMMAND_CLIENT_NOT_FOUND'])
+                        return
+                    }
+
                     Player.Tell(`[^5${info.Name}^7]  [@^5${info.ClientId}^7]  [^5${Utils.getRoleFrom(Math.min(info.PermissionLevel, 5), 1).Name}^7] [^5${info.IPAddress}^7] [^5${info.Guid}^7]`)
                 }
             },
@@ -302,14 +309,17 @@ class Plugin {
                     var Client = await this.Server.DB.getClient(Player.ClientId)
     
                     switch (true) {
+                        case (!Client):
+                            Player.Tell(Localization['COMMAND_CLIENT_NOT_FOUND'])
+                        return
                         case (!Permission):
-                            Player.Tell(Localization.ROLE_NOT_EXIST)
+                            Player.Tell(Localization['ROLE_NOT_EXIST'])
                         return
                         case (Client.PermissionLevel < Permissions.Levels.ROLE_ADMIN):
-                            Player.Tell(Localization.COMMAND_FORBIDDEN)
+                            Player.Tell(Localization['COMMAND_FORBIDDEN'])
                         return
                         case (Client.PermissionLevel < Permission.Level):
-                            Player.Tell(Localization.ROLE_HIERARCHY_ERROR)
+                            Player.Tell(Localization['ROLE_HIERARCHY_ERROR'])
                         return
                     }
     
@@ -360,9 +370,13 @@ class Plugin {
                 inGame: false,
                 callback: async (Player) => {
                     var Client = await this.Server.DB.getClient(Player.ClientId)
-        
-                    if (!Client.Settings.TokenLogin) {
-                        Player.Tell(Localization.TOKEN_LOGIN_DISABLED)
+
+                    switch (true) {
+                        case (!Client):
+                            Player.Tell(Localization['COMMAND_CLIENT_NOT_FOUND'])
+                        return
+                        case (!Client.Settings.TokenLogin):
+                            Player.Tell(Localization['TOKEN_LOGIN_DISABLED'])
                         return
                     }
         

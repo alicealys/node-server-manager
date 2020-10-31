@@ -23,8 +23,13 @@ class Utils {
         })
         return Client
     }
+    stripStringDiscord(string) {
+        string = this.stripString(string)
+        string = string.replace(new RegExp(/\|\s/g), '-')
+        return string
+    }
     stripString(string) {
-        return string.replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), '')
+        return string.toString().replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), '')
     }
     secondsToDhms (seconds) {
         seconds = Number(seconds);

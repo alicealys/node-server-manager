@@ -30,6 +30,25 @@ class MetaService {
             { Value: Value },
             { where: { ClientId, Key } })
     }
+    async deletePersistentMeta(Key, ClientId) {
+        return await this.Models.NSMMeta.destroy({
+            where: {
+                ClientId,
+                Key
+            }
+        })
+    }
+    async reversePersistentMeta(Key, Value) {
+        var meta = await this.Models.NSMMeta.findAll({
+            where: {
+                Value,
+                Key
+            },
+            raw: true
+        })
+
+        return meta.length ? meta[0] : null
+    }
     async getPersistentMeta(Key, ClientId) {
         var meta = await this.Models.NSMMeta.findAll({
             where: {
@@ -116,7 +135,6 @@ class Database {
 
         return Client.dataValues.ClientId
     }
-
     async initializeStats(ClientId) {
         if (!(await this.getPlayerStatsTotal(ClientId))) {
             await Models.NSMPlayerStats.build({
