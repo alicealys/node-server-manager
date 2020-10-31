@@ -38,9 +38,16 @@ class Plugin {
             })
 
             bot.on('message', async (msg) => {
-                if (!config.commandPrefixes.includes(msg.content[0])) return
-        
-                this.onCommand(msg)
+                if (msg.author.bot) return
+
+                var Manager = this.Managers.find(Manager => Manager && Manager.Server.channel && Manager.Server.channel.id == msg.channel.id)
+
+                if (!Manager && config.commandPrefixes.includes(msg.content[0])) {
+                    this.onCommand(msg)
+                    return
+                }
+                
+                Manager && Manager.Server.emit('discord_message', msg)
             })
         })
     }
@@ -56,22 +63,25 @@ class Plugin {
         return string.replace(new RegExp(/((<@(.*?)>)|(@(.*?)))/g), '(@)')
     }
     async serverLogger(Server) {
-        console.log(Server)
         Server.on('message', async (Player, Message) => {
             var discordUser = await this.getDiscordUser(Player.ClientId)
 
-            Server.channel.webhook.send(this.stripMentions(Message), {
+            var msg = this.stripMentions(Message)
+            if (!msg.length) return
+
+            Server.channel.webhook.send(msg, {
                 username: Player.Name,
                 avatarURL: discordUser ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png` : 'https://cdn.discordapp.com/embed/avatars/0.png'
             })
         })
 
-        bot.on('message', async (msg) => {
+        Server.on('discord_message', async (msg) => {
             if (!Server.channel || msg.channel.id != Server.channel.id || msg.author.id == bot.user.id || msg.author.bot) return
 
             var Client = await this.getClientByDiscord(msg.author.id)
 
             if (!Client.Name) {
+                msg.reply(`Your discord is not connected! Log in on ${process.env.webfrontUrl} then go to your settings ${process.env.webfrontUrl}/settings and connect your discord`)
                 return
             }
 
@@ -103,6 +113,8 @@ class Plugin {
         Server.channel = channel
         Server.emit('discord_ready')
 
+        this.serverLogger(Server)
+
     }
     async guildInit(guild) {
         var category = guild.channels.cache.find(channel => config[guild.id] && channel.type == 'category' && channel.id == config[guild.id].categoryId)
@@ -113,19 +125,18 @@ class Plugin {
             })
 
             config[guild.id] = { categoryId: category.id }
+            this.saveConfig()
         }
 
 
         for (var i = 0; i < this.Managers.length; i++) {
             if (this.Managers[i].Server.dvarsLoaded) {
-                await this.initServer(category, guild, this.Managers[i].Server)
-                this.serverLogger(this.Managers[i].Server)
-                return
+                this.initServer(category, guild, this.Managers[i].Server)
+                continue
             }
 
-            this.Managers[i].on('dvars_loaded', async () => {
-                await this.initServer(category, guild, this.Managers[i].Server)
-                this.serverLogger(this.Managers[i].Server)
+            this.Managers[i].Server.on('dvars_loaded', async (Server) => {
+                this.initServer(category, guild, Server)
             })
         }
     }
@@ -134,13 +145,10 @@ class Plugin {
         return discordUser ? JSON.parse(discordUser.Value) : false
     }
     async getClientByDiscord(clientId) {
-        if (this.clientCache[clientId]) return this.clientCache[clientId]
-
         var ClientId = await this.Server.DB.metaService.reversePersistentMeta('discord_id', clientId)
         var discordUser = ClientId ? await this.Server.DB.metaService.getPersistentMeta('discord_user', ClientId) : false
         var Client = ClientId ? await this.Server.DB.getClient(ClientId.ClientId) : false
 
-        this.clientCache[clientId] = Client
         return {...discordUser, ...Client}
     }
     async onCommand(msg) {

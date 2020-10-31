@@ -131,7 +131,7 @@ if (configured) {
     var clientData              = new (require(path.join(__dirname, `../Lib/ClientData.js`)))()
 
     process.env.config = JSON.stringify(require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)))
-    process.env.Localization = require(path.join(__dirname, `../Configuration/Localization-${process.env.locale}.json`))
+    process.env.Localization = require(path.join(__dirname, `../Configuration/Localization-${process.env.LOCALE}.json`))
     
     console.log("============================================================")
     console.log(`                 Node Server Manager v${Info.Version}`)
