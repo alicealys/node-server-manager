@@ -167,17 +167,13 @@ class Plugin {
                 ClientId: 0,
                 inGame: false,
                 Tell: (msg) => {
-                    buffer.push(this.censorIp(msg.toString()))
+                    buffer.push(this.censorIp(Utils.stripString(msg.toString())))
                 }
             }
 
             Client && (Player = {...Player, ...Client})
         
             var end = () => {
-                for (var i = 0; i < buffer.length; i++) {
-                    buffer[i] = Utils.stripString(buffer[i])
-                }
-
                 try {
                     let embed = new Discord.MessageEmbed()
                     .setColor(colors[Utils.getRandomInt(0, colors.length)])
