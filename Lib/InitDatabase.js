@@ -9,6 +9,8 @@ class MetaService {
         this.Models = Models
     }
     async addPersistentMeta(Key, Value, ClientId) {
+        if (!ClientId) return null
+
         var meta = await this.Models.NSMMeta.findAll({
             where: {
                 ClientId,
@@ -31,6 +33,8 @@ class MetaService {
             { where: { ClientId, Key } })
     }
     async deletePersistentMeta(Key, ClientId) {
+        if (!ClientId) return null
+
         return await this.Models.NSMMeta.destroy({
             where: {
                 ClientId,
@@ -50,6 +54,8 @@ class MetaService {
         return meta.length ? meta[0] : null
     }
     async getPersistentMeta(Key, ClientId) {
+        if (!ClientId) return null
+        
         var meta = await this.Models.NSMMeta.findAll({
             where: {
                 ClientId,
