@@ -224,6 +224,8 @@ class Server extends EventEmitter {
             if (this.Clients[c.num]) this.Clients[c.num].removeAllListeners()
             this.Clients[c.num] = new ePlayer(c.guid, c.name, c.num, c.address, this)
             await this.Clients[c.num].build()
+
+            if (!this.Clients[c.num]) return
             this.emit('connect', this.Clients[c.num])
             this.emit('any_event', {type: 'join', Origin: this.Clients[c.num]})
         })
