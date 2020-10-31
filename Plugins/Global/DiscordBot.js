@@ -128,7 +128,6 @@ class Plugin {
             this.saveConfig()
         }
 
-
         for (var i = 0; i < this.Managers.length; i++) {
             if (this.Managers[i].Server.dvarsLoaded) {
                 this.initServer(category, guild, this.Managers[i].Server)
@@ -164,7 +163,7 @@ class Plugin {
                 ClientId: 0,
                 inGame: false,
                 Tell: (msg) => {
-                    buffer.push(msg)
+                    buffer.push(msg.toString().replace(/\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}\b/g), '**[redacted]**')
                 }
             }
 
@@ -178,7 +177,7 @@ class Plugin {
                 try {
                     let embed = new Discord.MessageEmbed()
                     .setColor(colors[Utils.getRandomInt(0, colors.length)])
-                    .addField('\u200B', `${buffer.join('\n')}`, true)
+                    .addField('\u200B', `${buffer.join('\n').substr(0, 1000)}`, true)
     
                     msg.channel.send(embed)
                 }
