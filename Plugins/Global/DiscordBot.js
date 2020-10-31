@@ -8,6 +8,7 @@ const token         = config.discordBotToken
 const Permissions   = require(path.join(__dirname, `../../Configuration/NSMConfiguration.json`)).Permissions
 const Localization  = require(path.join(__dirname, `../../Configuration/Localization-${process.env.LOCALE}.json`)).lookup
 const fs            = require('fs')
+const wait          = require('delay')
 
 const colors = ['#FF3131', '#86C000', '#FFAD22', '#0082BA', '#25BDF1', '#9750DD']
 var guilds = []
@@ -15,6 +16,7 @@ var guilds = []
 let customCommands = {
     
 }
+var modifiedConfig = false
 
 class Plugin {
     constructor(Managers) {
@@ -54,6 +56,7 @@ class Plugin {
         return string.replace(new RegExp(/((<@(.*?)>)|(@(.*?)))/g), '(@)')
     }
     async serverLogger(Server) {
+        console.log(Server)
         Server.on('message', async (Player, Message) => {
             var discordUser = await this.getDiscordUser(Player.ClientId)
 
@@ -64,7 +67,7 @@ class Plugin {
         })
 
         bot.on('message', async (msg) => {
-            if (msg.channel.id != Server.channel.id || msg.author.id == bot.user.id || msg.author.bot) return
+            if (!Server.channel || msg.channel.id != Server.channel.id || msg.author.id == bot.user.id || msg.author.bot) return
 
             var Client = await this.getClientByDiscord(msg.author.id)
 
@@ -74,6 +77,32 @@ class Plugin {
 
             Server.Broadcast(Utils.formatString(Localization['SOCKET_MSG_FORMAT'], {name: Client.Name, message: msg.content}))
         })
+    }
+    async initServer(category, guild, Server) {
+        var channel = guild.channels.cache.find(channel => config.Servers[Server.Id][guild.id] && channel.id == config.Servers[Server.Id][guild.id].channelId)
+
+        if (!channel) {
+            await wait(500)
+            var channel = await guild.channels.create(Utils.stripString(Server.Hostname))
+            config.Servers[Server.Id][guild.id] = { ...config.Servers[Server.Id][guild.id], channelId: channel.id }
+            this.saveConfig()
+        }
+
+        channel.setParent(category.id)
+
+        var webhook = await channel.fetchWebhooks()
+
+        webhook = webhook.first()
+        
+        if (!webhook) {
+            var webhook = await channel.createWebhook('NSM Bot')
+        }
+
+        channel.webhook = webhook
+
+        Server.channel = channel
+        Server.emit('discord_ready')
+
     }
     async guildInit(guild) {
         var category = guild.channels.cache.find(channel => config[guild.id] && channel.type == 'category' && channel.id == config[guild.id].categoryId)
@@ -86,44 +115,19 @@ class Plugin {
             config[guild.id] = { categoryId: category.id }
         }
 
-        var modifiedConfig = false
 
         for (var i = 0; i < this.Managers.length; i++) {
-            var channel = guild.channels.cache.find(channel => config.Servers[this.Managers[i].Server.Id][guild.id] && channel.id == config.Servers[this.Managers[i].Server.Id][guild.id].channelId)
-
-            if (!channel) {
-                modifiedConfig = true
-                var channel = await guild.channels.create(Utils.stripString(this.Managers[i].Server.Hostname))
-                config.Servers[this.Managers[i].Server.Id][guild.id] = { ...config.Servers[this.Managers[i].Server.Id][guild.id], channelId: channel.id }
-            }
-
-            channel.setParent(category.id)
-
-            var webhook = await channel.fetchWebhooks()
-
-            webhook = webhook.first()
-            
-            if (!webhook) {
-                var webhook = await channel.createWebhook('NSM Bot')
-            }
-
-            channel.webhook = webhook
-
-            this.Managers[i].Server.channel = channel
-            this.Managers[i].Server.emit('discord_ready')
-        }
-
-        this.Managers.forEach(Manager => {
-            if (Manager.Server.dvarsLoaded) {
-                this.serverLogger(Manager.Server)
+            if (this.Managers[i].Server.dvarsLoaded) {
+                await this.initServer(category, guild, this.Managers[i].Server)
+                this.serverLogger(this.Managers[i].Server)
                 return
             }
 
-            Manager.Server.on('dvars_loaded', this.serverLogger.bind(this))
-        })
-        
-        modifiedConfig && this.saveConfig()
-
+            this.Managers[i].on('dvars_loaded', async () => {
+                await this.initServer(category, guild, this.Managers[i].Server)
+                this.serverLogger(this.Managers[i].Server)
+            })
+        }
     }
     async getDiscordUser(ClientId) {
         var discordUser = await this.Server.DB.metaService.getPersistentMeta('discord_user', ClientId)
