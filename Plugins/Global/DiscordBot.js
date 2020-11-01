@@ -64,24 +64,26 @@ class Plugin {
     async serverLogger(category, guild, Server) {
         Server.on('message', async (Player, Message) => {
             var discordUser = await this.getDiscordUser(Player.ClientId)
+            var imageIndex = Math.round(((Player.Name[0].charCodeAt(0) - 97) / 25) * 4)
 
             var msg = this.stripMentions(Message)
             if (!msg.length) return
 
             Server.channel.webhook.send(msg, {
                 username: Player.Name,
-                avatarURL: discordUser ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png` : 'https://cdn.discordapp.com/embed/avatars/0.png'
+                avatarURL: discordUser ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png` : `https://cdn.discordapp.com/embed/avatars/${imageIndex}.png`
             })
         })
         
         Server.on('disconnect', async (Player) => {
             var discordUser = await this.getDiscordUser(Player.ClientId)
+            var imageIndex = Math.round(((Player.Name[0].charCodeAt(0) - 97) / 25) * 4)
 
             let embed = new Discord.MessageEmbed()
             .setURL(`${process.env.webfrontUrl}/id/${Player.ClientId}`)
             .setColor(colors[Utils.getRandomInt(0, colors.length)])
             .setTimestamp()
-            .setAuthor(`${Player.Name} disconnected`, discordUser ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png` : 'https://cdn.discordapp.com/embed/avatars/0.png')
+            .setAuthor(`${Player.Name} disconnected`, discordUser ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png` : `https://cdn.discordapp.com/embed/avatars/${imageIndex}.png`)
 
             Server.channel.send(embed)
         })
@@ -126,12 +128,13 @@ class Plugin {
 
         Server.on('connect', async (Player) => {
             var discordUser = await this.getDiscordUser(Player.ClientId)
+            var imageIndex = Math.round(((Player.Name[0].charCodeAt(0) - 97) / 25) * 4)
 
             let embed = new Discord.MessageEmbed()
             .setURL(`${process.env.webfrontUrl}/id/${Player.ClientId}`)
             .setColor(colors[Utils.getRandomInt(0, colors.length)])
             .setTimestamp()
-            .setAuthor(`${Player.Name} connected`, discordUser ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png` : 'https://cdn.discordapp.com/embed/avatars/0.png')
+            .setAuthor(`${Player.Name} connected`, discordUser ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png` : `https://cdn.discordapp.com/embed/avatars/${imageIndex}.png`)
 
             Server.channel.send(embed)
         })

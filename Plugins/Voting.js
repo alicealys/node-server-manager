@@ -192,7 +192,7 @@ class Plugin {
         this.Manager.commands['votemap'] = {
             ArgumentLength: 1,
             Alias: 'vm',
-            gameTypeExclusions: ['zclassic', 'zstandard'],
+            gameTypeExclusions: ['zclassic', 'zstandard', 'infect'],
             Permission: Permissions.Commands.COMMAND_USER_CMDS,
             inGame: true,
             callback: async (Player, args) => {
