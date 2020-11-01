@@ -27,6 +27,17 @@ class Plugin {
         if (!token) return
         this.discordBot()
     }
+    async updateActivity() {
+        bot.user.setStatus('online')
+        bot.user.setActivity(Utils.formatString(Localization['DISCORD_BOT_ACTIVITY'], {
+                totalSlots: this.Managers.reduce((a, {Server}) => a + Server.Clients.length, 0),
+                onlineClients: this.Managers.reduce((a, {Server}) => a + Server.getClients().length, 0),
+                totalServers: this.Managers.filter(m => m.Server.Rcon.isRunning).length
+            }, '%')[0], { 
+                type: 'WATCHING',
+                url: process.env.webfrontUrl
+            })
+    }
     discordBot() {
         bot.login(token)
 
@@ -50,6 +61,10 @@ class Plugin {
 
                 Manager && Manager.Server.emit('discord_message', msg)
             })
+
+            setInterval(() => {
+                this.updateActivity()
+            }, 5000)
         })
     }
     async saveConfig() {
@@ -64,6 +79,8 @@ class Plugin {
         return string.replace(new RegExp(/((<@(.*?)>)|(@(.*?)))/g), '(@)')
     }
     async serverLogger(category, guild, Server) {
+        this.updateActivity()
+
         Server.on('message', async (Player, Message) => {
             var discordUser = await this.getDiscordUser(Player.ClientId)
 
@@ -86,6 +103,8 @@ class Plugin {
             .setAuthor(`${Player.Name} disconnected`, discordUser ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png` : `https://cdn.discordapp.com/embed/avatars/0.png`)
 
             Server.channel.send(embed)
+
+            this.updateActivity()
         })
 
         Server.on('report', async (Origin, Target, Reason) => {
@@ -136,6 +155,8 @@ class Plugin {
             .setAuthor(`${Player.Name} connected`, discordUser ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png` : `https://cdn.discordapp.com/embed/avatars/0.png`)
 
             Server.channel.send(embed)
+
+            this.updateActivity()
         })
 
         Server.on('map_loaded', () => {
@@ -148,6 +169,8 @@ class Plugin {
             .setTimestamp()
 
             Server.channel.send(embed)
+
+            this.updateActivity()
         })
 
         Server.on('discord_message', async (msg) => {

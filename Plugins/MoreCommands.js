@@ -295,7 +295,7 @@ class Plugin {
 
         (() => {
             let command = new Command()
-            .setName('summary')
+            .setName('status')
             .addCallback(async (Player, params, args, options, funcs) => {
                 funcs.Tell(Utils.formatString(Localization['COMMAND_SUMMARY_FORMAT'], {
                     totalClients: await this.Server.DB.getAllClients(),

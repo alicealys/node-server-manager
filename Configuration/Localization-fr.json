@@ -201,7 +201,8 @@
         "LOCKER_PURCHASE_SUCCESS": "Successfully bought extra locker for ^2$%COST%",
         "LOCKER_SELECT_SLOT": "Selected slot [^5%SLOT%^7] => Weapon: ^3%WEAPONNAME%,^7 ^3%CLIP%/%STOCK%",
         "LOCKER_SELECT_SLOT_EMPTY": "Selected slot [^5%SLOT%^7]",
-        "DISCORD_ACC_NOT_CONNECTED": "Your discord is not connected! Log in at %URL% then go to your settings %URL%/settings and connect your discord"
+        "DISCORD_ACC_NOT_CONNECTED": "Your discord is not connected! Log in at %URL% then go to your settings %URL%/settings and connect your discord",
+        "DISCORD_BOT_ACTIVITY": "%ONLINECLIENTS%/%TOTALSLOTS% players across %TOTALSERVERS% servers"
     },
     "Games": {
       "T6": {
