@@ -34,11 +34,9 @@ class EventLogWatcher extends EventParser {
         tail.on('line', this.onLine.bind(this))
     }
     async onLine(line) {
-        line = line.replace(/[^\x20-\x7E]+/g, '')
-        
         this.Server.emit('line', line)
         this.Server.emit('stripped_line', line.trim().replace(new RegExp(/([0-9]+:[0-9]+)\s+/g), ''))
-        var event = this.parseEvent(line)
+        var event = this.parseEvent(line.trim())
         if (!event) return
 
         this.EventDispatcher.dispatchCallback(event)

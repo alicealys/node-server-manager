@@ -172,6 +172,8 @@ class Plugin {
                 Player.Data.lastReport = new Date()
                 Player.Tell(Localization['COMMAND_REPORT_SUCCESS'])
 
+                this.Server.emit('report', Player, Client, params.reason)
+
                 this.Server.tellStaffGlobal(Utils.formatString(Localization['COMMAND_REPORT_TELL'], {Origin: Player.Name, Hostname: Player.Server.HostnameRaw,Target: Client.Name, Reason: params.reason}, '%')[0])
             })
             this.Manager.Commands.add(command)

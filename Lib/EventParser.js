@@ -6,21 +6,34 @@ class EventParser {
         eventString = eventString.trim().replace(/([0-9]+:[0-9]+)\s+/g, '$1;')
 
         var eventRegex = {
-          say: /^([0-9]+:[0-9]+);(say|sayteam);(-?[A-Fa-f0-9_]{1,32}|bot[0-9]+|0);([0-9]+);([^;]*);(.*)$/g,
-          join: /^([0-9]+:[0-9]+);(J);(-?[A-Fa-f0-9_]{1,32}|bot[0-9]+|0);([0-9]+);(.*)$/g,
-          quit: /^([0-9]+:[0-9]+);(Q);(-?[A-Fa-f0-9_]{1,32}|bot[0-9]+|0);([0-9]+);(.*)$/g,
-          damage: /^([0-9]+:[0-9]+);(D);(-?[A-Fa-f0-9_]{1,32}|bot[0-9]+|0);(-?[0-9]+);(axis|allies|world|none)?;([^;]{1,24});(-?[A-Fa-f0-9_]{1,32}|bot[0-9]+|0)?;(-?[0-9]+);(axis|allies|world|none)?;([^;]{1,24})?;((?:[0-9]+|[a-z]+|_|\+)+);([0-9]+);((?:[A-Z]|_)+);((?:[a-z]|_)+)$/g,
-          kill: /^([0-9]+:[0-9]+);(K);(-?[A-Fa-f0-9_]{1,32}|bot[0-9]+|0);(-?[0-9]+);(axis|allies|world|none)?;([^;]{1,24});(-?[A-Fa-f0-9_]{1,32}|bot[0-9]+|0)?;(-?[0-9]+);(axis|allies|world|none)?;([^;]{1,24})?;((?:[0-9]+|[a-z]+|_|\+)+);([0-9]+);((?:[A-Z]|_)+);((?:[a-z]|_)+)$/g,
-          init: /^([0-9]+:[0-9]+);(InitGame|InitGame(.+))$/g
+            say: /^([0-9]+:[0-9]+);(say|sayteam);(-?[A-Fa-f0-9_]{1,32}|bot[0-9]+|0);([0-9]+);([^;]*);(.*)$/g,
+            join: /^([0-9]+:[0-9]+);(J);(-?[A-Fa-f0-9_]{1,32}|bot[0-9]+|0);([0-9]+);(.*)$/g,
+            quit: /^([0-9]+:[0-9]+);(Q);(-?[A-Fa-f0-9_]{1,32}|bot[0-9]+|0);([0-9]+);(.*)$/g,
+            damage: /^([0-9]+:[0-9]+);(D);(-?[A-Fa-f0-9_]{1,32}|bot[0-9]+|0);(-?[0-9]+);(axis|allies|world|none)?;([^;]{1,24});(-?[A-Fa-f0-9_]{1,32}|bot[0-9]+|0)?;(-?[0-9]+);(axis|allies|world|none)?;([^;]{1,24})?;((?:[0-9]+|[a-z]+|_|\+)+);([0-9]+);((?:[A-Z]|_)+);((?:[a-z]|_)+)$/g,
+            kill: /^([0-9]+:[0-9]+);(K);(-?[A-Fa-f0-9_]{1,32}|bot[0-9]+|0);(-?[0-9]+);(axis|allies|world|none)?;([^;]{1,24});(-?[A-Fa-f0-9_]{1,32}|bot[0-9]+|0)?;(-?[0-9]+);(axis|allies|world|none)?;([^;]{1,24})?;((?:[0-9]+|[a-z]+|_|\+)+);([0-9]+);((?:[A-Z]|_)+);((?:[a-z]|_)+)$/g,
+            init: /^( +|)([0-9]+:[0-9]+);(InitGame|InitGame(.+))$/g
+        }
+
+        if (eventString.includes('InitGame')) {
+            var lines = eventString.split('\n')
+            for (var i = 0; i < lines.length; i++) {
+                if (lines[i].trim().match(eventRegex.init)) {
+                    var eventVars = lines[i].trim().split(';')
+                    eventVars[0] = parseInt(eventVars[0].split(':')[0]) * 60 + parseInt(eventVars[0].split(':')[1])
+                    eventData = { type: 'init', vars: eventVars }
+
+                    return eventData
+                }
+            }
         }
 
         var eventData = { type: null, data: null }
         Object.entries(eventRegex).forEach((r) => {
-          if (eventString.match(r[1])) {
-            var eventVars = eventString.split(';')
-            eventVars[0] = parseInt(eventVars[0].split(':')[0]) * 60 + parseInt(eventVars[0].split(':')[1]),
-            eventData = { type: r[0], vars: eventVars }
-          }
+            if (eventString.match(r[1])) {
+                var eventVars = eventString.split(';')
+                eventVars[0] = parseInt(eventVars[0].split(':')[0]) * 60 + parseInt(eventVars[0].split(':')[1])
+                eventData = { type: r[0], vars: eventVars }
+            }
         })
 
         return eventData
@@ -36,11 +49,12 @@ class EventParser {
                     TimeOffset: eventData.vars[0],
                 }
             }
+            break
             case 'say':
                 parsedEvent.data = {
                     TimeOffset: eventData.vars[0],
                     Origin: this.Server.Clients[eventData.vars[3]],
-                    Message: eventData.vars[5]
+                    Message: eventData.vars[5].replace(/[^\x20-\x7E]+/g, '')
                 }
             break
             case 'quit':

@@ -16,7 +16,6 @@ var guilds = []
 let customCommands = {
     
 }
-var modifiedConfig = false
 
 class Plugin {
     constructor(Managers) {
@@ -62,7 +61,7 @@ class Plugin {
     stripMentions(string) {
         return string.replace(new RegExp(/((<@(.*?)>)|(@(.*?)))/g), '(@)')
     }
-    async serverLogger(Server) {
+    async serverLogger(category, guild, Server) {
         Server.on('message', async (Player, Message) => {
             var discordUser = await this.getDiscordUser(Player.ClientId)
 
@@ -74,18 +73,100 @@ class Plugin {
                 avatarURL: discordUser ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png` : 'https://cdn.discordapp.com/embed/avatars/0.png'
             })
         })
+        
+        Server.on('disconnect', async (Player) => {
+            var discordUser = await this.getDiscordUser(Player.ClientId)
+
+            let embed = new Discord.MessageEmbed()
+            .setURL(`${process.env.webfrontUrl}/id/${Player.ClientId}`)
+            .setColor(colors[Utils.getRandomInt(0, colors.length)])
+            .setTimestamp()
+            .setAuthor(`${Player.Name} disconnected`, discordUser ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png` : 'https://cdn.discordapp.com/embed/avatars/0.png')
+
+            Server.channel.send(embed)
+        })
+
+        Server.on('report', async (Origin, Target, Reason) => {
+            var eventChannel = guild.channels.cache.find(channel => config[guild.id]['eventChannelId'] && channel.type == 'text' && channel.id == config[guild.id]['eventChannelId'])
+
+            !config[guild.id]['modRoles'] && (config[guild.id]['modRoles'] = [], this.saveConfig())
+
+            if (!eventChannel) {
+                var eventChannel = await guild.channels.create('Events')
+                eventChannel.setParent(category.id)
+                eventChannel.setPosition(0, 0)
+                eventChannel.updateOverwrite(guild.roles.everyone, { SEND_MESSAGES: false })
+
+                eventChannel.overwritePermissions([
+                    {
+                        id: guild.id,
+                        deny: ['SEND_MESSAGES'],
+                    }
+                ])
+
+                config[guild.id]['eventChannelId'] = eventChannel.id
+                this.saveConfig()
+            }
+
+            var modRoles = config[guild.id]['modRoles'].map(role => `<@&${role}>`)
+
+            let embed = new Discord.MessageEmbed()
+            .setTitle('Report')
+            .addField('Target', Target.Name, true)
+            .addField('Origin', Origin.Name, true)
+            .addField('Reason', Reason, true)
+            .addField('Server', Server.Hostname, true)
+            .setThumbnail(`${process.env.webfrontUrl}/api/map?ServerId=${Server.Id}`)
+            .setTimestamp()
+            .setColor(colors[Utils.getRandomInt(0, colors.length)])
+
+            modRoles.join(' ').length && await eventChannel.send(modRoles.join(' '))
+            eventChannel.send(embed)
+        })
+
+        Server.on('connect', async (Player) => {
+            var discordUser = await this.getDiscordUser(Player.ClientId)
+
+            let embed = new Discord.MessageEmbed()
+            .setURL(`${process.env.webfrontUrl}/id/${Player.ClientId}`)
+            .setColor(colors[Utils.getRandomInt(0, colors.length)])
+            .setTimestamp()
+            .setAuthor(`${Player.Name} connected`, discordUser ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png` : 'https://cdn.discordapp.com/embed/avatars/0.png')
+
+            Server.channel.send(embed)
+        })
+
+        Server.on('map_loaded', () => {
+            let embed = new Discord.MessageEmbed()
+            .setTitle('Map rotated')
+            .addField('Mapname', `${Server.getMapname().Alias}`, true)
+            .addField('Gametype', `${Server.getGametype().Alias}`, true)
+            .setColor(colors[Utils.getRandomInt(0, colors.length)])
+            .setThumbnail(`${process.env.webfrontUrl}/api/map?ServerId=${Server.Id}`)
+            .setTimestamp()
+
+            Server.channel.send(embed)
+        })
 
         Server.on('discord_message', async (msg) => {
-            if (!Server.channel || msg.channel.id != Server.channel.id || msg.author.id == bot.user.id || msg.author.bot) return
+            if (!Server.channel 
+                || msg.channel.id != Server.channel.id 
+                || msg.author.id == bot.user.id 
+                || msg.author.bot) return
 
             var Client = await this.getClientByDiscord(msg.author.id)
 
             if (!Client.Name) {
-                msg.reply(`Your discord is not connected! Log in on ${process.env.webfrontUrl} then go to your settings ${process.env.webfrontUrl}/settings and connect your discord`)
+                msg.reply(Utils.formatString(Localization['DISCORD_ACC_NOT_CONNECTED'], {
+                    url: process.env.webfrontUrl
+                }, '%'))
                 return
             }
 
-            Server.Broadcast(Utils.formatString(Localization['SOCKET_MSG_FORMAT'], {name: Client.Name, message: msg.content}))
+            Server.Broadcast(Utils.formatString(Localization['SOCKET_MSG_FORMAT'], {
+                name: Client.Name, 
+                message: msg.content
+            }))
         })
     }
     async initServer(category, guild, Server) {
@@ -113,7 +194,7 @@ class Plugin {
         Server.channel = channel
         Server.emit('discord_ready')
 
-        this.serverLogger(Server)
+        this.serverLogger(category, guild, Server)
 
     }
     async guildInit(guild) {
@@ -195,7 +276,7 @@ class Plugin {
             switch (true) {
                 case (!this.Manager.commands[command]):
                 case (this.Manager.commands[command].gameTypeExclusions && this.Manager.commands[command].gameTypeExclusions.includes(this.Server.Gametype)):
-                    !executedMiddleware && Player.Tell(Localization.COMMAND_NOT_FOUND)
+                    !executedMiddleware && Player.Tell(Localization['COMMAND_NOT_FOUND'])
                     end()
                 return
                 case (this.Manager.commands[command].inGame || this.Manager.commands[command].inGame == undefined):
@@ -203,12 +284,15 @@ class Plugin {
                     end()
                 return
                 case (Player.PermissionLevel < Permissions.Levels[this.Manager.commands[command].Permission]):
-                    Player.Tell(Localization.COMMAND_FORBIDDEN)
+                    Player.Tell(Localization['COMMAND_FORBIDDEN'])
                     end()
                 return
                 case (args.length - 1 < this.Manager.commands[command].ArgumentLength):
-                    Player.Tell(Localization.COMMAND_ARGUMENT_ERROR)
-                    Player.Tell(`Usage: ^6${config.commandPrefixes[0]}^7${Localization[`USAGE_${command.toLocaleUpperCase()}`]}`)
+                    Player.Tell(Localization['COMMAND_ARGUMENT_ERROR'])
+                    Player.Tell(Utils.formatString(Localization['COMMAND_COMMAND_USAGE'], {
+                        prefix: config.commandPrefixes[0],
+                        usage: Localization[`USAGE_${command.toLocaleUpperCase()}`]
+                    }))
                     end()
                 return
             }

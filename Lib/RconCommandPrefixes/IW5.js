@@ -22,7 +22,8 @@ module.exports = {
                 qport: match[9],
                 rate: match[10]
             }
-        }
+        },
+        retries: 2
     },
     getInfo: '\xff\xff\xff\xffgetinfo',
     getStatus: '\xff\xff\xff\xffgetstatus',

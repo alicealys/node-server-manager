@@ -706,7 +706,7 @@ class Plugin {
         catch (e) {
             this.Manager.logger.writeLn(e)
             
-            if (process.env.NODE_ENV.toLocaleLowerCase() == 'dev')
+            if (process.env.NODE_ENV && process.env.NODE_ENV.toLocaleLowerCase() == 'dev')
                 console.log(e)
 
             Player.Tell(Localization['COMMAND_ERROR'])

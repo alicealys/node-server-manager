@@ -34,13 +34,15 @@ class Server extends EventEmitter {
         this.Manager = Manager
         this.previousUptime = 0
         this.previousStatus = null
-        this.heartbeatRetry = 1
+        this.heartbeatRetry = this.Rcon.commandPrefixes.Rcon.retries ? this.Rcon.commandPrefixes.Rcon.retries : 1
         this.sessionStore = sessionStore
+        this.lastInit = new Date()
         this.on('init', this.onInitGame.bind(this))
         this.config = config
         this.reservedSlots = config.reservedSlots
         this.chai = new ChaiscriptApi(this)
         Manager.Commands = new Commands()
+        this.setMaxListeners(50)
     }
     getMap(name) {
       return this.Maps.find(Map => Map.Name.toLocaleLowerCase().startsWith(name) || Map.Alias.toLocaleLowerCase().startsWith(name) )
@@ -56,6 +58,12 @@ class Server extends EventEmitter {
         return map ? map : { Name: this.Mapname, Alias: this.Mapname }
     }
     onInitGame() {
+        if (new Date() - this.lastInit < 500) {
+            return
+        }
+
+        this.lastInit = new Date()
+
         var loadMap = async () => {
             this.removeListener('line', loadMap)
             this.Mapname = await this.Rcon.getDvar('mapname')
@@ -74,7 +82,7 @@ class Server extends EventEmitter {
         this.Clients.forEach(Client => {
             if (!Client) return
 
-            if (Client.Name.toLocaleLowerCase() == name || Client.ClientId == name) {
+            if (Client.Name.toLocaleLowerCase().startsWith(name.toLocaleLowerCase()) || Client.ClientId == name) {
                 found = Client
             }
         })

@@ -4,6 +4,7 @@
         "COMMAND_ARGUMENT_ERROR" : "Not enough arguments supplied",
         "COMMAND_CLIENT_NOT_FOUND" : "Player not found",
         "COMMAND_CLIENT_NOT_INGAME" : "Player is not in game",
+        "COMMAND_COMMAND_USAGE": "Usage: %PREFIX%^7%USAGE%",
         "ROLE_HIERARCHY_ERROR" : "You can't set that role",
         "CLIENT_HIERARCHY_ERROR": "You cannot execute this on that client",
         "COMMAND_EXECUTE_SUCCESS" : "Command executed successfully",
@@ -205,7 +206,9 @@
         "LOCKER_UNK_SLOT": "^1[???] $%COST%",
         "LOCKER_PURCHASE_SUCCESS": "Successfully bought extra locker for ^2$%COST%",
         "LOCKER_SELECT_SLOT": "Selected slot [^5%SLOT%^7] => Weapon: ^3%WEAPONNAME%,^7 ^3%CLIP%/%STOCK%",
-        "LOCKER_SELECT_SLOT_EMPTY": "Selected slot [^5%SLOT%^7]"
+        "LOCKER_SELECT_SLOT_EMPTY": "Selected slot [^5%SLOT%^7]",
+        "DISCORD_ACC_NOT_CONNECTED": "Your discord is not connected! Log in at %URL% then go to your settings %URL%/settings and connect your discord",
+        "DISCORD_CHANNEL_TOPIC": "**%HOSTNAME%** [%IPADDRESS%] - %MAPNAME% %CLIENTCOUNT% / %MAXCLIENTS%"
     },
     "Games": {
       "T6": {

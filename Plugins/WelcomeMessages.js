@@ -24,7 +24,9 @@ class Plugin {
         })
 
         this.Server.on('connect', async (Player) => {
-            if (!Player.IPAddress || Player.IPAddress.match(/(unknown|loopback|bot)/g)) return
+            if (Player.IPAddress.match(/(unknown|loopback|bot)/g)) return
+
+            Player.IPAddress = Player.IPAddress ? Player.IPAddress : (await this.Server.DB.getClient(Player.ClientId)).IPAddress
 
             if (Player.PermissionLevel >= Permissions.Levels['ROLE_MODERATOR']) {
                 Player.Tell(Utils.formatString(Localization['AUTO_RECENT_REPORTS'], { count: (await this.Server.DB.getActiveReports()).length }, '%')[0])

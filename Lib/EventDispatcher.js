@@ -22,9 +22,7 @@ class EventDispatcher {
 
             switch (event.type) {
                 case 'init':
-                    if (this.Server.previousUptime < this.Server.uptime) {
-                        this.Server.emit('init')
-                    }
+                    this.Server.emit('init')
                 break
                 case 'say':
                     if (!event.data.Origin.Clientslot || !this.Server.Clients[event.data.Origin.Clientslot]) return
