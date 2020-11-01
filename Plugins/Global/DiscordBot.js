@@ -66,7 +66,7 @@ class Plugin {
     async serverLogger(category, guild, Server) {
         Server.on('message', async (Player, Message) => {
             var discordUser = await this.getDiscordUser(Player.ClientId)
-            var imageIndex = Math.max(Math.min(Player.Name[0].charCodeAt(0) % 4, 4), 0)
+            var imageIndex = Math.round(((Player.Name[0].charCodeAt(0) - 97) / 25) * 4)
 
             var msg = this.stripMentions(Message)
             if (!msg.length) return
@@ -79,7 +79,7 @@ class Plugin {
         
         Server.on('disconnect', async (Player) => {
             var discordUser = await this.getDiscordUser(Player.ClientId)
-            var imageIndex = Math.max(Math.min(Player.Name[0].charCodeAt(0) % 4, 4), 0)
+            var imageIndex = Math.round(((Player.Name[0].charCodeAt(0) - 97) / 25) * 4)
 
             let embed = new Discord.MessageEmbed()
             .setURL(`${process.env.webfrontUrl}/id/${Player.ClientId}`)
@@ -130,7 +130,7 @@ class Plugin {
 
         Server.on('connect', async (Player) => {
             var discordUser = await this.getDiscordUser(Player.ClientId)
-            var imageIndex = Math.max(Math.min(Player.Name[0].charCodeAt(0) % 4, 4), 0)
+            var imageIndex = Math.round(((Player.Name[0].charCodeAt(0) - 97) / 25) * 4)
 
             let embed = new Discord.MessageEmbed()
             .setURL(`${process.env.webfrontUrl}/id/${Player.ClientId}`)
