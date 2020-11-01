@@ -66,16 +66,6 @@ class Plugin {
 
         (() => {
             let command = new Command({
-                name: 'reload'
-            })
-            .setPermission('ROLE_OWNER')
-            .addCallback(async (Player) => {
-                Player.Server.loadClientsAsync()
-            })
-        })(this);
-
-        (() => {
-            let command = new Command({
                 isMiddleware: true
             })
             .addCallback(async (Player, params, args, options, funcs, next) => {
@@ -133,7 +123,7 @@ class Plugin {
 
                     Player.Tell(Utils.formatString(Localization['COMMAND_REPORTS_TELL'], {Origin: OriginName, Target: TargetName, Reason: Reports[page - 1][i].Reason}, '%')[0])
 
-                    await wait(300)
+                    Player.inGame && await wait(300)
                 }
 
             })
@@ -199,7 +189,7 @@ class Plugin {
                             ClientId: staff[i].ClientId, 
                             Hostname: staff[i].Server.HostnameRaw
                     }, '%')[0])
-                    await wait(500)
+                    Player.inGame && await wait(500)
                 }
             })
             this.Manager.Commands.add(command)

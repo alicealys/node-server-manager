@@ -354,7 +354,8 @@ class Database {
     }
 
     async getClient(ClientId) {
-    
+        if (!ClientId) return false
+
         if (ClientId == 1) {
             return {
                 Name: 'Node Server Manager',
