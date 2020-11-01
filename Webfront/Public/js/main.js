@@ -782,7 +782,7 @@ async function profilePreview(coords, ClientId) {
     info = JSON.parse(info)
 
     var profile = createElementFromHTML(`
-    <div class='wf-profle-preview wf-profile-header' data-profile='${ClientId}'>
+    <div class='wf-profle-preview wf-profile-header-' data-profile='${ClientId}'>
         <div class='wf-profile-header-name'>
             <div class='profile-header-left'>
                 ${info.Flag ? `<div class='wf-profile-header-online'></div><div class='flag-icon wf-profile-flag flag-icon-${info.Flag}'></div>` : ''}
