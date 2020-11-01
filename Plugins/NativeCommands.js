@@ -670,7 +670,7 @@ class Plugin {
 
             var Client = await this.Server.DB.getClient(Player.ClientId)
 
-            if (Client.Settings.InGameLogin && !Player.Session.Data.Authorized) {
+            if (Client.Settings && Client.Settings.InGameLogin && !Player.Session.Data.Authorized) {
                 Player.Tell(Localization['CLIENT_NOT_AUTHORIZED'])
                 return
             }

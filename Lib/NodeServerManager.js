@@ -9,7 +9,7 @@ const ConfigMaker             = require('./ConfigMaker.js')
 
 var Info = {
     Author: 'fed',
-    Version: '1.0.0'
+    Version: require('child_process').execSync('git rev-parse HEAD').toString().trim().substr(0, 6)
 }
 
 var Managers = []
@@ -133,10 +133,13 @@ if (configured) {
     process.env.config = JSON.stringify(require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)))
     process.env.Localization = require(path.join(__dirname, `../Configuration/Localization-${process.env.LOCALE}.json`))
     
-    console.log("============================================================")
-    console.log(`                 Node Server Manager v${Info.Version}`)
-    console.log(`                         By ${Info.Author}`)
-    console.log("============================================================")
+    var commitId = require('child_process').execSync('git rev-parse HEAD')
+
+    console.log(`+-------------------------------+`)
+    console.log(`| \x1b[32mNode Server Manager\x1b[0m\t\t|`)
+    console.log(`| \x1b[33mv${Info.Version}\x1b[0m\t\t\t|`)
+    console.log(`| By \x1b[34m${Info.Author}\x1b[0m\t\t\t|`)
+    console.log(`+-------------------------------+`)
 
     console.log(`Environment: ${process.env.NODE_ENV == 'dev' ? 'Development' : 'Production'}`)
 
