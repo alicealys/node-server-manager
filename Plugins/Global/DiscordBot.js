@@ -30,6 +30,8 @@ class Plugin {
     discordBot() {
         bot.login(token)
 
+        bot.on('shardError', (e) => {})
+
         bot.on('ready', async () => {
             var guilds = bot.guilds.cache.map(guild => guild)
             guilds.forEach(async (guild) => {
