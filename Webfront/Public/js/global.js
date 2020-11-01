@@ -217,7 +217,7 @@ async function renderServerList() {
         var mapNameDiv = serverCard.querySelector('*[data-mapname]').children[0]
         mapNameDiv.addEventListener('mouseover', () => {
             hoverOut = setTimeout(() => {
-                img = imagePreview(mapNameDiv, `/api/map?ServerId=${status.ServerId}&_=${btoa(mapNameDiv.innerHTML)}`)
+                img = imagePreview(mapNameDiv, `/api/map.jpg?ServerId=${status.ServerId}&_=${btoa(mapNameDiv.innerHTML)}`)
             }, 1)
         })
 
