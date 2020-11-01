@@ -1171,7 +1171,7 @@ class Webfront {
             res.end(JSON.stringify(Messages))
         })
 
-        this.app.get('/api/map', async (req, res, next) => {
+        this.app.get('/api/map.jpg', async (req, res, next) => {
             if (!req.query.ServerId) {
                 res.end()
                 return
