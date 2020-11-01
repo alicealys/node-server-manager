@@ -3566,6 +3566,17 @@ body {
   display: flex;
   align-items: center;
 }
+.wf-profile-header- div {
+  display:inline-flex;
+}
+.wf-profile-header- {
+  -webkit-box-shadow: 0px 0px 9px -1px var(--color-text);
+  -moz-box-shadow: 0px 0px 9px -1px var(--color-text);
+  box-shadow: 0px 0px 9px -1px var(--color-text);
+  border-radius: 5px;
+  background-color: var(--color-3);
+  padding:10px;
+}
 .wf-profile-header {
   -webkit-box-shadow: 0px 0px 9px -1px var(--color-text);
   -moz-box-shadow: 0px 0px 9px -1px var(--color-text);

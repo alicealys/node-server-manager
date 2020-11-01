@@ -116,7 +116,7 @@ class Plugin {
             .addField('Origin', Origin.Name, true)
             .addField('Reason', Reason, true)
             .addField('Server', Server.Hostname, true)
-            .setThumbnail(`${process.env.webfrontUrl}/api/map?ServerId=${Server.Id}`)
+            .setThumbnail(`${process.env.webfrontUrl}/api/map.jpg?ServerId=${Server.Id}`)
             .setTimestamp()
             .setColor(colors[Utils.getRandomInt(0, colors.length)])
 
@@ -142,7 +142,7 @@ class Plugin {
             .addField('Mapname', `${Server.getMapname().Alias}`, true)
             .addField('Gametype', `${Server.getGametype().Alias}`, true)
             .setColor(colors[Utils.getRandomInt(0, colors.length)])
-            .setThumbnail(`${process.env.webfrontUrl}/api/map?ServerId=${Server.Id}`)
+            .setThumbnail(`${process.env.webfrontUrl}/api/map.jpg?ServerId=${Server.Id}`)
             .setTimestamp()
 
             Server.channel.send(embed)

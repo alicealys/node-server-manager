@@ -40,7 +40,7 @@ class Plugin {
                         .replace('%PLAYER%', Player.Name)
                         .replace('%CONNECTIONS%', Utils.ordinalSuffix(connections.length | 1)))
 
-            if (Player.Session.Data.Authorized) {
+            if (Player.Session && Player.Session.Data.Authorized) {
                 Player.Tell('Logged in through previous session')
             }
 
