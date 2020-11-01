@@ -14,7 +14,7 @@ const colors = ['#FF3131', '#86C000', '#FFAD22', '#0082BA', '#25BDF1', '#9750DD'
 var guilds = []
 
 let customCommands = {
-    
+
 }
 
 class Plugin {
@@ -47,7 +47,7 @@ class Plugin {
                     this.onCommand(msg)
                     return
                 }
-                
+
                 Manager && Manager.Server.emit('discord_message', msg)
             })
         })
@@ -75,7 +75,7 @@ class Plugin {
                 avatarURL: discordUser ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png` : `https://cdn.discordapp.com/embed/avatars/0.png`
             })
         })
-        
+
         Server.on('disconnect', async (Player) => {
             var discordUser = await this.getDiscordUser(Player.ClientId)
 
@@ -151,9 +151,9 @@ class Plugin {
         })
 
         Server.on('discord_message', async (msg) => {
-            if (!Server.channel 
-                || msg.channel.id != Server.channel.id 
-                || msg.author.id == bot.user.id 
+            if (!Server.channel
+                || msg.channel.id != Server.channel.id
+                || msg.author.id == bot.user.id
                 || msg.author.bot) return
 
             var Client = await this.getClientByDiscord(msg.author.id)
@@ -166,7 +166,7 @@ class Plugin {
             }
 
             Server.Broadcast(Utils.formatString(Localization['SOCKET_MSG_FORMAT'], {
-                name: Client.Name, 
+                name: Client.Name,
                 message: msg.content
             }))
         })
@@ -186,7 +186,7 @@ class Plugin {
         var webhook = await channel.fetchWebhooks()
 
         webhook = webhook.first()
-        
+
         if (!webhook) {
             var webhook = await channel.createWebhook('NSM Bot')
         }
@@ -243,7 +243,7 @@ class Plugin {
             var Client = ClientId ? await this.Server.DB.getClient(ClientId.ClientId) : false
 
             var args = msg.content.substr(1).split(/\s+/g)
-            
+
             var buffer = []
             var Player = {
                 PermissionLevel: 0,
@@ -255,26 +255,26 @@ class Plugin {
             }
 
             Client && (Player = {...Player, ...Client})
-        
+
             var end = () => {
                 try {
                     let embed = new Discord.MessageEmbed()
                     .setColor(colors[Utils.getRandomInt(0, colors.length)])
                     .addField('\u200B', `${buffer.join('\n').substr(0, 1000)}`, true)
-    
+
                     msg.channel.send(embed)
                 }
                 catch (e) {}
             }
-        
+
             var executedMiddleware = await this.Manager.Commands.executeMiddleware(args[0], Player, args)
             if (await this.Manager.Commands.execute(args[0], Player, args)) {
                 end()
                 return
             }
-        
+
             var command = Utils.getCommand(this.Manager.commands, args[0])
-        
+
             switch (true) {
                 case (!this.Manager.commands[command]):
                 case (this.Manager.commands[command].gameTypeExclusions && this.Manager.commands[command].gameTypeExclusions.includes(this.Server.Gametype)):
@@ -298,7 +298,7 @@ class Plugin {
                     end()
                 return
             }
-        
+
             await this.Manager.commands[command].callback(Player, args, false)
             end()
         }
