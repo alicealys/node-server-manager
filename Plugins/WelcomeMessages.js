@@ -24,7 +24,7 @@ class Plugin {
         })
 
         this.Server.on('connect', async (Player) => {
-            if (Player.IPAddress.match(/(unknown|loopback|bot)/g)) return
+            if (Player.IPAddress && Player.IPAddress.match(/(unknown|loopback|bot)/g)) return
 
             Player.IPAddress = Player.IPAddress ? Player.IPAddress : (await this.Server.DB.getClient(Player.ClientId)).IPAddress
 
