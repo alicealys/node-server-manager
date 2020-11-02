@@ -565,19 +565,26 @@ class Plugin {
         
                     switch (true) {
                         case (!Client):
-                            Player.Tell(Localization.COMMAND_CLIENT_NOT_FOUND)
+                            Player.Tell(Localization['COMMAND_CLIENT_NOT_FOUND'])
                         return
                         case (Client.PermissionLevel >= Player.PermissionLevel):
-                            Player.Tell(Localization.CLIENT_HIERARCHY_ERROR)
+                            Player.Tell(Localization['CLIENT_HIERARCHY_ERROR'])
                         return
                         case (!parts || parts.length < 2 || !timeVars[parts[1]] || !Number.isInteger(parseInt(parts[0]))):
-                            Player.Tell(Localization.COMMAND_PARSE_TIME_ERROR)
+                            Player.Tell(Localization['COMMAND_PARSE_TIME_ERROR'])
                         return
                     }
         
                     var Reason = args.slice(3).join(' ')
                     var Duration = parseInt(parts[0] * timeVars[parts[1]])
+
+                    if (Duration > 86400 * 32) {
+                        Player.Tell(Localization['COMMAND_PARSE_TIME_ERROR'])
+                        return
+                    }
+
                     var Target = this.Server.findClient(Client.ClientId)
+
                     if (Target) {
                         Target.Tempban(Reason, Player, Duration)
                         Player.Tell(`Banned ^5${Client.Name}^7 for ^5${Duration}^7 seconds for ^5${Reason}^7`)

@@ -13,6 +13,8 @@ const wait          = require('delay')
 const colors = ['#FF3131', '#86C000', '#FFAD22', '#0082BA', '#25BDF1', '#9750DD']
 var guilds = []
 
+var databaseCache = {}
+
 let customCommands = {
 
 }
@@ -36,7 +38,7 @@ class Plugin {
             }, '%')[0], { 
                 type: 'WATCHING',
                 url: process.env.webfrontUrl
-            })
+        })
     }
     discordBot() {
         bot.login(token)
@@ -65,6 +67,10 @@ class Plugin {
             setInterval(() => {
                 this.updateActivity()
             }, 5000)
+
+            setInterval(() => {
+                databaseCache = {}
+            }, 60 * 1000 * 5)
         })
     }
     async saveConfig() {
@@ -84,13 +90,60 @@ class Plugin {
         Server.on('message', async (Player, Message) => {
             var discordUser = await this.getDiscordUser(Player.ClientId)
 
-            var msg = this.stripMentions(Message)
+            var msg = Utils.stripString(this.stripMentions(Message))
             if (!msg.length) return
 
             Server.channel.webhook.send(msg, {
                 username: Player.Name,
                 avatarURL: discordUser ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png` : `https://cdn.discordapp.com/embed/avatars/0.png`
             })
+        })
+
+        Server.on('penalty', async (Type, Target, Reason, Origin, Duration = -1) => {
+            let embed = new Discord.MessageEmbed()
+            .setTitle(`:hammer: Penalty`)
+            .setDescription(Utils.formatString(Localization['DISCORD_BOT_PENALTY'], {
+                target: Target.Name,
+                targetUrl: `${process.env.webfrontUrl}/id/${Target.ClientId}`,
+                penaltyName: `**${Localization[Type].toLocaleLowerCase()}**`,
+                origin: Origin.Name,
+                originUrl: `${process.env.webfrontUrl}/id/${Origin.ClientId}`,
+                duration: Duration > 0 ? `(${Utils.time2str(Duration)})` : '',
+                reason: `**${Utils.stripString(this.stripMentions(Reason))}**`
+            }))
+            .addField('Target', `[${Target.Name}](${process.env.webfrontUrl}/id/${Target.ClientId})`, true)
+            .addField('Origin', `[${Origin.Name}](${process.env.webfrontUrl}/id/${Origin.ClientId})`, true)
+            .addField('Reason', Utils.stripString(Reason), true)
+            .setTimestamp()
+            .setColor(colors[Utils.getRandomInt(0, colors.length)])
+
+            Duration > 0 && embed.addField('Duration', Utils.time2str(Duration), true)
+
+            guild.eventChannel.send(embed)
+        })
+
+        Server.on('report', async (Origin, Target, Reason) => {
+            var modRoles = config[guild.id]['modRoles'].map(role => `<@&${role}>`)
+
+            let embed = new Discord.MessageEmbed()
+            .setTitle(':triangular_flag_on_post: Report')
+            .setDescription(Utils.formatString(Localization['DISCORD_BOT_REPORT'], {
+                target: Target.Name,
+                targetUrl: `${process.env.webfrontUrl}/id/${Target.ClientId}`,
+                origin: Origin.Name,
+                originUrl: `${process.env.webfrontUrl}/id/${Origin.ClientId}`,
+                reason: `**${Utils.stripString(this.stripMentions(Reason))}**`
+            }))
+            .addField('Target', `[${Target.Name}](${process.env.webfrontUrl}/id/${Target.ClientId})`, true)
+            .addField('Origin', `[${Origin.Name}](${process.env.webfrontUrl}/id/${Origin.ClientId})`, true)
+            .addField('Reason', Utils.stripString(Reason), true)
+            .addField('Server', Utils.stripString(Server.Hostname), true)
+            .setThumbnail(`${process.env.webfrontUrl}/api/map.jpg?ServerId=${Server.Id}`)
+            .setTimestamp()
+            .setColor(colors[Utils.getRandomInt(0, colors.length)])
+
+            modRoles.join(' ').length && await guild.eventChannel.send(modRoles.join(' '))
+            guild.eventChannel.send(embed)
         })
 
         Server.on('disconnect', async (Player) => {
@@ -101,48 +154,11 @@ class Plugin {
             .setColor(colors[Utils.getRandomInt(0, colors.length)])
             .setTimestamp()
             .setAuthor(`${Player.Name} disconnected`, discordUser ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png` : `https://cdn.discordapp.com/embed/avatars/0.png`)
+            .setFooter(`${Server.getClients().length} / ${Server.Clients.length}`)
 
             Server.channel.send(embed)
 
             this.updateActivity()
-        })
-
-        Server.on('report', async (Origin, Target, Reason) => {
-            var eventChannel = guild.channels.cache.find(channel => config[guild.id]['eventChannelId'] && channel.type == 'text' && channel.id == config[guild.id]['eventChannelId'])
-
-            !config[guild.id]['modRoles'] && (config[guild.id]['modRoles'] = [], this.saveConfig())
-
-            if (!eventChannel) {
-                var eventChannel = await guild.channels.create('Events')
-                eventChannel.setParent(category.id)
-                eventChannel.setPosition(0, 0)
-                eventChannel.updateOverwrite(guild.roles.everyone, { SEND_MESSAGES: false })
-
-                eventChannel.overwritePermissions([
-                    {
-                        id: guild.id,
-                        deny: ['SEND_MESSAGES'],
-                    }
-                ])
-
-                config[guild.id]['eventChannelId'] = eventChannel.id
-                this.saveConfig()
-            }
-
-            var modRoles = config[guild.id]['modRoles'].map(role => `<@&${role}>`)
-
-            let embed = new Discord.MessageEmbed()
-            .setTitle('Report')
-            .addField('Target', Target.Name, true)
-            .addField('Origin', Origin.Name, true)
-            .addField('Reason', Reason, true)
-            .addField('Server', Server.Hostname, true)
-            .setThumbnail(`${process.env.webfrontUrl}/api/map.jpg?ServerId=${Server.Id}`)
-            .setTimestamp()
-            .setColor(colors[Utils.getRandomInt(0, colors.length)])
-
-            modRoles.join(' ').length && await eventChannel.send(modRoles.join(' '))
-            eventChannel.send(embed)
         })
 
         Server.on('connect', async (Player) => {
@@ -153,6 +169,7 @@ class Plugin {
             .setColor(colors[Utils.getRandomInt(0, colors.length)])
             .setTimestamp()
             .setAuthor(`${Player.Name} connected`, discordUser ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png` : `https://cdn.discordapp.com/embed/avatars/0.png`)
+            .setFooter(`${Server.getClients().length} / ${Server.Clients.length}`)
 
             Server.channel.send(embed)
 
@@ -167,6 +184,7 @@ class Plugin {
             .setColor(colors[Utils.getRandomInt(0, colors.length)])
             .setThumbnail(`${process.env.webfrontUrl}/api/map.jpg?ServerId=${Server.Id}`)
             .setTimestamp()
+            .setFooter(`${Server.getClients().length} / ${Server.Clients.length}`)
 
             Server.channel.send(embed)
 
@@ -234,6 +252,29 @@ class Plugin {
             this.saveConfig()
         }
 
+        var eventChannel = guild.channels.cache.find(channel => config[guild.id]['eventChannelId'] && channel.type == 'text' && channel.id == config[guild.id]['eventChannelId'])
+
+        !config[guild.id]['modRoles'] && (config[guild.id]['modRoles'] = [], this.saveConfig())
+
+        if (!eventChannel) {
+            var eventChannel = await guild.channels.create('Events')
+            eventChannel.setParent(category.id)
+            eventChannel.setPosition(0, 0)
+            eventChannel.updateOverwrite(guild.roles.everyone, { SEND_MESSAGES: false })
+
+            eventChannel.overwritePermissions([
+                {
+                    id: guild.id,
+                    deny: ['SEND_MESSAGES'],
+                }
+            ])
+
+            config[guild.id]['eventChannelId'] = eventChannel.id
+            this.saveConfig()
+        }
+
+        guild.eventChannel = eventChannel
+
         for (var i = 0; i < this.Managers.length; i++) {
             if (this.Managers[i].Server.dvarsLoaded) {
                 this.initServer(category, guild, this.Managers[i].Server)
@@ -246,8 +287,12 @@ class Plugin {
         }
     }
     async getDiscordUser(ClientId) {
+        if (databaseCache[ClientId]) return databaseCache[ClientId]
+
         var discordUser = await this.Server.DB.metaService.getPersistentMeta('discord_user', ClientId)
-        return discordUser ? JSON.parse(discordUser.Value) : false
+        databaseCache[ClientId] = discordUser ? JSON.parse(discordUser.Value) : false
+
+        return databaseCache[ClientId]
     }
     async getClientByDiscord(clientId) {
         var ClientId = await this.Server.DB.metaService.reversePersistentMeta('discord_id', clientId)
@@ -325,9 +370,7 @@ class Plugin {
             await this.Manager.commands[command].callback(Player, args, false)
             end()
         }
-        catch (e) {
-            console.log(e)
-        }
+        catch (e) {}
     }
 }
 
