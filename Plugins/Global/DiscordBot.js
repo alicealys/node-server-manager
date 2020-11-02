@@ -143,7 +143,6 @@ class Plugin {
             .addField('Origin', `[${Origin.Name}](${process.env.webfrontUrl}/id/${Origin.ClientId})`, true)
             .addField('Reason', Utils.stripString(Reason), true)
             .addField('Server', Utils.stripString(Server.Hostname), true)
-            .setThumbnail(this.getServerIcon(Server))
             .setTimestamp()
             .setColor(colors[Utils.getRandomInt(0, colors.length)])
 
