@@ -24,7 +24,9 @@ class Plugin {
 
             switch (lockerEvent.event) {
                 case 'locker_set':
-                    if (!lockerEvent.player) return
+                    if (!lockerEvent.player 
+                        || Player.getSelectedLocker == undefined 
+                        || Player.updateLocker == undefined) return
 
                     var Player = this.Server.Clients.find(c => c && c.Guid == lockerEvent.player.Guid)
                     

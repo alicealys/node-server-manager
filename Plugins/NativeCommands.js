@@ -703,7 +703,7 @@ class Plugin {
                 case (this.Manager.commands[command].gameTypeExclusions && this.Manager.commands[command].gameTypeExclusions.includes(this.Server.Gametype)):
                     !executedMiddleware && Player.Tell(Localization.COMMAND_NOT_FOUND)
                 return
-                case (Client.Settings.InGameLogin && !Player.Session.Data.Authorized):
+                case (Client.Settings && Client.Settings.InGameLogin && !Player.Session.Data.Authorized):
                     Player.Tell(Localization.CLIENT_NOT_AUTHORIZED)
                 return
                 case (Player.PermissionLevel < Permissions.Levels[this.Manager.commands[command].Permission]):
