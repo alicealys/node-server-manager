@@ -1049,13 +1049,14 @@ class Webfront {
             var locationSetting = (await this.db.metaService.getPersistentMeta('location', Client.ClientId))
             locationSetting = locationSetting ? locationSetting.Value : locationSetting
 
-            Client.clientMeta = await this.db.getClientProfileMeta(Client.ClientId)  
+            Client.clientMeta = await this.db.getClientProfileMeta(Client.ClientId)
             Client.Role = Utils.getRoleFrom(Client.PermissionLevel, 1).Name
             Client.InGame = await this.getClientStatus(Client.Guid)
             Client.WebStatus = getClientWebStatus(Client.ClientId)
             Client.Messages = await db.getMessages(Client.ClientId, 0, 20)
             Client.Ban = await db.isBanned(Client.ClientId)
             Client.Flag = locationSetting == null || locationSetting == '0' ? Client.IPAddress ? await getFlag(Client.IPAddress.split(':')[0]) : null : null
+            
             Client.Status = {}
             Client.discordUser = discordUser ? JSON.parse(discordUser.Value) : false
 

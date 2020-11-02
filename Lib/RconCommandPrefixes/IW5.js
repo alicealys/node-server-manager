@@ -23,7 +23,7 @@ module.exports = {
                 rate: match[10]
             }
         },
-        retries: 2
+        retries: 3
     },
     getInfo: '\xff\xff\xff\xffgetinfo',
     getStatus: '\xff\xff\xff\xffgetstatus',

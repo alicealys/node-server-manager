@@ -73,12 +73,11 @@ class Database {
         this.clientCache = []
         this.Models = Models
         this.cache = {}
+        this.shortCache = {}
         this.metaService = new MetaService(Models)
         this.clientProfileMeta = [
             async (ClientId) => {
                 var stats = await this.getPlayerStatsTotal(ClientId)
-                var weaponMeta = await this.getClientMeta(ClientId)
-                var count = await this.getMessageCount(ClientId)
                 if (!stats) return {}
                 return  {
                         name: 'Stats',
@@ -86,11 +85,7 @@ class Database {
                             'Kills': stats.Kills ? stats.Kills : 0,
                             'Deaths': stats.Deaths ? stats.Deaths : 0,
                             'KDR': (stats.Kills / Math.max(stats.Deaths, 1)).toFixed(2),
-                            'Performance': stats.Performance.toFixed(2),
-                            'Total Damage': weaponMeta.Damage ? weaponMeta.Damage : 0,
-                            'Favourite Weapon': weaponMeta.MostUsed ? weaponMeta.MostUsed : 'none',
-                            'Most Hit': weaponMeta.HitLoc ? weaponMeta.HitLoc : 'none',
-                            'Messages': count,
+                            'Performance': stats.Performance.toFixed(2)
                         }
                     }
             }
@@ -98,14 +93,21 @@ class Database {
         setInterval(() => {
             this.cache = {}
         }, 60 * 1000 * 30)
+
+        setInterval(() => {
+            this.shortCache = {}
+        }, 60 * 1000 * 5)
     }
 
     async getClientProfileMeta(ClientId) {
-        var metaRef = []
+        if (this.shortCache[`META_${ClientId}`]) return this.shortCache[`META_${ClientId}`]
+
+        this.shortCache[`META_${ClientId}`] = []
         for (var i = 0; i < this.clientProfileMeta.length; i++) {
-            metaRef.push(await this.clientProfileMeta[i](ClientId))
+            this.shortCache[`META_${ClientId}`].push(await this.clientProfileMeta[i](ClientId))
         }
-        return metaRef
+
+        return this.shortCache[`META_${ClientId}`]
     }
 
     async startTransaction() {

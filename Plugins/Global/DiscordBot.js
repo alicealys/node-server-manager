@@ -11,13 +11,8 @@ const fs            = require('fs')
 const wait          = require('delay')
 
 const colors = ['#FF3131', '#86C000', '#FFAD22', '#0082BA', '#25BDF1', '#9750DD']
-var guilds = []
 
 var databaseCache = {}
-
-let customCommands = {
-
-}
 
 class Plugin {
     constructor(Managers) {
