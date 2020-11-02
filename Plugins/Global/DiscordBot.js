@@ -79,6 +79,16 @@ class Plugin {
     stripMentions(string) {
         return string.replace(new RegExp(/((<@(.*?)>)|(@(.*?)))/g), '(@)')
     }
+    getServerIcon(Server) {
+        var imgPath = path.join(__dirname, `../../Webfront/Public/img/maps/${Server.Gamename.toLocaleLowerCase()}/${Server.Mapname}.jpg`)
+        
+        return fs.existsSync(imgPath) ? imgPath : `../../Webfront/Public/img/maps/default.png`
+    }
+    getServerIconName(Server) {
+        var imgPath = path.join(__dirname, `../../Webfront/Public/img/maps/${Server.Gamename.toLocaleLowerCase()}/${Server.Mapname}.jpg`)
+        
+        return fs.existsSync(imgPath) ? `${Server.Mapname}.jpg` : `default.png`
+    }
     async serverLogger(category, guild, Server) {
         this.updateActivity()
 
@@ -133,7 +143,7 @@ class Plugin {
             .addField('Origin', `[${Origin.Name}](${process.env.webfrontUrl}/id/${Origin.ClientId})`, true)
             .addField('Reason', Utils.stripString(Reason), true)
             .addField('Server', Utils.stripString(Server.Hostname), true)
-            .setThumbnail(`${process.env.webfrontUrl}/api/map.jpg?ServerId=${Server.Id}`)
+            .setThumbnail(this.getServerIcon(Server))
             .setTimestamp()
             .setColor(colors[Utils.getRandomInt(0, colors.length)])
 
@@ -177,7 +187,8 @@ class Plugin {
             .addField('Mapname', `${Server.getMapname().Alias}`, true)
             .addField('Gametype', `${Server.getGametype().Alias}`, true)
             .setColor(colors[Utils.getRandomInt(0, colors.length)])
-            .setThumbnail(`${process.env.webfrontUrl}/api/map.jpg?ServerId=${Server.Id}`)
+            .attachFiles([this.getServerIcon(Server)])
+            .setThumbnail(`attachment://${this.getServerIconName(Server)}`)
             .setTimestamp()
             .setFooter(`${Server.getClients().length} / ${Server.Clients.length}`)
 
