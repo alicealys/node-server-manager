@@ -94,6 +94,15 @@ class Plugin {
                     await this.Server.Rcon.executeCommandAsync('map_restart')
                 }
             },
+            'maprotate': {
+                ArgumentLength: 0,
+                Alias: 'rotate',
+                Permission: Permissions.Commands.COMMAND_MAP,
+                inGame: true,
+                callback: async (Player, args) => {
+                    await this.Server.Rcon.executeCommandAsync('map_rotate')
+                }
+            },
             'map': {
                 ArgumentLength: 1,
                 Alias: 'm',
