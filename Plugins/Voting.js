@@ -54,7 +54,7 @@ class Plugin {
 
     voteUpdate() {
         if (this.currentVote.Type && this.currentVote.Votes.length >= this.minimumVotes()) {
-            this.currentVote.Callback(this.currentVote)
+            this.currentVote.callback(this.currentVote)
             this.currentVote = this.currentVoteDefault
         }
     }
@@ -64,13 +64,17 @@ class Plugin {
         var voteTypes = {
             Kick: {
                 Name: 'VOTE_KICK',
-                Callback: async (Vote) => {
-                    Vote.Target.Kick(Localization['COMMAND_VOTEKICK_KICK_MESSAGE'], NodeServerManager)
+                callback: async (Vote) => {
+                    Vote.Target.Kick(Utils.formatString(Localization['COMMAND_VOTEKICK_KICK_MESSAGE'], {
+                        origin: Vote.Origin.Name, 
+                        originId: Vote.Origin.ClientId,
+                        reason: Vote.Reason
+                    }, '%')[0], NodeServerManager)
                 }
             },
             Map: {
                 Name: 'VOTE_MAP',
-                Callback: async (Vote) => {
+                callback: async (Vote) => {
                     var delay = 3000
                     this.Server.Broadcast(Utils.formatString(Localization['COMMAND_MAP_FORMAT'], {Name: Vote.Target.Alias, Delay: (delay / 1000).toFixed(0)}, '%')[0])
                     await wait(delay)
@@ -125,7 +129,7 @@ class Plugin {
         }
 
         this.Manager.commands['votekick'] = {
-            ArgumentLength: 1,
+            ArgumentLength: 2,
             Alias: 'vk',
             Permission: Permissions.Commands.COMMAND_USER_CMDS,
             inGame: true,
@@ -133,12 +137,17 @@ class Plugin {
                 var Target = await this.Server.getPlayerByName(args[1])
 
                 switch (true) {
+                    case (args.slice(2).join(' ').length < 5):
+                        Player.Tell(Utils.formatString(Localization['COMMAND_PARAM_LENGTH'], {
+                            name: 'reason',
+                            length: 5
+                        }))
+                    return
+                    case (Player.Data.lastVote && (new Date() - Player.Data.lastVote) / 1000 < 300):
+                        Player.Tell(Localization['VOTE_COMMANDS_COOLDOWN'])
+                    return
                     case (!Target):
                         Player.Tell(Localization['COMMAND_CLIENT_NOT_FOUND'])
-                    return
-                    case (Target.PermissionLevel > Player.PermissionLevel):
-                    case (Target.ClientId == Player.ClientId):
-                        Player.Tell(Localization['COMMAND_VOTEKICK_HIERARCHY_ERR'])
                     return
                     case (Player.cooldownStart && new Date() - Player.cooldownStart > this.cooldownTime):
                         Player.Tell(Utils.formatString(Localization['COMMAND_VOTE_COOLDOWN'], { Time: (new Date() - Player.cooldownStart - this.cooldownTime) / 1000 }, '%')[0])
@@ -153,19 +162,35 @@ class Plugin {
                 }
 
                 if (!this.currentVote.Origin) {
+                    Player.Data.lastVote = new Date()
+
+                    Player.Data.lastVotes = Player.Data.lastVotes ? Player.Data.lastVotes : []
+                    Player.Data.lastVotes.push(new Date())
+
+                    var lastVotes = Player.Data.lastVotes.filter(date => (new Date() - date) / 1000 < 3600)
+
+                    if (lastVotes.length >= 3) {
+                        Player.Report(Utils.formatString(Localization['VOTEKICK_COMMNAD_REPORT'], {
+                            player: Player.Name,
+                            count: lastVotes.length
+                        }, '%')[0])
+                    }
+
                     this.currentVote = {
                         Origin: Player,
                         Target: Target,
                         Type: voteTypes.Kick.Name,
+                        Reason: args.slice(2).join(' '),
                         Votes: [Player],
-                        actionString: Utils.formatString(Localization['COMMAND_VOTEKICK_ACTION'], {Name: Target.Name} , '%')[0],
-                        Callback: voteTypes.Kick.Callback
+                        actionString: Utils.formatString(Localization['COMMAND_VOTEKICK_ACTION'], {Name: Target.Name, Reason: args.slice(2).join(' ')} , '%')[0],
+                        callback: voteTypes.Kick.callback
                     }
 
                     this.Server.Broadcast(Utils.formatString(Localization['COMMAND_VOTE_VOTED_TEMPLATE'], {
                         Name: Player.Name,
                         Prefix: config.commandPrefixes[0],
                         Action: this.currentVote.actionString,
+                        Reason: args.slice(2).join(' '),
                         Votes: 1,
                         minVotes: this.minimumVotes()
                     }, '%')[0])
@@ -199,6 +224,9 @@ class Plugin {
                 var Target = await this.Server.getMap(args[1])
     
                 switch (true) {
+                    case (Player.Data.lastVote && (new Date() - Player.Data.lastVote) / 1000 < 300):
+                        Player.Tell(Localization['VOTE_COMMANDS_COOLDOWN'])
+                    return
                     case (!Target):
                         Player.Tell(Localization['COMMAND_VOTEMAP_NOT_FOUND'])
                     return
@@ -215,13 +243,15 @@ class Plugin {
                 }
 
                 if (!this.currentVote.Origin) {
+                    Player.Data.lastVote = new Date()
+
                     this.currentVote = {
                         Origin: Player,
                         Target: Target,
                         Type: voteTypes.Map.Name,
                         Votes: [Player],
                         actionString: Utils.formatString(Localization['COMMAND_VOTEMAP_ACTION'], {Name: Target.Alias} , '%')[0],
-                        Callback: voteTypes.Map.Callback
+                        callback: voteTypes.Map.callback
                     }
 
                     this.Server.Broadcast(Utils.formatString(Localization['COMMAND_VOTE_VOTED_TEMPLATE'], {
