@@ -150,6 +150,19 @@ class Plugin {
             guild.eventChannel.send(embed)
         })
 
+        Server.on('round_start', async (roundNumber) => {
+            let embed = new Discord.MessageEmbed()
+            .setTitle('Round started')
+            .addField(roundNumber, '\u200B', true)
+            .setColor(colors[Utils.getRandomInt(0, colors.length)])
+            .attachFiles([this.getServerIcon(Server)])
+            .setThumbnail(`attachment://${this.getServerIconName(Server)}`)
+            .setTimestamp()
+            .setFooter(`${Server.getClients().length} / ${Server.Clients.length}`)
+
+            Server.channel.send(embed)
+        })
+
         Server.on('disconnect', async (Player) => {
             var discordUser = await this.getDiscordUser(Player.ClientId)
 

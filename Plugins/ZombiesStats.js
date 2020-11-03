@@ -180,6 +180,8 @@ class Plugin {
                 var event = JSON.parse(data)
                 switch (event.event) {
                     case 'round_start':
+                        this.Server.emit('round_start', event.round)
+                        this.roundNumber = event.round
                         event.players.forEach(Player => {
                             this.Server.Clients.forEach(async Client => {
                                 if (!Client) return
