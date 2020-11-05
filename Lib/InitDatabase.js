@@ -266,7 +266,6 @@ class Database {
         for (var i = 0; i < _Clients.length; i++) {
             var Client = await this.getClient(_Clients[i].dataValues.ClientId)
             Client.Name = _Clients[i].dataValues.Name
-            Client.LastConnection = _Clients[i].dataValues.Date
             Client.IPAddress = _Clients[i].dataValues.IPAddress
             Clients.push(Client)
         }

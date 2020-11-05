@@ -127,6 +127,8 @@ class Server extends EventEmitter {
 
             this.Clients = new Array(this.MaxClients).fill(null)
 
+            this.Rcon.isRunning = true
+
             this.externalIP = !this.IP.match(/(^127\.)|(localhost)|(^192\.168\.)|(^10\.)|(^172\.1[6-9]\.)|(^172\.2[0-9]\.)|(^172\.3[0-1]\.)|(^::1$)|(^[fF][cCdD])/g) ? this.IP : await ip.v4()
             this.emit('dvars_loaded', this)
             this.dvarsLoaded = true
@@ -198,7 +200,10 @@ class Server extends EventEmitter {
                     wasRunning = false
                 }
                 this.heartbeatRetry > 0 && this.heartbeatRetry--
-            } else this.heartbeatRetry = 2
+            } else  {
+                this.heartbeatRetry = 2
+                this.Rcon.isRunning = true
+            }
             
             if (!this.Rcon.isRunning && status != false) {
                 this.heartbeatRetry = 1

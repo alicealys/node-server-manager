@@ -13,7 +13,7 @@ class Rcon {
             ? {...require(`./RconCommandPrefixes/Default.js`), ...require(`./RconCommandPrefixes/${gamename}.js`)} 
             : require(`./RconCommandPrefixes/Default.js`)
             
-        this.isRunning = true
+        this.isRunning = false
         this.commandRetries = 3
         this.previousClients = []
         this.client = dgram.createSocket('udp4')

@@ -30,6 +30,7 @@
     "moment": "^2.27.0",
     "node-2fa": "^1.1.2",
     "node-fetch": "^2.6.1",
+    "node-machine-id": "^1.1.12",
     "package.json": "^2.0.1",
     "public-ip": "^4.0.2",
     "read-last-lines": "^1.7.2",

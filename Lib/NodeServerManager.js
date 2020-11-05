@@ -6,6 +6,7 @@ process.env.LOCALE = 'en'
 
 const EventEmitter            = require('events')
 const ConfigMaker             = require('./ConfigMaker.js')
+const MasterServer = require('./MasterServer.js')
 
 var Info = {
     Author: 'fed',
@@ -13,7 +14,6 @@ var Info = {
 }
 
 var Managers = []
-var Webfront = null
 var Id = 0
 
 class Logger {
@@ -37,6 +37,10 @@ function COD2BashColor(string) {
     return string.replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), `\x1b[3$1m`)
 }
 
+console._log = (string) => {
+    console.log(`${COD2BashColor(string)}\x1b[0m`)
+}
+
 class NSM extends EventEmitter{
     constructor (config) {
         super()
@@ -57,7 +61,6 @@ class NSM extends EventEmitter{
         this.Server = new Server(this.IP, this.PORT, this.RconConnection, Database, sessionStore, clientData, Managers, Id++, this, this.config)
         this.eventLogWatcher = this.LOGFILE ? new EventLogWatcher(this.LOGFILE, this.Server, this) : new ServerLogWatcher(this.LOGSERVERURI, this.Server, this)
 
-        this.loadRconSettings()
         this.loadPlugins()
         
         await this.Server.setDvarsAsync()
@@ -96,25 +99,6 @@ class NSM extends EventEmitter{
             })
         })
     }
-    loadRconSettings() {
-        const directoryPath = path.join(__dirname, '../Plugins/Rcon');
-        fs.readdir(directoryPath, (err, files) => {
-            if (err)
-                return
-            
-            files.forEach( (file) => {
-                if (!file.match(/.+\.js/g)) return
-                this.logger.writeLn(`Loading plugin \x1b[33m${file}\x1b[0m for server ${this.Server.IP}:${this.Server.PORT}`)
-                try {
-                    let plugin = require(path.join(__dirname, `../Plugins/Rcon/${file}`))
-                    new plugin(this.Server, this, Managers)
-                }
-                catch (e) {
-                    console.log(`Error evaluating plugin \x1b[33m${file}\x1b[0m: \x1b[31m${e.toString()}\x1b[0m`)
-                }
-            })
-        })
-    }
 }
 
 if (configured) {
@@ -126,26 +110,36 @@ if (configured) {
     var Database                = new (require(path.join(__dirname, '../Lib/InitDatabase.js')))()
     var EventLogWatcher         = require('./EventLogWatcher.js')
     var ServerLogWatcher        = require('./ServerLogWatcher.js')
-    var _CLICommands            = require('./CLICommands.js')
     var sessionStore            = new (require(path.join(__dirname, `../Webfront/SessionStore.js`)))()
     var clientData              = new (require(path.join(__dirname, `../Lib/ClientData.js`)))()
 
     process.env.config = JSON.stringify(require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)))
     process.env.Localization = require(path.join(__dirname, `../Configuration/Localization-${process.env.LOCALE}.json`))
     
-    var commitId = require('child_process').execSync('git rev-parse HEAD')
+    var commitId = require('child_process').execSync('git rev-parse HEAD').toString().trim()
+    var lastCommit = require('child_process').execSync('git ls-remote https://github.com/fedddddd/node-server-manager.git HEAD').toString().split(/\s+/g)[0].trim()
 
     console.log(`+-------------------------------+`)
     console.log(`| \x1b[32mNode Server Manager\x1b[0m\t\t|`)
-    console.log(`| \x1b[33mv${Info.Version}\x1b[0m\t\t\t|`)
+    console.log(`| \x1b[33m${Info.Version}\x1b[0m\t\t\t|`)
     console.log(`| By \x1b[34m${Info.Author}\x1b[0m\t\t\t|`)
     console.log(`+-------------------------------+`)
+
+    console._log(commitId == lastCommit 
+        ? '^2Node Server Manager is up to date' 
+        : `^3An update is available (v${commitId.substr(0, 6)}, run git pull to update)`)
 
     console.log(`Environment: ${process.env.NODE_ENV == 'dev' ? 'Development' : 'Production'}`)
 
     configuration.Servers.forEach(config => {
         Managers.push(new NSM(config))
     })
+
+    var masterServer = new (require('./MasterServer.js'))(Managers)
+
+    for (var i = 0; i < Managers.length; i++) {
+        Managers[i].Server.masterServer = masterServer
+    }
 
     async function loadGlobalPlugins() {
         const directoryPath = path.join(__dirname, '../Plugins/Global');
@@ -178,7 +172,9 @@ if (configured) {
         Hostname: configuration.WebfrontHostname, 
     }, sessionStore, Database))
 
-    new _CLICommands(Managers[0], Managers)
+    new (require('./CLICommands.js'))(Managers[0], Managers)
+    
+    masterServer.init()
 } else {
     var configMake = new ConfigMaker()
     configMake.init()
