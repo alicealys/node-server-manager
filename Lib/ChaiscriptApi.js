@@ -5,8 +5,9 @@ class ChaiscriptApi {
     }
     async eval(code) {
         return new Promise(async (resolve, reject) => {
-            this.dvarNumber = this.dvarNumber > 20 ? 0 : this.dvarNumber
+            code = code.replace(new RegExp(/\n/g), '').trim()
 
+            this.dvarNumber = this.dvarNumber > 20 ? 0 : this.dvarNumber
             var dvarNumber = this.dvarNumber++
 
             await this.Server.Rcon.setDvar(`chai_${dvarNumber}`, `${code.trim()}`)

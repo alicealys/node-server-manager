@@ -26,6 +26,8 @@ class ePlayer extends EventEmitter {
         this.PermissionLevel = await this.Server.DB.getClientLevel(this.ClientId)
         this.Server.DB.logConnection(this)
 
+        this.matchData = {}
+
         try {
             this.Data = this.Server.clientData.getData(this.ClientId)
             this.Session = this.Server.sessionStore.createSession(this.IPAddress.split(':')[0] ? this.IPAddress.split(':')[0] : crypto.randomBytes(8).toString('hex'))

@@ -82,7 +82,7 @@ class Plugin {
     getServerIcon(Server) {
         var imgPath = path.join(__dirname, `../../Webfront/Public/img/maps/${Server.Gamename.toLocaleLowerCase()}/${Server.Mapname}.jpg`)
         
-        return fs.existsSync(imgPath) ? imgPath : `../../Webfront/Public/img/maps/default.png`
+        return fs.existsSync(imgPath) ? imgPath : path.join(__dirname, `../../Webfront/Public/img/maps/default.png`)
     }
     getServerIconName(Server) {
         var imgPath = path.join(__dirname, `../../Webfront/Public/img/maps/${Server.Gamename.toLocaleLowerCase()}/${Server.Mapname}.jpg`)

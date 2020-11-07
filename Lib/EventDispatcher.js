@@ -36,6 +36,9 @@ class EventDispatcher {
                 case 'join':
                     if (this.Server.Clients[event.data.Origin.Clientslot] != null 
                         && this.Server.Clients[event.data.Origin.Clientslot].Guid == event.data.Origin.Guid) {
+
+                        this.Server.Clients[event.data.Origin.Clientslot].matchData = {}
+
                         this.Server.emit('preconnect', this.Server.Clients[event.data.Origin.Clientslot])
                         this.Server.emit('any_event', {type: 'join', Origin: this.Server.Clients[event.data.Origin.Clientslot]})
                         return
@@ -59,7 +62,7 @@ class EventDispatcher {
 
                     var Player = new ePlayer(event.data.Origin.Guid, event.data.Origin.Name, event.data.Origin.Clientslot, IPAddress, this.Server)
                     await Player.build()
-
+                    
                     this.Server.emit('connect', Player)
                     this.Server.emit('any_event', {type: 'join', Origin: Player})
               break

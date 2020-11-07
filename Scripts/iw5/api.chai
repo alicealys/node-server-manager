@@ -1,4 +1,4 @@
-setInterval(fun() {
+var interval = setInterval(fun() {
     for (var i = 0; i < 20; ++i) {
         if (gsc.getDvar("chai_${i}") != "") {
             var string = gsc.getDvar("chai_${i}")
@@ -15,3 +15,7 @@ setInterval(fun() {
         }
     }
 }, 100)
+
+level.onNotify("game_ended", fun[interval](args) {
+    interval.clear()
+})
