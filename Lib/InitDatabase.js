@@ -568,7 +568,7 @@ class Database {
                     [Sequelize.Op.gt]: 0
                 }
             },
-            attributes: ['ClientId', 'Kills', 'Downs', 'Revives', 'HighestRound', 'Headshots', 'Score', [Sequelize.literal('ROW_NUMBER() over (order by Score desc)'), 'Rank']],
+            attributes: ['ClientId', 'Kills', 'Downs', 'Revives', 'HighestRound', 'Headshots', 'Score', [Sequelize.literal('ROW_NUMBER() over (order by Kills desc)'), 'Rank']],
             order: [
                 ['Kills', 'desc']
             ]
