@@ -146,12 +146,12 @@ class Plugin {
                     case (Player.Data.lastVote && (new Date() - Player.Data.lastVote) / 1000 < 300):
                         Player.Tell(Localization['VOTE_COMMANDS_COOLDOWN'])
                     return
+                    case (!Target):
+                        Player.Tell(Localization['COMMAND_CLIENT_NOT_FOUND'])
+                    return
                     case (Target.PermissionLevel > Player.PermissionLevel):
                     case (Target.ClientId == Player.ClientId):
                         Player.Tell(Localization['COMMAND_VOTEKICK_HIERARCHY_ERR'])
-                    return
-                    case (!Target):
-                        Player.Tell(Localization['COMMAND_CLIENT_NOT_FOUND'])
                     return
                     case (Player.cooldownStart && new Date() - Player.cooldownStart > this.cooldownTime):
                         Player.Tell(Utils.formatString(Localization['COMMAND_VOTE_COOLDOWN'], { Time: (new Date() - Player.cooldownStart - this.cooldownTime) / 1000 }, '%')[0])
