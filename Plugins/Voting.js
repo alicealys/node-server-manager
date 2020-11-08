@@ -134,7 +134,7 @@ class Plugin {
             Permission: Permissions.Commands.COMMAND_USER_CMDS,
             inGame: true,
             callback: async (Player, args) => {
-                var Target = await this.Server.getPlayerByName(args[1])
+                var Target = await this.Server.findLocalClient(args[1])
 
                 switch (true) {
                     case (args.slice(2).join(' ').length < 5):
