@@ -21,6 +21,7 @@ class Plugin {
                 name: 'target',
                 join: true
             })
+            .setInGame(true)
             .addCallback(async (Player, Params) => {
                 var Target = this.Server.findLocalClient(Params.target)
 
@@ -46,6 +47,7 @@ class Plugin {
                 name: 'weapon',
                 join: false
             })
+            .setInGame(true)
             .addCallback(async (Player, Params) => {
                 Player.chai.forceGiveWeapon(Params.weapon.replace(new RegExp(/(\\|\")/g), ''))
             })
@@ -63,6 +65,7 @@ class Plugin {
                 name: 'target',
                 join: true
             })
+            .setInGame(true)
             .addCallback(async (Player, Params) => {
                 var Target = this.Server.findLocalClient(Params.target)
 
@@ -89,6 +92,7 @@ class Plugin {
                 join: false,
                 optional: true
             })
+            .setInGame(true)
             .addCallback(async (Player, params) => {
                 var vision = params.vision && params.vision.replace(new RegExp(/(\\|\")/g), '').length 
                     ? params.vision.replace(new RegExp(/(\\|\")/g), '') 
@@ -111,6 +115,7 @@ class Plugin {
             let command = new Command({
                 name: 'nvg',
             })
+            .setInGame(true)
             .addCallback(async (Player) => {
                 Player.matchData.nvg = !Player.matchData.nvg
                 var vision = Player.matchData.nvg ? 'default_night_mp' : this.Server.Mapname
@@ -119,6 +124,28 @@ class Plugin {
                     var player = gsc.getEntByNum(${Player.Clientslot});
                     player.visionSetNakedForPlayer(\\"${vision}\\");
                     player.iPrintLn(\\"Night Vision ${vision == 'default_night_mp' ? '^2On' : '^1Off'}\\");
+                `)
+            })
+            if (this.Server.Gamename == 'IW5')
+                this.Manager.Commands.add(command)
+        })(this);
+
+        (() => {
+            let command = new Command({
+                name: 'leap',
+            })
+            .setInGame(true)
+            .addParam({
+                name: 'vel',
+                optional: true
+            })
+            .addCallback(async (Player) => {
+                Player.Tell('WOOOOOOOOOOO')
+
+                this.Server.chai.eval(`
+                    var player = gsc.getEntByNum(${Player.Clientslot});
+                    var velocity = player.getVelocity();
+                    player.setVelocity([velocity[0], velocity[1], velocity[2] + ${params.vel ? params.vel : '500'}]);
                 `)
             })
             if (this.Server.Gamename == 'IW5')
