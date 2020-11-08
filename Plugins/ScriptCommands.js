@@ -139,13 +139,15 @@ class Plugin {
                 name: 'vel',
                 optional: true
             })
-            .addCallback(async (Player) => {
+            .addCallback(async (Player, params) => {
                 Player.Tell('WOOOOOOOOOOO')
 
+                var velocity = params.vel ? parseInt(params.vel) : 500
+                
                 this.Server.chai.eval(`
                     var player = gsc.getEntByNum(${Player.Clientslot});
                     var velocity = player.getVelocity();
-                    player.setVelocity([velocity[0], velocity[1], velocity[2] + ${params.vel ? params.vel : '500'}]);
+                    player.setVelocity([velocity[0], velocity[1], velocity[2] + ${Number.isInteger(velocity) ? velocity : 500}]);
                 `)
             })
             if (this.Server.Gamename == 'IW5')
