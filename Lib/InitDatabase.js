@@ -570,7 +570,7 @@ class Database {
             },
             attributes: ['ClientId', 'Kills', 'Downs', 'Revives', 'HighestRound', 'Headshots', 'Score', [Sequelize.literal('ROW_NUMBER() over (order by Score desc)'), 'Rank']],
             order: [
-                ['Score', 'desc']
+                ['Kills', 'desc']
             ]
         })).map(x => x = x.dataValues)
         for (var i = 0; i < Stats.length; i++) {
