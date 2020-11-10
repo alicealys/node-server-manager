@@ -98,9 +98,6 @@ class Plugin {
                     ? params.vision.replace(new RegExp(/(\\|\")/g), '') 
                     : this.Server.Mapname
 
-
-                console.log(vision)
-
                 this.Server.chai.eval(`
                     var player = gsc.getEntByNum(${Player.Clientslot});
                     player.visionSetNakedForPlayer(\\"${vision}\\");
