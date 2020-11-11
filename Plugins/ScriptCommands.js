@@ -130,6 +130,7 @@ class Plugin {
         (() => {
             let command = new Command({
                 name: 'leap',
+                permission: 'ROLE_ADMIN'
             })
             .setInGame(true)
             .addParam({
