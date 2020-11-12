@@ -85,7 +85,7 @@ class ConfigMaker {
                             'PASSWORD' : configTemplate[11].value,
                             'LOGFILE' : configTemplate[12].value,
                             'Gamename' : Gamenames[parseInt(configTemplate[13].value)],
-                            'reservedSlots' : configTemplate[14].value,
+                            'reservedSlots' : parseInt(configTemplate[14].value),
                         }
             
                     ],
