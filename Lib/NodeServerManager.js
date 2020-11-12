@@ -6,7 +6,6 @@ process.env.LOCALE = 'en'
 
 const EventEmitter            = require('events')
 const ConfigMaker             = require('./ConfigMaker.js')
-const MasterServer = require('./MasterServer.js')
 
 var Info = {
     Author: 'fed',
