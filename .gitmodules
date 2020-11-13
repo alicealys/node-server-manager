@@ -1,0 +1,3 @@
+[submodule "Scripts/iw5/plugins/source/iw5-chai-utils"]
+	path = Scripts/iw5/plugins/source/iw5-chai-utils
+	url = https://github.com/fedddddd/iw5-chai-utils.git
