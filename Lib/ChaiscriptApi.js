@@ -10,19 +10,23 @@ class ChaiscriptApi {
             this.dvarNumber = this.dvarNumber > 20 ? 0 : this.dvarNumber
             var dvarNumber = this.dvarNumber++
 
-            await this.Server.Rcon.setDvar(`chai_${dvarNumber}`, `${code.trim()}`)
+            await this.Server.Rcon.executeCommandAsync(`chai_eval ${code.trim()}`)
+            
+
+            resolve()
             var onLine = (line) => {
-                if (line.match(new RegExp(`chai_${dvarNumber};(.)+`))) {
+                /*if (line.match(new RegExp(`chai_${dvarNumber};(.)+`))) {
                     resolve(line.substr(`chai_${dvarNumber};`.length))
                 }
-                this.Server.removeListener('line', onLine)
+                this.Server.removeListener('line', onLine)*/
+                resolve()
             }
 
             setTimeout(() => {
                 resolve(null)
             }, 1000)
 
-            this.Server.on('stripped_line', onLine)
+            //this.Server.on('stripped_line', onLine)
         })
 
     }

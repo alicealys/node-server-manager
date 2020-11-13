@@ -1,0 +1,9 @@
+def chai_callback(string) {
+    try {
+        print("evaluating ${string}")
+        eval(string)
+    }
+    catch (e) { print("error ${e}") }
+}
+
+set_chai_callback(chai_callback)
