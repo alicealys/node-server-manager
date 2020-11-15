@@ -55,7 +55,7 @@ class Utils {
           case 0:
             var RolesArray = Object.entries(Permissions.Roles)
             for (var i = 0; i < RolesArray.length; i++) {
-              if (RolesArray[i][1].toLocaleLowerCase() == Value.toLocaleLowerCase()) {
+              if (this.stripString(RolesArray[i][1].toLocaleLowerCase()) == this.stripString(Value.toLocaleLowerCase())) {
                 return {
                   Name: RolesArray[i][1],
                   Level: Permissions.Levels[RolesArray[i][0]]

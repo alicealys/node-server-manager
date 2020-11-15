@@ -61,7 +61,7 @@
                     </div>
                     <div class='wf-profile-role'>
                         <% if (!Client.Ban.Banned) {%>
-                        <div><%= Client.Role %></div>
+                        <div colorcode><%= Client.Role %></div>
                         <% } else {%>
                             <div class='iw-red'>Banned - <%= Client.Ban.Reason %></div>
                         <% }%>

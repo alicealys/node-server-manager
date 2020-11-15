@@ -803,7 +803,7 @@ async function profilePreview(coords, ClientId) {
             </div>
         </div>
         <div class='wf-profile-role'>
-            ${info.Ban.Banned ? `<div class='iw-red'>Banned - ${info.Ban.Reason}</div>` : `<div>${info.Role}</div>`}
+            ${info.Ban.Banned ? `<div class='iw-red'>Banned - ${info.Ban.Reason}</div>` : `<div>${COD2HTML(info.Role)}</div>`}
         </div>
         <div class='wf-profile-description-wrap'>
             <div class='wf-profile-description-line'>

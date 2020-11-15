@@ -35,7 +35,7 @@
                 <% Clients.forEach(Client => { %>
                     <div class='wf-client-search-client'>
                         <a class='wf-search-name' href='/id/<%= Client.ClientId %>'><%= Client.Name %></a>
-                        <div class='wf-search-level'><%= Client.Role %></div>
+                        <div colorcode class='wf-search-level'><%= Client.Role %></div>
                         <div class='wf-search-date'><%= moment(Client.Date).calendar()  %></div>
                     </div>
                 <% }) %>

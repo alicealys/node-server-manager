@@ -21,7 +21,7 @@ class ePlayer extends EventEmitter {
     async build() {
         this.ClientId = await this.Server.DB.addClient(this.Guid)
 
-        await this.Server.DB.initializeStats(this.ClientId)
+        this.Server.DB.initializeStats(this.ClientId)
 
         this.PermissionLevel = await this.Server.DB.getClientLevel(this.ClientId)
         this.Server.DB.logConnection(this)
@@ -33,7 +33,7 @@ class ePlayer extends EventEmitter {
             this.Session = this.Server.sessionStore.createSession(this.IPAddress.split(':')[0] ? this.IPAddress.split(':')[0] : crypto.randomBytes(8).toString('hex'))
             this.Session && (this.Session.Data.Authorized = this.Session.Data.Authorized != undefined ? this.Session.Data.Authorized : false)
         }
-        catch(e) {}
+        catch(e) { }
     }
     Report(Reason, Origin = NodeServerManager) {
         this.Server.DB.addReport(Origin.ClientId, this.ClientId, Reason)

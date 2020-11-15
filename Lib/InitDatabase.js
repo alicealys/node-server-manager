@@ -143,18 +143,24 @@ class Database {
 
         return Client.dataValues.ClientId
     }
+    
     async initializeStats(ClientId) {
-        if (!(await this.getPlayerStatsTotal(ClientId))) {
-            await Models.NSMPlayerStats.build({
-                ClientId: ClientId
-            }, {transaction: this.transaction}).save()
+        try {
+            if (!(await this.getPlayerStatsTotal(ClientId))) {
+                await Models.NSMPlayerStats.build({
+                    ClientId: ClientId
+                }, {transaction: this.transaction}).save()
+            }
+    
+            if (!(await this.getClientSettings(ClientId))) {
+                console.log(ClientId)
+    
+                await Models.NSMSettings.build({
+                    ClientId
+                }, {transaction: this.transaction}).save()
+            }
         }
-        if (!(await this.getClientSettings(ClientId))) {
-            await Models.NSMSettings.build({
-                ClientId
-            }, {transaction: this.transaction}).save()
-        }
-        // await this.transaction.commit()
+        catch (e) {}
     }
 
     async setClientSetting(ClientId, Setting, Value) {
