@@ -40,10 +40,10 @@ class Plugin {
                     / (this.Buffer.Stats[Player.ClientId].Kills 
                         + this.Buffer.Stats[Player.ClientId].Deaths)
     
-                (this.Buffer.Stats[Attacker.ClientId].Performance = (this.Buffer.Stats[Attacker.ClientId].TotalPerformance 
+                this.Buffer.Stats[Attacker.ClientId].Performance = (this.Buffer.Stats[Attacker.ClientId].TotalPerformance 
                     + (this.Buffer.Stats[Player.ClientId].Performance + 400)) 
                     / (this.Buffer.Stats[Attacker.ClientId].Kills 
-                        + this.Buffer.Stats[Attacker.ClientId].Deaths))
+                        + this.Buffer.Stats[Attacker.ClientId].Deaths)
             }
         })
 
