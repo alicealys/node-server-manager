@@ -27,7 +27,6 @@ class Plugin {
 
             !this.Buffer.previousStats[Attacker.ClientId] && (this.Buffer.previousStats[Attacker.ClientId] = {}, Object.assign(this.Buffer.previousStats[Attacker.ClientId], this.Buffer.Stats[Attacker.ClientId]))
 
-            Attacker.Clientslot != Player.Clientslot && 
             this.Buffer.Stats[Player.ClientId].Deaths++
 
             if (Attacker.Clientslot != Player.Clientslot) {

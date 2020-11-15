@@ -143,7 +143,7 @@ class Database {
 
         return Client.dataValues.ClientId
     }
-    
+
     async initializeStats(ClientId) {
         try {
             if (!(await this.getPlayerStatsTotal(ClientId))) {
@@ -153,8 +153,6 @@ class Database {
             }
     
             if (!(await this.getClientSettings(ClientId))) {
-                console.log(ClientId)
-    
                 await Models.NSMSettings.build({
                     ClientId
                 }, {transaction: this.transaction}).save()
