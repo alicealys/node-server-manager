@@ -85,19 +85,24 @@ class EventDispatcher {
                     this.Server.Clients[event.data.Origin.Clientslot].removeAllListeners()
                     this.Server.Clients[event.data.Origin.Clientslot] = null
               break
-
               case 'kill':
                 var Target = this.Server.Clients[event.data.Target.Clientslot]
                 var Attacker = (event.data.Origin.Clientslot && event.data.Origin.Clientslot >= 0) ? this.Server.Clients[event.data.Origin.Clientslot] : Target
+
+                if (Attacker.Clientslot != Target.Clientslot) {
+                    Attacker.emit('kill', Target, event.data.Attack)
+                    Target.emit('death', Attacker, event.data.Attack)
+
+                    this.Server.emit('death', Target, Attacker, event.data.Attack)
+                    this.Server.emit('kill', Target, Attacker, event.data.Attack)
+
+                    this.Server.emit('any_event', {type: 'death', Origin: Target, Attack: event.data.Attack })
+                    this.Server.emit('any_event',  { type:'kill', Origin: Attacker, Attack: event.data.Attack })
+                    return
+                }
                 
-                Attacker.Clientslot != Target.Clientslot ? Attacker.emit('kill', Target, event.data.Attack) : Attacker.emit('death', Attacker, event.data.Attack)
-                Attacker.Clientslot != Target.Clientslot ? this.Server.emit('any_event',  { type:'kill', Origin: Attacker, Attack: event.data.Attack }) : this.Server.emit('any_event',  { type:'death', Origin: Attacker, Attack: event.data.Attack })
-
-                Target.emit('death', Attacker, event.data.Attack)
-
-                this.Server.emit('any_event', {type: 'death', Origin: Target})
-  
-                this.Server.emit('death', Target, Attacker, event.data.Attack)
+                Attacker.emit('death', Attacker, event.data.Attack)
+                this.Server.emit('death', Attacker, Attacker, event.data.Attack)
               break
 
             }
