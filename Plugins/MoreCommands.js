@@ -313,6 +313,7 @@ class Plugin {
             let command = new Command()
             .setName('rotation')
             .setAlias('rr')
+            .setInGame(true)
             .addCallback(async (Player, params, args, options, funcs) => {
                 var buffer = ""
 
