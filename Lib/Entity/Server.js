@@ -252,6 +252,12 @@ class Server extends EventEmitter {
         })
     }
     async Broadcast (string) {
+        string = string.toString()
+
+        if (!string) {
+            return
+        }
+
         string = string.replace(new RegExp(/\s+/g), ' ')
 
         var chunks = Utils.breakString(string, this.Rcon.commandPrefixes.Dvars.maxSayLength, ' ')
