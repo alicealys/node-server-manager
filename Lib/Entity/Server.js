@@ -9,6 +9,7 @@ const Gametypes         = Game.Gametypes
 const Permissions       = require(path.join(__dirname, `../../Configuration/NSMConfiguration.json`)).Permissions
 const { ChaiscriptApi } = require('../ChaiscriptApi.js')
 const wait              = require('delay')
+const Utils             = new (require(path.join(__dirname, `../../Utils/Utils.js`)))()
 
 var wasRunning = true
 class Server extends EventEmitter {
@@ -45,7 +46,7 @@ class Server extends EventEmitter {
         this.setMaxListeners(50)
     }
     getMap(name) {
-      return this.Maps.find(Map => Map.Name.toLocaleLowerCase().startsWith(name) || Map.Alias.toLocaleLowerCase().startsWith(name) )
+        return this.Maps.find(Map => Map.Name.toLocaleLowerCase().startsWith(name) || Map.Alias.toLocaleLowerCase().startsWith(name) )
     }
     getGametype() {
         return Gametypes[this.Gametype] ? { Name: this.Gametype, Alias: Gametypes[this.Gametype] } : { Name: this.Gametype, Alias: this.Gametype }
@@ -250,8 +251,26 @@ class Server extends EventEmitter {
             Manager.Server.Broadcast(Message)
         })
     }
-    Broadcast (string) {
-        this.Rcon.executeCommandAsync(this.Rcon.commandPrefixes.Rcon.Say.replace('%MESSAGE%', string))
+    async Broadcast (string) {
+        string = string.replace(new RegExp(/\s+/g), ' ')
+
+        var chunks = Utils.breakString(string, this.Rcon.commandPrefixes.Dvars.maxSayLength, ' ')
+
+        for (var i = 0; i < chunks.length; i++) {
+            await this.Rcon.executeCommandAsync(this.Rcon.commandPrefixes.Rcon.Say.replace('%MESSAGE%', chunks[i]))
+        }
+    }
+    isZM() {
+        return ['zclassic', 'zstandard'].includes(this.Gametype)
+    }
+    isZMAlt() {
+        return ['zgrief', 'zcleansed'].includes(this.Gametype)
+    }
+    isAliens() {
+        return ['aliens'].includes(this.Gametypes)
+    }
+    isMP() {
+        return !this.isZM() && !this.isZMAlt() && !this.isAliens()
     }
 }
 

@@ -34,6 +34,7 @@ module.exports = {
         gamename: 'gamename',
         maprotation: 'sv_mapRotation',
         gametype: 'g_gametype',
-        messagelength: 999999999
+        messagelength: 999999999,
+        maxSayLength: 120
     }
 }

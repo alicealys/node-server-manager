@@ -308,6 +308,26 @@ class Plugin {
             })
             this.Manager.Commands.add(command)
         })(this);
+
+        (() => {
+            let command = new Command()
+            .setName('rotation')
+            .setAlias('rr')
+            .addCallback(async (Player, params, args, options, funcs) => {
+                var buffer = ""
+
+                this.Server.mapRotation.forEach((map, i) => {
+                    buffer += Utils.va("%s%s%s", 
+                        map == this.Server.Mapname ? '^3' : '^5',
+                        this.Server.getMap(map) ? this.Server.getMap(map).Alias : map,
+                        i < this.Server.mapRotation.length - 1 ? '^7, ' : ''
+                    )
+                })
+
+                funcs.Tell(buffer)
+            })
+            this.Manager.Commands.add(command)
+        })(this);
     }
 }
 

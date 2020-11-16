@@ -70,12 +70,16 @@ class ePlayer extends EventEmitter {
         this.Server.emit('penalty', 'PENALTY_TEMP_BAN', this, Reason, Origin, Duration)
         this.Kick(`You have been banned for: ^5${Reason} ${Utils.secondsToDhms(Duration)}^7 left`, Origin, false, '')
     }
-    Tell (text) {
+    async Tell (text) {
         if (!text) return
-        
-        this.Server.Rcon.executeCommandAsync(this.Server.Rcon.commandPrefixes.Rcon.Tell
-            .replace('%CLIENT%', this.Clientslot)
-            .replace('%MESSAGE%', text))
+
+        var chunks = Utils.breakString(text, this.Server.Rcon.commandPrefixes.Dvars.maxSayLength, ' ')
+
+        for (var i = 0; i < chunks.length; i++) {
+            await this.Server.Rcon.executeCommandAsync(this.Server.Rcon.commandPrefixes.Rcon.Tell
+                .replace('%CLIENT%', this.Clientslot)
+                .replace('%MESSAGE%', chunks[i]))
+        }
     }
     Kick (Message, Origin = NodeServerManager, Log = true, Basemsg = 'You have been kicked: ^5') {
         this.Server.DB.addPenalty({

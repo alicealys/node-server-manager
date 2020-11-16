@@ -128,6 +128,31 @@ class Utils {
     chunkString(str, length) {
         return str.match(new RegExp('.{1,' + length + '}', 'g'));
     }
+    va(format) {
+        var args = Array.from(arguments)
+        args.shift()
+
+        for (var i = 0; i < args.length; i++) {
+            format = format.replace(`%${(typeof args[i])[0]}`, args[i])
+        }
+
+        return format
+    }
+    breakString(str, length, char, chunks = []) {
+        str = str.replace(new RegExp(/\s+/g), ' ').trim()
+
+        if (str.length <= length) {
+            chunks.push(str.trim())
+            return chunks
+        }
+
+        var index = str.lastIndexOf(char, length) >= 0 ? str.lastIndexOf(char, length) : length
+
+        chunks.push(str.substr(0, index).trim())
+        str = str.substr(index)
+
+        return this.breakString(str, length, char, chunks)
+    }
     ordinalSuffix(i) {
         var j = i % 10
         var k = i % 100

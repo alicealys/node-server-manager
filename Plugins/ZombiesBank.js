@@ -115,6 +115,11 @@ class Plugin {
             logToAudit: false,
             Permission: Permissions.Commands.COMMAND_USER_CMDS,
             callback: async (Player, args) => {
+                if (!this.Server.isZM()) {
+                    Player.Tell(Localization['COMMAND_UNAVAILABLE_GAMETYPE'])
+                    return
+                }
+
                 if ((new Date() - Player.Data.lastWithdraw) / 1000 < 5) {
                     Player.Tell(Localization['COMMAND_COOLDOWN'])
                     return
@@ -128,9 +133,6 @@ class Plugin {
                     : Math.min(parseInt(args[1]), 1000000 - gameMoney)
             
                 switch (true) {
-                    case (!this.Server.Mapname.startsWith('zm_')):
-                        Player.Tell(Localization['COMMAND_UNAVAILABLE_GAMETYPE'])
-                    return
                     case (!Number.isInteger(withdrawMoney) || withdrawMoney < 0):
                             Player.Tell(Localization['ZBANK_PARSE_ERROR'])
                         return
@@ -154,6 +156,11 @@ class Plugin {
             logToAudit: false,
             Permission: Permissions.Commands.COMMAND_USER_CMDS,
             callback: async (Player, args) => {
+                if (!this.Server.isZM()) {
+                    Player.Tell(Localization['COMMAND_UNAVAILABLE_GAMETYPE'])
+                    return
+                }
+
                 if ((new Date() - Player.Data.lastDeposit) / 1000 < 5) {
                     Player.Tell(Localization['COMMAND_COOLDOWN'])
                     return
@@ -164,9 +171,6 @@ class Plugin {
                 var depositMoney = args[1] == 'all' ? parseInt(gameMoney) : parseInt(args[1])
 
                 switch (true) {
-                    case (!this.Server.Mapname.startsWith('zm_')):
-                        Player.Tell(Localization['COMMAND_UNAVAILABLE_GAMETYPE'])
-                    return
                     case (!Number.isInteger(depositMoney)):
                         Player.Tell(Localization['ZBANK_PARSE_ERROR'])
                     return

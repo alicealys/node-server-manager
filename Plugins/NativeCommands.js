@@ -135,14 +135,15 @@ class Plugin {
                 inGame: true,
                 callback: async (Player, args) => {
                     var mapIndex = this.Server.mapRotation.indexOf(this.Server.mapRotation.find(Map => Map == this.Server.Mapname))
+
+                    var nextMap = mapIndex < this.Server.mapRotation.length - 1 ? this.Server.mapRotation[mapIndex + 1] : this.Server.mapRotation[0]
+                    nextMap = this.Server.getMap(nextMap) ? this.Server.getMap(nextMap).Alias : nextMap
     
-                    if (!mapIndex) {
+                    if (mapIndex < 0 || !nextMap) {
                         Player.Tell(Localization['COMMAND_NEXTMAP_NOT_FOUND'])
                         return
                     }
     
-                    var nextMap = mapIndex < this.Server.mapRotation.length - 1 ? this.Server.mapRotation[mapIndex + 1] : this.Server.mapRotation[0]
-                    nextMap = this.Server.getMap(nextMap) ? this.Server.getMap(nextMap).Alias : nextMap
                     Player.Tell(Utils.formatString(Localization['COMMAND_NEXTMAP_FORMAT'], {Name: nextMap}, '%'))
                 }
             },
