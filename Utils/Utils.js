@@ -139,7 +139,7 @@ class Utils {
         return format
     }
     breakString(str, length, char, chunks = []) {
-        str = str.replace(new RegExp(/\s+/g), ' ').trim()
+        str = str.toString().replace(new RegExp(/\s+/g), ' ').trim()
 
         if (str.length <= length) {
             chunks.push(str.trim())
