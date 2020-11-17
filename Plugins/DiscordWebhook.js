@@ -56,7 +56,8 @@ class Plugin {
         var translation = {
             'PENALTY_TEMP_BAN': 'Temp ban',
             'PENALTY_PERMA_BAN': 'Perma ban',
-            'PENALTY_KICK': 'Kick'
+            'PENALTY_KICK': 'Kick',
+            'PENALTY_MUTE': 'Mute'
         }
         this.sendHookPenalty(`:hammer: ${Target.Name}`, ' ', `${await this.getUrl()}/id/${Target.ClientId}`, translation[Type], Reason, Origin, Duration)
     }

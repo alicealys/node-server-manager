@@ -346,21 +346,30 @@ class Database {
 
         Aliases = Aliases.concat(await this.getAliases(TargetId))
 
-        var Penalties = []
+        var count = 0
 
-        Aliases.forEach(async Alias => {
-            Penalties = await Models.NSMPenalties.update(
+        for (var i = 0; i < Aliases.length; i++) {
+            var Alias = Aliases[i]
+
+            var result = await Models.NSMPenalties.update(
                 { Active: false },
-                { where: { TargetId: Alias.OriginId, Active: true, PenaltyType: { [Sequelize.Op.not]: 'PENALTY_UNBAN' } } }, {transaction: this.transaction}
+                { where: {
+                    [Sequelize.Op.or]: [
+                        { TargetId: Alias.ClientId },
+                        { TargetId: Alias.OriginId }
+                    ],
+                    Active: true, 
+                    PenaltyType: { 
+                        [Sequelize.Op.not]: 'PENALTY_UNBAN'
+                    } 
+                }, raw: true }, 
+                {transaction: this.transaction}
             )
 
-            Penalties = Penalties.concat(await Models.NSMPenalties.update(
-                { Active: false },
-                { where: { TargetId: Alias.ClientId, Active: true, PenaltyType: { [Sequelize.Op.not]: 'PENALTY_UNBAN' } } }, {transaction: this.transaction}
-            ))
-        })
+            count += parseInt(result[0])
+        }
 
-        Penalties.length > 0 && await Models.NSMPenalties.build({
+        count > 0 && await Models.NSMPenalties.build({
             TargetId,
             OriginId,
             PenaltyType: 'PENALTY_UNBAN',
@@ -368,7 +377,7 @@ class Database {
             Reason: Reason
         }, {transaction: this.transaction})
 
-        return Penalties[0]
+        return count
     }
 
     async getClient(ClientId) {
@@ -417,7 +426,7 @@ class Database {
     async addPenalty(PenaltyMeta) {
         var Aliases = await this.getAliases(PenaltyMeta.TargetId)
 
-        if (PenaltyMeta.Type != 'PENALTY_KICK') {
+        if (PenaltyMeta.PenaltyType != 'PENALTY_KICK') {
             Aliases.forEach(async Alias => {
                 // terrible but need this asap
     
@@ -862,7 +871,6 @@ class Database {
                         Duration: playerPenalties[i].Duration,
                         Reason: playerPenalties[i].Reason
                     }
-                return
                 case 'PENALTY_TEMP_BAN':
                     var dateDiff = (new Date(playerPenalties[i].Date) - new Date()) / 1000
                     if (dateDiff + playerPenalties[i].Duration > 0) {
@@ -879,6 +887,19 @@ class Database {
         return {
             Banned: false
         }
+    }
+
+    async isMuted(ClientId) {
+        var Penalties = await Models.NSMPenalties.findAll({
+            where: {
+                TargetId: ClientId,
+                PenaltyType: 'PENALTY_MUTE',
+                Active: true
+            },
+            raw: true
+        })
+
+        return Penalties
     }
 
     async getMessageCount(ClientId) {

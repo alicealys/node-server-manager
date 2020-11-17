@@ -212,7 +212,8 @@
         "PENALTY_PERMA_BAN": "Perma banned",
         "PENALTY_KICK": "Kicked",
         "PENALTY_UNBAN": "Unbanned",
-        "PENALTY_VPN_KICK": "VPN detected"
+        "PENALTY_VPN_KICK": "VPN detected",
+        "COMMAND_MUTE_FORMAT": "Muted ^5%TARGET%^7 for ^5%DURATION%^7 seconds"
     },
     "Games": {
       "T6": {

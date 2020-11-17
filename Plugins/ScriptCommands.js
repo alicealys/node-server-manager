@@ -151,6 +151,80 @@ class Plugin {
             if (this.Server.Gamename == 'IW5')
                 this.Manager.Commands.add(command)
         })(this);
+
+        (() => {
+            let command = new Command({
+                name: 'mute',
+                permission: 'ROLE_MODERATOR'
+            })
+            .addParams([
+                {
+                    index: 0,
+                    name: 'target'
+                },
+                {
+                    index: 1,
+                    name: 'duration'
+                },
+                {
+                    index: 2,
+                    name: 'reason',
+                    join: true
+                }
+            ])
+            .addCallback(async (Player, params) => {
+                var Client = await this.Server.getClient(params.target)
+
+                var timeVars = {
+                    'd': 86400,
+                    'h': 3600,
+                    'm': 60,
+                    's': 1,
+                }
+
+                if (!params.duration.match(/([0-9]+)([A-Za-z]+)/)) {
+                    Player.Tell(Localization.COMMAND_PARSE_TIME_ERROR)
+                    return
+                }
+    
+                var parts = Array.from(params.duration.match(/([0-9]+)([A-Za-z]+)/)).slice(1)
+
+                switch (true) {
+                    case (!Client):
+                        Player.Tell(Localization['COMMAND_CLIENT_NOT_FOUND'])
+                    return
+                    case (Client.PermissionLevel >= Player.PermissionLevel):
+                        Player.Tell(Localization['CLIENT_HIERARCHY_ERROR'])
+                    return
+                    case (!parts || parts.length < 2 || !timeVars[parts[1]] || !Number.isInteger(parseInt(parts[0]))):
+                        Player.Tell(Localization['COMMAND_PARSE_TIME_ERROR'])
+                    return
+                }
+
+                var Duration = parseInt(parts[0] * timeVars[parts[1]])
+
+                if (Duration > 3600 * 72) {
+                    Player.Tell(Localization['COMMAND_PARSE_TIME_ERROR'])
+                    return
+                }
+
+                this.Server.DB.addPenalty({
+                    TargetId: Client.ClientId,
+                    OriginId: Player.ClientId,
+                    PenaltyType: 'PENALTY_MUTE',
+                    Duration: Duration,
+                    Reason: params.reason
+                })
+
+                this.Server.emit('penalty', 'PENALTY_MUTE', Client, params.reason, Player, Duration)
+                Player.Tell(Utils.formatString(Localization['COMMAND_MUTE_FORMAT'], {
+                    Target: Client.Name,
+                    Duration
+                }, '%')[0])
+            })
+
+            this.Manager.Commands.add(command)
+        })(this);
     }
 }
 
