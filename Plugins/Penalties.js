@@ -19,7 +19,7 @@ class Plugin {
     async onEvent (Event) {
         try {
             var playerPenalties = await this.Server.DB.getAllPenalties(Event.Origin.ClientId)
-
+            
             for (var i = 0; i < playerPenalties.length; i++) {
                 switch (playerPenalties[i].PenaltyType) {
                     case 'PENALTY_PERMA_BAN':
@@ -34,7 +34,7 @@ class Plugin {
                 }
             }
         }
-        catch (e) {}
+        catch (e) { }
     }
 
 }

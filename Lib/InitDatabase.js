@@ -342,10 +342,23 @@ class Database {
     }
 
     async unbanClient(TargetId, OriginId, Reason) {
-        var Penalties = await Models.NSMPenalties.update(
-            { Active: false },
-            { where: { TargetId: TargetId, Active: true, PenaltyType: { [Sequelize.Op.not]: 'PENALTY_UNBAN' } } }, {transaction: this.transaction}
-        )
+        var Aliases = [{ ClientId: TargetId, OriginId: TargetId }]
+
+        Aliases = Aliases.concat(await this.getAliases(TargetId))
+
+        var Penalties = []
+
+        Aliases.forEach(async Alias => {
+            Penalties = await Models.NSMPenalties.update(
+                { Active: false },
+                { where: { TargetId: Alias.OriginId, Active: true, PenaltyType: { [Sequelize.Op.not]: 'PENALTY_UNBAN' } } }, {transaction: this.transaction}
+            )
+
+            Penalties = Penalties.concat(await Models.NSMPenalties.update(
+                { Active: false },
+                { where: { TargetId: Alias.ClientId, Active: true, PenaltyType: { [Sequelize.Op.not]: 'PENALTY_UNBAN' } } }, {transaction: this.transaction}
+            ))
+        })
 
         Penalties.length > 0 && await Models.NSMPenalties.build({
             TargetId,
@@ -354,7 +367,7 @@ class Database {
             Duration: 0,
             Reason: Reason
         }, {transaction: this.transaction})
-        // await this.transaction.commit()
+
         return Penalties[0]
     }
 
@@ -402,8 +415,24 @@ class Database {
     }
 
     async addPenalty(PenaltyMeta) {
-        var Penalty = await Models.NSMPenalties.build(PenaltyMeta, {transaction: this.transaction}).save()
-        // await this.transaction.commit()
+        var Aliases = await this.getAliases(PenaltyMeta.TargetId)
+
+        if (PenaltyMeta.Type != 'PENALTY_KICK') {
+            Aliases.forEach(async Alias => {
+                // terrible but need this asap
+    
+                if (Alias.OriginId != PenaltyMeta.TargetId) {
+                    await Models.NSMPenalties.build({ ...PenaltyMeta, ...{ TargetId: Alias.OriginId }}, {transaction: this.transaction}).save()
+                }
+    
+                if (Alias.ClientId != PenaltyMeta.TargetId) {
+                    await Models.NSMPenalties.build({ ...PenaltyMeta, ...{ TargetId: Alias.ClientId }}, {transaction: this.transaction}).save()
+                }
+            })
+        }
+
+        var Penalty = await Models.NSMPenalties.build(PenaltyMeta, {transaction: this.transaction}).save() 
+
         return Penalty.dataValues
     }
 
@@ -421,6 +450,41 @@ class Database {
                 TargetId: ClientId,
             }
         } : null
+
+        if (ClientId) {
+            var Aliases = await this.getAliases(ClientId)
+            var allPenalties = []
+
+            Aliases.forEach(async Alias => {
+                var Penalties = await Models.NSMPenalties.findAll({
+                    where: Sequelize.or(
+                        { TargetId: Alias.ClientId },
+                        { TargetId: Alias.OriginId }
+                    ),
+                }, {transaction: this.transaction})
+
+                for (var i = 0; i < Penalties.length; i++) {
+                    Penalties[i] = Penalties[i].dataValues
+                }
+
+                allPenalties = allPenalties.concat(Penalties)
+            })
+
+            var Penalties = await Models.NSMPenalties.findAll({
+                where: {
+                    TargetId: ClientId 
+                }
+            }, {transaction: this.transaction})
+
+            for (var i = 0; i < Penalties.length; i++) {
+                Penalties[i] = Penalties[i].dataValues
+            }
+
+            allPenalties = allPenalties.concat(Penalties)
+
+            return allPenalties
+        }
+
         var Penalties = await Models.NSMPenalties.findAll(where, {transaction: this.transaction})
 
         for (var i = 0; i < Penalties.length; i++) {
@@ -676,6 +740,7 @@ class Database {
                 ClientId
             }
         }, {transaction: this.transaction})
+
         return Connections.length > 0 ? Connections : false
     }
 
@@ -685,14 +750,61 @@ class Database {
             {where: {ClientId}}, {transaction: this.transaction})
     }
 
+    async getClientsByIp(IPAddress) {
+        if (!IPAddress) {
+            return []
+        }
+
+        var Connections = await Models.NSMConnections.findAll({
+            where: {
+                IPAddress
+            },
+            group: ['ClientId'],
+            raw: true
+        })
+
+        return Connections
+    }
+
+    async getAliases(ClientId) {
+        var Aliases = await Models.NSMAliases.findAll({
+            where: Sequelize.or(
+                { ClientId: ClientId },
+                { OriginId: ClientId }
+            ),
+            raw: true
+        })
+
+        return Aliases
+    }
+
+    async addAlias(OriginId, ClientId) {
+        try {
+            await Models.NSMAliases.build({
+                OriginId,
+                ClientId
+            }, {transaction: this.transaction}).save()
+        }
+        catch (e) {}
+    }
+
     async logConnection(ePlayer) {
+        var IPAddress = ePlayer.IPAddress ? ePlayer.IPAddress.split(':')[0] : null
+
         var ClientId = await this.getClientId(ePlayer.Guid)
+
+        var Connections = await this.getClientsByIp(IPAddress)
+        Connections.forEach(Connection => {
+            if (Connection.ClientId != ePlayer.ClientId) {
+                this.addAlias(ePlayer.ClientId, Connection.ClientId)
+            }
+        })
 
         this.updateLastConnection(ClientId)
         
         var Connection = await Models.NSMConnections.build({
             ClientId: ClientId,
-            IPAddress: ePlayer.IPAddress,
+            IPAddress: IPAddress,
             Guid: ePlayer.Guid,
             Name: ePlayer.Name
         }, {transaction: this.transaction}).save()
