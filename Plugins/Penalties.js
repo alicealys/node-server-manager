@@ -31,10 +31,6 @@ class Plugin {
                     case 'PENALTY_TEMP_BAN':
                         var dateDiff = (new Date(playerPenalties[i].Date) - new Date()) / 1000
 
-                        playerPenalties[i].Active && console.log(dateDiff)
-
-                        playerPenalties[i].Active && console.log(playerPenalties[i].Date, new Date())
-
                         if (dateDiff + playerPenalties[i].Duration > 0) {
                             if (playerPenalties[i].Active) {
                                 Event.Origin.Kick(`Banned for: ^5${playerPenalties[i].Reason}^7 ${Utils.secondsToDhms(dateDiff + playerPenalties[i].Duration)} left`, NodeServerManager)
