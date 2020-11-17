@@ -211,7 +211,8 @@
         "PENALTY_TEMP_BAN": "Temp banned",
         "PENALTY_PERMA_BAN": "Perma banned",
         "PENALTY_KICK": "Kicked",
-        "PENALTY_UNBAN": "Unbanned"
+        "PENALTY_UNBAN": "Unbanned",
+        "PENALTY_VPN_KICK": "VPN detected"
     },
     "Games": {
       "T6": {

@@ -113,7 +113,7 @@ if (configured) {
     var clientData              = new (require(path.join(__dirname, `../Lib/ClientData.js`)))()
 
     process.env.config = JSON.stringify(require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)))
-    process.env.Localization = require(path.join(__dirname, `../Configuration/Localization-${process.env.LOCALE}.json`))
+    process.env.Localization = JSON.stringify(require(path.join(__dirname, `../Configuration/Localization-${process.env.LOCALE}.json`)))
     
     var commitId = require('child_process').execSync('git rev-parse HEAD').toString().trim()
     var lastCommit = require('child_process').execSync('git ls-remote https://github.com/fedddddd/node-server-manager.git HEAD').toString().split(/\s+/g)[0].trim()
