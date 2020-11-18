@@ -30,34 +30,24 @@ class NodeLogServer {
             const server = this.ssl ? https.createServer(this.ssl) : http.createServer()
             const socket = new ws.Server({ server })
 
-            server.listen(this.bindPort, () => {
-                console.log(`Server listening on port ${this.bindPort}`)
-            })
-
             var getParams = (url) => {
                 var queryDict = {}
                 url.substr(1).split("&").forEach(function(item) {queryDict[item.split("=")[0]] = item.split("=")[1]})
                 return queryDict;
             }
 
-            var filePath = path.resolve(this.logfile)
+            var filePath = path.resolve(this.logFile)
 
             if (!fs.existsSync(filePath)) {
                 console.log(`Warning: log file "${filePath}" doesn't exist\nMake sure you selected the right file in Configuration/NLSConfiguration.json Servers -> LOGFILE\n`)
-            }
-    
-            if (process.platform == 'win32') {
-                var tail = spawn(`powershell`, ['-command', 'get-content', '-wait', '-Tail 0', `"${filePath}"`])
-                tail.stdout.on('data', (data) => {
-                    this.onLine(data.toString())
-                })
                 return
             }
-            
-            var tail = new Tail(filePath)
-            tail.watch()
-    
-            tail.on('line', this.onLine.bind(this))
+
+            server.listen(this.bindPort, () => {
+                console.log(`Server listening on port ${this.bindPort}`)
+            })
+
+            socket.authorizedClients = []
 
             socket.Broadcast = (msg) => {
                 socket.authorizedClients.forEach(client => {
@@ -65,7 +55,6 @@ class NodeLogServer {
                 })
             }
 
-            socket.authorizedClients = []
             socket.on('connection', (conn, req) => {
                 var params = getParams(req.url.substr(1))
 
@@ -77,13 +66,25 @@ class NodeLogServer {
                 console.log(`Accepting connection from ${req.socket.remoteAddress}`)
                 socket.authorizedClients.push(conn)
             })
+    
+            if (process.platform == 'win32') {
+                var tail = spawn(`powershell`, ['-command', 'get-content', '-wait', '-Tail 0', `"${filePath}"`])
+                tail.stdout.on('data', (data) => {
+                    socket.Broadcast(data.toString())
+                })
+                return
+            }
+            
+            var tail = new Tail(filePath)
+            tail.watch()
+    
+            tail.on('line', async (data) => {
+                socket.Broadcast(data)
+            })
         }
         catch (e) {
             console.log(`Log server failed to start: ${e.toString()}`)
         }
-    }
-    onLine(data) {
-        socket.Broadcast(data)
     }
 }
 
