@@ -469,6 +469,7 @@ class Plugin {
                         if (Target) {
                             Target.PermissionLevel = Permission.Level
                             Target.Tell(`Your role has been set to [ ^5${Permission.Name}^7 ]`)
+                            Target.Server.Rcon.executeCommandAsync(`setclantag ${Target.Clientslot} ${Utils.stripString(Permission.Name)}`)
                         }
     
                         this.Server.DB.setLevel(Client, Permission.Level)
