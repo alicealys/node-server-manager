@@ -473,9 +473,9 @@ class Plugin {
                             var role = Permission.Name
 
                             var customTag = await this.Server.DB.metaService.getPersistentMeta('custom_tag', Target.ClientId)
-                            role = customTag ? customTag.Value : role
+                            role = customTag ? customTag.Value : Utils.stripString(role)
 
-                            Target.Server.Rcon.executeCommandAsync(`setclantag ${Target.Clientslot} "${role}"`)
+                            Target.Server.Rcon.executeCommandAsync(`setclantagraw ${Target.Clientslot} "${role}"`)
                         }
     
                         this.Server.DB.setLevel(Client, Permission.Level)

@@ -19,7 +19,7 @@ class Plugin {
             let command = new Command()
             .setName('settag')
             .setAlias('st')
-            .setPermission('ROLE_ADMIN')
+            .setPermission('ROLE_MODERATOR')
             .addParams([
                 {
                     name: 'target',
@@ -43,7 +43,7 @@ class Plugin {
                 var inGame = this.Server.findClient(Client.ClientId)
 
                 if (inGame) {
-                    inGame.Server.Rcon.executeCommandAsync(`setclantag ${inGame.Clientslot} "${params.tag}"`)
+                    inGame.Server.Rcon.executeCommandAsync(`setclantagraw ${inGame.Clientslot} "${params.tag}"`)
 
                     inGame.Tell(Utils.va(Localization['COMMAND_SETTAG_FORMAT_SELF'], params.tag))
                 }
@@ -58,7 +58,7 @@ class Plugin {
             let command = new Command()
             .setName('deltag')
             .setAlias('dt')
-            .setPermission('ROLE_ADMIN')
+            .setPermission('ROLE_MODERATOR')
             .addParams([
                 {
                     name: 'target',
@@ -78,9 +78,9 @@ class Plugin {
                 var inGame = this.Server.findClient(Client.ClientId)
 
                 if (inGame) {
-                    var role = Utils.getRoleFrom(Player.PermissionLevel, 1).Name
+                    var role = Utils.stripString(Utils.getRoleFrom(Player.PermissionLevel, 1).Name)
 
-                    inGame.Server.Rcon.executeCommandAsync(`setclantag ${inGame.Clientslot} "${role}"`)
+                    inGame.Server.Rcon.executeCommandAsync(`setclantagraw ${inGame.Clientslot} "${role}"`)
                     inGame.Tell(Localization['COMMAND_DELTAG_SELF'])
                 }
 
@@ -94,9 +94,9 @@ class Plugin {
         var role = Utils.getRoleFrom(Player.PermissionLevel, 1).Name
 
         var customTag = await this.Server.DB.metaService.getPersistentMeta('custom_tag', Player.ClientId)
-        role = customTag ? customTag.Value : role
+        role = customTag ? customTag.Value : Utils.stripString(role)
 
-        this.Server.Rcon.executeCommandAsync(`setclantag ${Player.Clientslot} "${Utils.stripString(role)}"`)
+        this.Server.Rcon.executeCommandAsync(`setclantagraw ${Player.Clientslot} "${role}"`)
     }
 }
 
