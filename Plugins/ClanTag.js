@@ -78,7 +78,7 @@ class Plugin {
                 var inGame = this.Server.findClient(Client.ClientId)
 
                 if (inGame) {
-                    var role = Player.PermissionLevel > 0 ? Utils.getRoleFrom(Player.PermissionLevel, 1).Name : ''
+                    var role = Utils.getRoleFrom(Player.PermissionLevel, 1).Name
 
                     inGame.Server.Rcon.executeCommandAsync(`setclantag ${inGame.Clientslot} "${role}"`)
                     inGame.Tell(Localization['COMMAND_DELTAG_SELF'])
@@ -91,7 +91,7 @@ class Plugin {
         })(this);
     }
     async onPlayerConnect(Player) {
-        var role = Player.PermissionLevel > 0 ? Utils.getRoleFrom(Player.PermissionLevel, 1).Name : ''
+        var role = Utils.getRoleFrom(Player.PermissionLevel, 1).Name
 
         var customTag = await this.Server.DB.metaService.getPersistentMeta('custom_tag', Player.ClientId)
         role = customTag ? customTag.Value : role

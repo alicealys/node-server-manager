@@ -470,7 +470,7 @@ class Plugin {
                             Target.PermissionLevel = Permission.Level
                             Target.Tell(`Your role has been set to [ ^5${Permission.Name}^7 ]`)
 
-                            var role = Target.PermissionLevel > 0 ? Permission.Name : ''
+                            var role = Permission.Name
 
                             var customTag = await this.Server.DB.metaService.getPersistentMeta('custom_tag', Target.ClientId)
                             role = customTag ? customTag.Value : role
