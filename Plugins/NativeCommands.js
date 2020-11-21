@@ -469,7 +469,13 @@ class Plugin {
                         if (Target) {
                             Target.PermissionLevel = Permission.Level
                             Target.Tell(`Your role has been set to [ ^5${Permission.Name}^7 ]`)
-                            Target.Server.Rcon.executeCommandAsync(`setclantag ${Target.Clientslot} ${Utils.stripString(Permission.Name)}`)
+
+                            var role = Target.PermissionLevel > 0 ? Permission.Name : ''
+
+                            var customTag = await this.Server.DB.metaService.getPersistentMeta('custom_tag', Target.ClientId)
+                            role = customTag ? customTag.Value : role
+
+                            Target.Server.Rcon.executeCommandAsync(`setclantag ${Target.Clientslot} "${role}"`)
                         }
     
                         this.Server.DB.setLevel(Client, Permission.Level)

@@ -115,7 +115,7 @@
         "AUTO_RECENT_REPORTS": "^5%COUNT%^7 reports on ete recus",
         "COMMAND_LIST_PAGE": "^3--- Page %CURRENT% / %MAX% ---",
         "WELCOME_PLAYER": "Bienvenue ^5%PLAYER%^7, c'est la ^5%CONNECTIONS%^7 fois que vous venez sur ce serveur!",
-        "WELCOME_PLAYER_BROADCAST": "^%LEVEL%%ROLE%^7 ^5%PLAYER%^7 a rejoint depuis ^5%LOCATION%^7",
+        "WELCOME_PLAYER_BROADCAST": "[^%LEVEL%%ROLE%^7] ^5%PLAYER%^7 a rejoint depuis ^5%LOCATION%^7",
         "QUIT_PLAYER_BROADCAST": "^1%NAME%^7 est parti..",
         "COMMAND_PLAYERS_FORMAT": "[^%LEVEL%%ROLE%^7] ^5%NAME%^7 (^6@%CLIENTID%^7) @ ^3%HOSTNAME%",
         "NO_PLAYERS_ONLINE": "Aucuns joueurs en ligne",
@@ -213,7 +213,11 @@
         "PENALTY_KICK": "Kicked",
         "PENALTY_UNBAN": "Unbanned",
         "PENALTY_VPN_KICK": "VPN detected",
-        "COMMAND_MUTE_FORMAT": "Muted ^5%TARGET%^7 for ^5%DURATION%^7 seconds"
+        "COMMAND_MUTE_FORMAT": "Muted ^5%TARGET%^7 for ^5%DURATION%^7 seconds",
+        "COMMAND_SETTAG_FORMAT": "^5%s^7's tag has been set to %s",
+        "COMMAND_SETTAG_FORMAT_SELF": "Your tag has been set to %s",
+        "COMMAND_DELTAG_SELF": "Your tag has been removed",
+        "COMMAND_DELTAG_FORMAT": "^5%s^7's tag has been removed"
     },
     "Games": {
       "T6": {
