@@ -1,4 +1,4 @@
-const Localization = JSON.parse(process.env.Localization)
+const Localization = JSON.parse(process.env.Localization).lookup
 const fetch        = require('node-fetch')
 
 class Plugin {
