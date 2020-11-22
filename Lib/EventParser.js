@@ -30,12 +30,12 @@ class EventParser {
         var eventData = { type: null, data: null }
         Object.entries(eventRegex).forEach((r) => {
             if (eventString.match(r[1])) {
-                var eventVars = eventString.split(';')
+                var eventVars = r[1].exec(eventString)
                 eventVars[0] = parseInt(eventVars[0].split(':')[0]) * 60 + parseInt(eventVars[0].split(':')[1])
                 eventData = { type: r[0], vars: eventVars }
             }
         })
-
+        
         return eventData
     }
     parseEvent(eventString) {
@@ -53,8 +53,8 @@ class EventParser {
             case 'say':
                 parsedEvent.data = {
                     TimeOffset: eventData.vars[0],
-                    Origin: this.Server.Clients[eventData.vars[3]],
-                    Message: eventData.vars[5].replace(/[^\x20-\x7E]+/g, '')
+                    Origin: this.Server.Clients[eventData.vars[4]],
+                    Message: eventData.vars[6].replace(/[^\x20-\x7E]+/g, '')
                 }
             break
             case 'quit':
@@ -62,28 +62,28 @@ class EventParser {
                 parsedEvent.data = {
                     TimeOffset: eventData.vars[0],
                     Origin: {
-                        Guid: eventData.vars[2],
-                        Clientslot: eventData.vars[3],
-                        Name: eventData.vars[4].replace(/\[.*\]/g, '')
+                        Guid: eventData.vars[3],
+                        Clientslot: eventData.vars[4],
+                        Name: eventData.vars[5].replace(/\[.*\]/g, '')
                     },
                 }
             break
             case 'kill':
-                var Weapon = eventData.vars[10]
+                var Weapon = eventData.vars[11]
                 var BaseWeapon = Weapon
                 if (Weapon.indexOf('_mp') > 0) {
                     BaseWeapon = Weapon.substr(0, Weapon.indexOf('_mp'))
                 }
-                var suicide = eventData.vars[3] == eventData.vars[7]
+                var suicide = eventData.vars[4] == eventData.vars[8]
                 parsedEvent.data = {
                     TimeOffset: eventData.vars[0],
-                    Target: this.Server.Clients[eventData.vars[3]],
-                    Origin: suicide ? {ClientId: 1} : this.Server.Clients[eventData.vars[7]],
+                    Target: this.Server.Clients[eventData.vars[4]],
+                    Origin: suicide ? {ClientId: 1} : this.Server.Clients[eventData.vars[8]],
                     Attack: {
-                        Weapon: eventData.vars[10],
-                        Damage: eventData.vars[11],
-                        MOD: eventData.vars[12],
-                        HitLoc: eventData.vars[13],
+                        Weapon: eventData.vars[11],
+                        Damage: eventData.vars[12],
+                        MOD: eventData.vars[13],
+                        HitLoc: eventData.vars[14],
                         BaseWeapon: BaseWeapon
                     }
                 } 

@@ -29,6 +29,7 @@ class Utils {
         return string
     }
     stripString(string) {
+        if (!string) return ''
         return string.toString().replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), '')
     }
     secondsToDhms (seconds) {
