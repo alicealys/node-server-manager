@@ -23,20 +23,24 @@ class Plugin {
             .addParams([
                 {
                     name: 'target',
-                    index: 1,
-                    join: true
+                    index: 0,
                 },
                 {
                     name: 'tag',
-                    index: 0
+                    join: true,
+                    index: 1
                 }
             ])
             .addCallback(async (Player, params) => {
                 var Client = await this.Server.getClient(params.target)
-
-                if (!Client) {
-                    Player.Tell(Localization['COMMAND_CLIENT_NOT_FOUND'])
-                    return
+                
+                switch (true) {
+                    case (!Client):
+                        Player.Tell(Localization['COMMAND_CLIENT_NOT_FOUND'])
+                        return
+                    case (Client.ClientId != Player.ClientId && Client.PermissionLevel >= Player.PermissionLevel):
+                        Player.Tell(Localization['CLIENT_HIERARCHY_ERROR'])
+                        return
                 }
 
                 this.Server.DB.metaService.addPersistentMeta('custom_tag', params.tag, Client.ClientId)
@@ -44,11 +48,10 @@ class Plugin {
 
                 if (inGame) {
                     inGame.Server.Rcon.executeCommandAsync(`setclantagraw ${inGame.Clientslot} "${params.tag}"`)
-
                     inGame.Tell(Utils.va(Localization['COMMAND_SETTAG_FORMAT_SELF'], params.tag))
                 }
 
-                Player.Tell(Utils.va(Localization['COMMAND_SETTAG_FORMAT'], inGame.Name, params.tag))
+                (Player.ClientId != Client.ClientId || !inGame) && Player.Tell(Utils.va(Localization['COMMAND_SETTAG_FORMAT'], Client.Name, params.tag))
             })
 
             this.Manager.Commands.add(command)
