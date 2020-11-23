@@ -105,7 +105,7 @@ class Plugin {
                 `)
             })
             if (this.Server.Gamename == 'IW5')
-                this.Manager.Commands.add(command)
+                //this.Manager.Commands.add(command)
         })(this);
 
         (() => {
@@ -124,7 +124,7 @@ class Plugin {
                 `)
             })
             if (this.Server.Gamename == 'IW5')
-                this.Manager.Commands.add(command)
+                //this.Manager.Commands.add(command)
         })(this);
 
         (() => {
