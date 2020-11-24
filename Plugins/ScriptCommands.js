@@ -104,7 +104,7 @@ class Plugin {
                     player.iPrintLn(\\"Vision set to ^5${vision}\\")
                 `)
             })
-            if (this.Server.Gamename == 'IW5')
+            //if (this.Server.Gamename == 'IW5')
                 //this.Manager.Commands.add(command)
         })(this);
 
@@ -123,7 +123,7 @@ class Plugin {
                     player.iPrintLn(\\"Night Vision ${vision == 'default_night_mp' ? '^2On' : '^1Off'}\\");
                 `)
             })
-            if (this.Server.Gamename == 'IW5')
+            //if (this.Server.Gamename == 'IW5')
                 //this.Manager.Commands.add(command)
         })(this);
 
