@@ -51,20 +51,29 @@ class Plugin {
             var customTag = await this.Server.DB.metaService.getPersistentMeta('custom_tag', Player.ClientId)
             role = customTag ? `^7${customTag.Value}` : role
 
-            if (Player.IPAddress) {
-                var info = !(setting && setting.Value == '1') 
-                    ? await this.getInfo(Player.IPAddress.match(/(localhost|127\.0\.0\.1)/g) 
-                        ? this.Server.externalIP 
-                        : Player.IPAddress) 
-                    : { country: Localization['STRING_HIDDEN'] }
-
+            if (!Player.IPAddress) {
                 this.Server.Broadcast(Utils.formatString(Localization['WELCOME_PLAYER_BROADCAST'], {
                     player: Player.Name,
-                    location: info ? info.country : Localization['STRING_UNKNOWN'],
+                    location: Localization['STRING_UNKNOWN'],
                     level: Player.PermissionLevel,
                     role
                 }, '%')[0])
+
+                return
             }
+
+            var info = !(setting && setting.Value == '1') 
+                ? await this.getInfo(Player.IPAddress.match(/(localhost|127\.0\.0\.1)/g) 
+                    ? this.Server.externalIP 
+                    : Player.IPAddress) 
+                : { country: Localization['STRING_HIDDEN'] }
+
+            this.Server.Broadcast(Utils.formatString(Localization['WELCOME_PLAYER_BROADCAST'], {
+                player: Player.Name,
+                location: info ? info.country : Localization['STRING_UNKNOWN'],
+                level: Player.PermissionLevel,
+                role
+            }, '%')[0])
         })
     }
     async getInfo(IPAddress) {
