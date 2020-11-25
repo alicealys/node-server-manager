@@ -82,7 +82,7 @@ class Plugin {
                 var inGame = this.Server.findClient(Client.ClientId)
 
                 if (inGame) {
-                    var role = Utils.stripString(Utils.getRoleFrom(Player.PermissionLevel, 1).Name)
+                    var role = Utils.stripString(Utils.getRoleFrom(Client.PermissionLevel, 1).Name)
 
                     inGame.Server.Rcon.executeCommandAsync(`setclantagraw ${inGame.Clientslot} "${role}"`)
                     inGame.Tell(Localization['COMMAND_DELTAG_SELF'])
