@@ -94,6 +94,8 @@ class ePlayer extends EventEmitter {
         this.Server.Rcon.executeCommandAsync(this.Server.Rcon.commandPrefixes.Rcon.clientKick
             .replace('%CLIENT%', this.Clientslot)
             .replace('%REASON%', `${Basemsg}${Message}`))
+        
+        //this.Server.Clients[this.Clientslot] = null
   } 
 }
 module.exports = ePlayer

@@ -2,6 +2,7 @@
     "lookup": {
         "COMMAND_NOT_FOUND" : "Command not found, use ^5help^7 for a list of commands",
         "COMMAND_ARGUMENT_ERROR" : "Not enough arguments supplied",
+        "COMMAND_ARGUMENT_INVALID": "^1Invalid argument ^3%s^7,^1 expected ^5%s^7",
         "COMMAND_CLIENT_NOT_FOUND" : "Player not found",
         "COMMAND_CLIENT_NOT_INGAME" : "Player is not in game",
         "COMMAND_COMMAND_USAGE": "Usage: %PREFIX%^7%USAGE%",
@@ -226,7 +227,16 @@
         "COMMAND_SETTAG_FORMAT": "^5%s^7's tag has been set to %s",
         "COMMAND_SETTAG_FORMAT_SELF": "Your tag has been set to %s",
         "COMMAND_DELTAG_SELF": "Your tag has been removed",
-        "COMMAND_DELTAG_FORMAT": "^5%s^7's tag has been removed"
+        "COMMAND_DELTAG_FORMAT": "^5%s^7's tag has been removed",
+        "AVPN_BLACKLISTED": "Your IP address is blacklisted",
+        "AVPN_REMOVE_ADDRESS": "Removed ^5%s",
+        "AVPN_ADD_ADDRESS": "Added ^5%s",
+        "AVPN_ADD_CLIENT": "Added client with ClientId ^5%n",
+        "AVPN_REMOVE_CLIENT": "Removed client with ClientId ^5%n",
+        "AVPN_HELP": "^5blacklist^7: list of blacklisted addresses\n^5whitelist^7: list of whitelisted addresses^7: list of whitelisted clients\nActions: ^5flush^7, ^5add^7, ^5remove^7",
+        "AVPN_RESET": "Configuration reset",
+        "AVPN_FLUSH": "Flushed ^5%s",
+        "AVPN_LIST": "^3%s^7: ^5%i^7 entries"
     },
     "Games": {
       "T6": {
