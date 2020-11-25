@@ -236,7 +236,7 @@
         "AVPN_HELP": "^5blacklist^7: list of blacklisted addresses\n^5whitelist^7: list of whitelisted addresses^7: list of whitelisted clients\nActions: ^5flush^7, ^5add^7, ^5remove^7",
         "AVPN_RESET": "Configuration reset",
         "AVPN_FLUSH": "Flushed ^5%s",
-        "AVPN_LIST": "^3%s^7: ^5%i^7 entries"
+        "AVPN_LIST": "^5%s^7: ^3%n^7 entries"
     },
     "Games": {
       "T6": {
