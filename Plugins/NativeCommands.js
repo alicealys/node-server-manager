@@ -216,7 +216,7 @@ class Plugin {
                         return
                     }
         
-                    Target.Session.Data.lastMsg = Player
+                    Target.Session && (Target.Session.Data.lastMsg = Player)
                     Player.inGame && (Player.Session.Data.lastMsg = Target)
     
                     Target.Tell(`^3[^5${Player.Name}^3 (@^5${Player.ClientId}^3) -> me]^7 ${args.slice(2).join(' ')}`)
