@@ -130,6 +130,7 @@ class Plugin {
 
         this.Manager.commands['votekick'] = {
             ArgumentLength: 2,
+            gameTypeExclusions: ['zclassic', 'zstandard'],
             Alias: 'vk',
             Permission: Permissions.Commands.COMMAND_USER_CMDS,
             inGame: true,

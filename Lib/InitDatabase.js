@@ -686,7 +686,7 @@ class Database {
                 order: [
                     ['Date', 'desc']
                 ]
-            })).map(s => s = {x: s.Date, y: s.Performance})
+            })).map(s => s = {x: i, y: s.Performance})
         }
 
         this.cache[`statHistory_${page};${limit}`] = Stats
