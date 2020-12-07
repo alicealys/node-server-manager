@@ -353,6 +353,12 @@ class Plugin {
             })
             .addCallback(async (Player, params) => {
                 if (!params.server) {
+                    if (Player.Session.Data.serverChat) {
+                        Player.Session.Data.serverChat.Broadcast(Utils.formatString(Localization['SERVERCHAT_DISCONNECTED'], {
+                            Name: Player.Name
+                        }, '%')[0])
+                    }
+
                     Player.Session.Data.serverChat = undefined
                     Player.Tell(Localization['SERVERCHAT_DISABLED'])
                     return
@@ -366,6 +372,10 @@ class Plugin {
                 }
 
                 Player.Session.Data.serverChat = Manager.Server
+
+                Manager.Server.Broadcast(Utils.formatString(Localization['SERVERCHAT_CONNECTED'], {
+                    Name: Player.Name
+                }, '%')[0])
 
                 Player.Tell(Utils.formatString(Localization['SERVERCHAT_ENABLED'], {
                     Hostname: Manager.Server.Hostname

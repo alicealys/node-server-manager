@@ -230,7 +230,9 @@
         "AVPN_FLUSH": "Flushed ^5%s",
         "AVPN_LIST": "^5%s^7: ^3%n^7 entries",
         "SERVERCHAT_DISABLED": "Server chat disconnected",
-        "SERVERCHAT_ENABLED": "Connected to ^3%HOSTNAME%"
+        "SERVERCHAT_ENABLED": "Connected to ^3%HOSTNAME%",
+        "SERVERCHAT_CONNECTED": "^5%NAME%^7 connected to this server's chat",
+        "SERVERCHAT_DISCONNECTED": "^5%NAME%^7 disconnected from this server's chat"
     },
     "Games": {
       "T6": {

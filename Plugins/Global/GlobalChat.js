@@ -14,9 +14,11 @@ class Plugin {
     }
     playerMessage(Player, Message) {
         if (Player.Session && Player.Session.Data.serverChat) {
-            Player.Session.Data.serverChat.Broadcast(Utils.formatString(Localization['SOCKET_MSG_FORMAT'], {
+            Player.Session.Data.serverChat.Broadcast(Utils.formatString(Localization['GLOBALCHAT_FORMAT'], {
+                Enabled: '',
                 Name: Player.Name,
-                Message
+                Message,
+                Hostname: Player.Hostname
             }))
         }
 
