@@ -1,4 +1,4 @@
-const ePlayer           = require('./ePlayer.js')
+const ePlayer           = require('./Player.js')
 const path              = require('path')
 const Commands          = require(path.join(__dirname, `../Commands.js`))
 const EventEmitter      = require('events')

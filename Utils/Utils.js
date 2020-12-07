@@ -48,6 +48,9 @@ class Utils {
     capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
+    cleanIncludes(str1, str2) {
+        return this.stripString(str1).toLocaleLowerCase().includes(this.stripString(str2).toLocaleLowerCase())
+    }
     str2bool(string) {
         return string ? string == '1' || string == 'true' : null
     }

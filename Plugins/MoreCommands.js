@@ -33,6 +33,7 @@ class Plugin {
                     funcs.Tell(Utils.formatString(Localization['COMMAND_CALC_RESULT'], { result: Localization['COMMAND_CALC_FAIL'] }, '%')[0])
                 }
             })
+
             this.Manager.Commands.add(command)
         })(this);
 
@@ -61,6 +62,7 @@ class Plugin {
                     break
                 }
             })
+
             this.Manager.Commands.add(command)
         })(this);
 
@@ -83,6 +85,7 @@ class Plugin {
 
                 funcs.Tell(Utils.formatString(Localization['COMMAND_LINKS_FORMAT'], {name: sc[0], url: sc[1]}, '%')[0])
             })
+
             this.Manager.Commands.add(command)
         })(this);
 
@@ -127,6 +130,7 @@ class Plugin {
                 }
 
             })
+
             this.Manager.Commands.add(command)
         })(this);
 
@@ -166,6 +170,7 @@ class Plugin {
 
                 this.Server.tellStaffGlobal(Utils.formatString(Localization['COMMAND_REPORT_TELL'], {Origin: Player.Name, Hostname: Player.Server.HostnameRaw,Target: Client.Name, Reason: params.reason}, '%')[0])
             })
+
             this.Manager.Commands.add(command)
         })(this);
 
@@ -192,6 +197,7 @@ class Plugin {
                     Player.inGame && await wait(500)
                 }
             })
+
             this.Manager.Commands.add(command)
         })(this);
 
@@ -224,6 +230,7 @@ class Plugin {
                     address: `${Client.Server.externalIP}:${Client.Server.PORT}`
                 }, '%')[0])
             })
+
             this.Manager.Commands.add(command)
         })(this);
 
@@ -245,6 +252,7 @@ class Plugin {
                     Player.Tell(e.toString())
                 }
             })
+
             if (process.env.NODE_ENV == 'dev')
                 this.Manager.Commands.add(command)
         })(this);
@@ -279,6 +287,7 @@ class Plugin {
                   .replace('%KDR%',(Stats.Kills / Math.max(Stats.Deaths, 1)).toFixed(2)))
                 else funcs.Tell(Localization.COMMAND_CLIENT_NOT_FOUND)
             })
+
             this.Manager.Commands.add(command)
         })(this);
 
@@ -290,6 +299,7 @@ class Plugin {
             .addCallback(async (Player, params, args, options, funcs) => {
                 funcs.Tell(Utils.formatString(Localization['COMMAND_UPTIME_FORMAT'], {uptime: Utils.time2str(this.Server.uptime)}, '%')[0])
             })
+
             this.Manager.Commands.add(command)
         })(this);
 
@@ -306,6 +316,7 @@ class Plugin {
                     totalSlots: this.Managers.reduce((a, {Server}) => a + Server.Clients.length, 0)
                 }, '%')[0])
             })
+
             this.Manager.Commands.add(command)
         })(this);
 
@@ -327,6 +338,40 @@ class Plugin {
 
                 funcs.Tell(buffer)
             })
+            
+            this.Manager.Commands.add(command)
+        })(this);
+
+        (() => {
+            let command = new Command()
+            .setName('chat')
+            .setInGame(true)
+            .addParam({
+                name: 'server',
+                optional: true,
+                join: true
+            })
+            .addCallback(async (Player, params) => {
+                if (!params.server) {
+                    Player.Session.Data.serverChat = undefined
+                    Player.Tell(Localization['SERVERCHAT_DISABLED'])
+                    return
+                }
+
+                var Manager = this.Managers.find(Manager => Utils.cleanIncludes(Manager.Server.Hostname, params.server))
+
+                if (!Manager) {
+                    Player.Tell(Localization['SERVER_NOT_FOUND'])
+                    return
+                }
+
+                Player.Session.Data.serverChat = Manager.Server
+
+                Player.Tell(Utils.formatString(Localization['SERVERCHAT_ENABLED'], {
+                    Hostname: Manager.Server.Hostname
+                }, '%')[0])
+            })
+
             this.Manager.Commands.add(command)
         })(this);
     }

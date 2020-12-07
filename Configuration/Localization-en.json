@@ -128,6 +128,7 @@
         "COMMAND_PARSE_TIME_ERROR": "Could not parse time, format: 1d (day), 2h (hours), 3m (mins), 10s (secs)",
         "RCON_SERVER_NOT_SPECIFIED": "Please specify the server to execute this command on",
         "SERVER_NOT_EXIST": "Specified server doesn't exist or is offline, Usage: rcon serverid command",
+        "SERVER_NOT_FOUND": "Server not found",
         "TOKEN_LOGIN_DISABLED": "Token login is disabled, to re-enable it go to your account settings",
         "CLIENT_NOT_AUTHORIZED": "You activated in-game login, go to the webfront and authorize the login before executing any commands",
         "AUDIT_CMD_EXEC": "Execute command %NAME%",
@@ -236,7 +237,9 @@
         "AVPN_HELP": "^5blacklist^7: list of blacklisted addresses\n^5whitelist^7: list of whitelisted addresses^7: list of whitelisted clients\nActions: ^5flush^7, ^5add^7, ^5remove^7",
         "AVPN_RESET": "Configuration reset",
         "AVPN_FLUSH": "Flushed ^5%s",
-        "AVPN_LIST": "^5%s^7: ^3%n^7 entries"
+        "AVPN_LIST": "^5%s^7: ^3%n^7 entries",
+        "SERVERCHAT_DISABLED": "Server chat disconnected",
+        "SERVERCHAT_ENABLED": "Connected to ^3%HOSTNAME%"
     },
     "Games": {
       "T6": {

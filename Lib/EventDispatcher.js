@@ -1,4 +1,4 @@
-const ePlayer       = require('./Entity/ePlayer.js')
+const ePlayer       = require('./Entity/Player.js')
 const wait          = require('delay')
 
 class EventDispatcher {

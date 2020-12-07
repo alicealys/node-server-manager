@@ -125,6 +125,7 @@
         "COMMAND_PARSE_TIME_ERROR": "Mauvaise utilisation, format: 1d (jour), 2h (heures), 3m (minutes), 10s (secondes)",
         "RCON_SERVER_NOT_SPECIFIED": "Specifie les serveur sur lequel vous voulez executer la commande",
         "SERVER_NOT_EXIST": "Le serveur specifie n''existe pas, Usage: rcon serverid command",
+        "SERVER_NOT_FOUND": "Server not found",
         "TOKEN_LOGIN_DISABLED": "Le login par token est desactive, activez le pour acceder a vos parametres de compte",
         "CLIENT_NOT_AUTHORIZED": "Vous venez d'activer le login par token, allez sur le webfront pour l'autoriser avant d'executer n'importe quelle commande.",
         "AUDIT_CMD_EXEC": "Execute la commande %NAME%",
@@ -227,7 +228,9 @@
         "AVPN_HELP": "^5blacklist^7: list of blacklisted addresses\n^5whitelist^7: list of whitelisted addresses^7: list of whitelisted clients\nActions: ^5flush^7, ^5add^7, ^5remove^7",
         "AVPN_RESET": "Configuration reset",
         "AVPN_FLUSH": "Flushed ^5%s",
-        "AVPN_LIST": "^5%s^7: ^3%n^7 entries"
+        "AVPN_LIST": "^5%s^7: ^3%n^7 entries",
+        "SERVERCHAT_DISABLED": "Server chat disconnected",
+        "SERVERCHAT_ENABLED": "Connected to ^3%HOSTNAME%"
     },
     "Games": {
       "T6": {

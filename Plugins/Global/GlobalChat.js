@@ -13,11 +13,28 @@ class Plugin {
         })
     }
     playerMessage(Player, Message) {
+        if (Player.Session && Player.Session.Data.serverChat) {
+            Player.Session.Data.serverChat.Broadcast(Utils.formatString(Localization['SOCKET_MSG_FORMAT'], {
+                Name: Player.Name,
+                Message
+            }))
+        }
+
         this.Managers.forEach(async Manager => {
             Manager.Server.Clients.forEach(Client => {
-                if (!Client 
-                    || !Client.Session 
-                    || !Client.Session.Data.globalChat 
+                if (!Client || !Client.Session) return
+
+                if (Client.Session.Data.serverChat 
+                    && Client.Session.Data.serverChat.Id == Player.Server.Id 
+                    && (!Player.Session.Data.serverChat || Player.Session.Data.serverChat && Player.Session.Data.serverChat.Id != Client.Server.Id)) {
+                    Client.Tell(Utils.formatString(Localization['SOCKET_MSG_FORMAT'], {
+                        Name: Player.Name, 
+                        Message,
+                    }, '%')[0])
+                    return
+                }
+
+                if (!Client.Session.Data.globalChat 
                     || Client.Server.Id == Player.Server.Id) return
 
                 Client.Tell(Utils.formatString(Localization['GLOBALCHAT_FORMAT'], {
