@@ -18,7 +18,7 @@ class Plugin {
                 Enabled: '',
                 Name: Player.Name,
                 Message,
-                Hostname: Player.Hostname
+                Hostname: Player.Server.Hostname
             }))
         }
 
