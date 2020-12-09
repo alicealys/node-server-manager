@@ -681,7 +681,7 @@ class Database {
         for (var i = 0; i < Stats.length; i++) {
             Stats[i].History = (await Models.NSMPlayerStatHistory.findAll({
                 where: {ClientId: Stats[i].ClientId},
-                limit: 100,
+                limit: 25,
                 attributes: [[Sequelize.literal('max(Performance, 0)'), 'Performance'], 'Date'],
                 order: [
                     ['Date', 'desc']

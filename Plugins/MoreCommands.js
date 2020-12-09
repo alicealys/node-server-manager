@@ -371,6 +371,12 @@ class Plugin {
                     return
                 }
 
+                if (Player.Session.Data.serverChat && Player.Session.Data.serverChat.Id != Manager.Server.Id) {
+                    Player.Session.Data.serverChat.Broadcast(Utils.formatString(Localization['SERVERCHAT_DISCONNECTED'], {
+                        Name: Player.Name
+                    }, '%')[0])
+                }
+
                 Player.Session.Data.serverChat = Manager.Server
 
                 Manager.Server.Broadcast(Utils.formatString(Localization['SERVERCHAT_CONNECTED'], {
