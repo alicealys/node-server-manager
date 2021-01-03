@@ -407,8 +407,15 @@ class Plugin {
                 const size = Player.inGame ? 4 : 15
                 const chunkedRules = Utils.chunkArray(this.Server.config.rules, size)
 
-                const index = Math.max(0, Math.min(params.page ? parseInt(params.page) - 1 : 0, chunkedRules.length))
-                const rules = chunkedRules[index]
+                const page = Math.max(0, Math.min(params.page ? parseInt(params.page) - 1 : 0, chunkedRules.length))
+                const rules = chunkedRules[page]
+
+                Player.Tell(Utils.formatString(Localization['COMMAND_LIST_PAGE'], {
+                    current: page + 1,
+                    max: chunkedRules.length
+                }, '%')[0])
+
+                Player.inGame && await wait(300)
 
                 for (var i = 0; i < rules.length; i++) {
                     Player.Tell(Utils.va(Localization['COMMAND_RULES_FORMAT'], size * index + i + 1, rules[i]))
