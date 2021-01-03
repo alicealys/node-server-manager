@@ -418,7 +418,7 @@ class Plugin {
                 Player.inGame && await wait(300)
 
                 for (var i = 0; i < rules.length; i++) {
-                    Player.Tell(Utils.va(Localization['COMMAND_RULES_FORMAT'], size * index + i + 1, rules[i]))
+                    Player.Tell(Utils.va(Localization['COMMAND_RULES_FORMAT'], size * page + i + 1, rules[i]))
 
                     Player.inGame && await wait(500)
                 }

@@ -120,7 +120,7 @@ class Plugin {
                     return
                 }
 
-                if ((new Date() - Player.Data.lastWithdraw) / 1000 < 5) {
+                if (Player.Data.lastWithdraw && (new Date() - Player.Data.lastWithdraw) / 1000 < 5) {
                     Player.Tell(Localization['COMMAND_COOLDOWN'])
                     return
                 }
