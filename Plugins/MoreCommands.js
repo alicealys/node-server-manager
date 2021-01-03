@@ -390,6 +390,36 @@ class Plugin {
 
             this.Manager.Commands.add(command)
         })(this);
+
+        (() => {
+
+            let command = new Command()
+            .setName('rules')
+            .addParam({
+                name: 'page',
+                optional: true
+            })
+            .addCallback(async (Player, params) => {
+                if (!this.Server.config.rules) {
+                    Player.Tell(Localization['COMMAND_RULES_UNDEFINED'])
+                    return
+                }
+
+                const size = Player.inGame ? 4 : 15
+                const chunkedRules = Utils.chunkArray(this.Server.config.rules, size)
+
+                const index = Math.max(0, Math.min(params.page ? parseInt(params.page) - 1 : 0, chunkedRules.length))
+                const rules = chunkedRules[index]
+
+                for (var i = 0; i < rules.length; i++) {
+                    Player.Tell(Utils.va(Localization['COMMAND_RULES_FORMAT'], size * index + i + 1, rules[i]))
+
+                    Player.inGame && await wait(500)
+                }
+            })
+
+            this.Manager.Commands.add(command)
+        })(this);
     }
 }
 

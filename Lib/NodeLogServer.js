@@ -63,6 +63,7 @@ class NodeLogServer {
                     conn.close()
                     return
                 }
+                
                 console.log(`Accepting connection from ${req.socket.remoteAddress}`)
                 socket.authorizedClients.push(conn)
             })

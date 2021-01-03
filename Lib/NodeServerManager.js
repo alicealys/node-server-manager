@@ -101,7 +101,6 @@ class NSM extends EventEmitter{
 }
 
 if (configured) {
-
     const configuration         = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`).toString())
     process.env.LOCALE          = configuration.locale ? fs.existsSync(path.join(__dirname, `../Configuration/Localization-${configuration.locale}.json`)) ? configuration.locale : 'en' : 'en'
     var RconConnection          = require('./RconConnection.js')
@@ -131,7 +130,7 @@ if (configured) {
     console.log(`Environment: ${process.env.NODE_ENV == 'dev' ? 'Development' : 'Production'}`)
 
     configuration.Servers.forEach(config => {
-        Managers.push(new NSM(config))
+        Managers.push(new NSM({ ...configuration, ...config }))
     })
 
     var masterServer = new (require('./MasterServer.js'))(Managers)
