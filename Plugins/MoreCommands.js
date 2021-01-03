@@ -392,7 +392,6 @@ class Plugin {
         })(this);
 
         (() => {
-
             let command = new Command()
             .setName('rules')
             .addParam({
@@ -416,6 +415,18 @@ class Plugin {
 
                     Player.inGame && await wait(500)
                 }
+            })
+
+            this.Manager.Commands.add(command)
+        })(this);
+
+        (() => {
+            let command = new Command()
+            .setName('resetstats')
+            .setAlias('rs')
+            .addCallback(async (Player, params) => {
+                await this.Server.DB.resetStats(Player.ClientId)
+                Player.Tell(Localization['COMMAND_RESETSTATS_RESET'])
             })
 
             this.Manager.Commands.add(command)

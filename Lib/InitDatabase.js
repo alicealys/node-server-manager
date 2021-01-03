@@ -601,8 +601,8 @@ class Database {
     async getGlobalStats() {
         if (this.cache[`globalStats`]) return this.cache[`globalStats`]
 
-        var totalKills = (await Models.NSMKills.findAll({
-            attributes: [[Sequelize.fn('max', Sequelize.literal('_rowid_')), 'totalKills']],
+        var totalKills = (await Models.NSMPlayerStats.findAll({
+            attributes: [[Sequelize.fn('sum', Sequelize.col('Kills')), 'totalKills']],
         }))[0].dataValues.totalKills
 
         var totalPlayedTime = (await Models.NSMPlayerStats.findAll({
@@ -619,6 +619,7 @@ class Database {
 
         var Player = await this.getClient(ClientId)
         if (!Player) return false
+
         var Stats = {
             Kills: await this.getPlayerKills(ClientId),
             Deaths: await this.getPlayerDeaths(ClientId),
@@ -1003,6 +1004,22 @@ class Database {
         Models.NSMPlayerStats.update(
             { 'Kills': Stats.Kills, 'Deaths': Stats.Deaths, 'Performance': Stats.Performance, 'TotalPerformance': Stats.TotalPerformance},
             {where: {ClientId: ClientId}}, {transaction: this.transaction})
+    }
+
+    async resetStats(ClientId) {
+        await Models.NSMPlayerStats.update({
+            'Kills': 0,
+            'Deaths': 0,
+            'Performance': 100,
+            'TotalPerformance': 100
+        },
+        {
+            where: {
+                ClientId
+            }
+        }, { transaction: this.transaction })
+
+        this.cache[`statsTotal_${ClientId}`] = undefined
     }
 
     async logMessage(ClientId, Name, Hostname, Message) {

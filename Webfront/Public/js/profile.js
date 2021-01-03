@@ -6,9 +6,8 @@ window.addEventListener('load', () => {
     socket.addEventListener('message', (e) => {
         var msg = JSON.parse(e.data)
         if (msg.event == 'event_client_message') {
-          notifyMe(msg.ServerId, msg.Client, msg.Message)
+          notifyMe(msg.ServerId, msg.Client, msg.Message, msg.Client.Name)
           if (msg.Client.ClientId != Profile.ClientId) return
-          document.getElementById('message-count').innerHTML = parseInt(document.getElementById('message-count').innerHTML) + 1
           logMessage(msg, false)
         }
     })
@@ -81,7 +80,7 @@ function escapeHtml(text) {
   return text.replace(/[&<>"']/g, function(m) { return map[m] })
 }
 
-async function notifyMe(ServerId, Client, Message) {
+async function notifyMe(ServerId, Client, Message, Title = 'Message') {
   const notifications = document.getElementById("notifications-cont")
   var n = document.createDocumentFragment()
   var status = ServerId ? JSON.parse(await makeRequest('GET', `/api/players?ServerId=${ServerId}`)) : null
@@ -91,7 +90,7 @@ async function notifyMe(ServerId, Client, Message) {
   <div class='notification-notif notifFadeIn notifFadeOut'>
       <div class='notification-icon'></div>
       <div class='notification-textcontent'>
-          <div class='notification-user'><div><a href='/id/${Client.ClientId}' class='wf-link wf-bold'>${status ? Client.Name : ''}</a> ${status ? '@' : ''} <div class='wf-notif-hostname' data-colorcode>${status ? COD2HTML(status.Dvars.Hostname, 'var(--color-text)') : 'Penalties'}</div></div></div>
+          <div class='notification-user'><div><a href='/id/${Client.ClientId}' class='wf-link wf-bold'>${status ? Client.Name : ''}</a> ${status ? '@' : ''} <div class='wf-notif-hostname' data-colorcode>${status ? COD2HTML(status.Dvars.Hostname, 'var(--color-text)') : Title}</div></div></div>
           <pre class='notification-text'>${COD2HTML(Message)}</pre>
       </div>
       <div notification-dismiss class='notification-btn'>
@@ -169,7 +168,7 @@ function kickClient() {
       return
     }
     var result = JSON.parse(await makeRequest('GET', `/api/mod?command=${btoa(`command=kick @${Profile.ClientId} ${params.Reason}`)}`))
-    notifyMe(null, Profile, result.result.join(' '))
+    notifyMe(null, Profile, result.result.join(' '), 'Penalties')
     close()
   })
 }
@@ -188,7 +187,7 @@ function unBanClient(el) {
     el.setAttribute('onclick', null)
     el.onclick = function () { banClient(el) }
     el.children[0].className = 'fas fa-lock-open'
-    notifyMe(null, Profile, result.result.join(' '))
+    notifyMe(null, Profile, result.result.join(' '), 'Penalties')
     close()
   })
 }
@@ -208,7 +207,7 @@ function banClient(el) {
     el.onclick = function () { unBanClient(el) }
     console.log(el)
     el.children[0].className = 'fas fa-lock'
-    notifyMe(null, Profile, result.result.join(' '))
+    notifyMe(null, Profile, result.result.join(' '), 'Penalties')
     close()
   })
 }

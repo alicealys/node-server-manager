@@ -243,7 +243,8 @@
         "SERVERCHAT_CONNECTED": "^5%NAME%^7 connected to this server's chat",
         "SERVERCHAT_DISCONNECTED": "^5%NAME%^7 disconnected from this server's chat",
         "COMMAND_RULES_UNDEFINED": "This server has no rules...",
-        "COMMAND_RULES_FORMAT": "^3#%n^7: ^5%s"
+        "COMMAND_RULES_FORMAT": "^3#%n^7: ^5%s",
+        "COMMAND_RESETSTATS_RESET": "Your stats have been reset"
     },
     "Games": {
       "T6": {

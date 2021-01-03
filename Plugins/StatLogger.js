@@ -13,8 +13,6 @@ class Plugin {
         Player.lastSeen = new Date()
 
         Player.on('death', async (Attacker, Attack) => {
-            this.Server.DB.logKill(Attacker.ClientId, Player.ClientId, Attack)
-
             this.Buffer.Stats[Player.ClientId] = this.Buffer.Stats[Player.ClientId] 
                 ? this.Buffer.Stats[Player.ClientId] 
                 : await this.Server.DB.getPlayerStatsTotal(Player.ClientId)

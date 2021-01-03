@@ -93,7 +93,7 @@ class NSM extends EventEmitter{
                     new plugin(this.Server, this, Managers)
                 }
                 catch (e) {
-                    console.log(`Error evaluating plugin \x1b[33m${file}\x1b[0m: \x1b[31m${e.toString()}\x1b[0m`)
+                    console.log(`Error evaluating plugin \x1b[33m${file}\x1b[0m: \x1b[31m${e.toString()}\n${e.stack}\x1b[0m`)
                 }
             })
         })
