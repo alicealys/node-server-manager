@@ -424,9 +424,9 @@ class Plugin {
             let command = new Command()
             .setName('resetstats')
             .setAlias('rs')
-            .addCallback(async (Player, params) => {
+            .addCallback(async (Player, params, args, options, funcs) => {
                 await this.Server.DB.resetStats(Player.ClientId)
-                Player.Tell(Localization['COMMAND_RESETSTATS_RESET'])
+                funcs.Tell(Localization['COMMAND_RESETSTATS_RESET'])
             })
 
             this.Manager.Commands.add(command)
