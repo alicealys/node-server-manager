@@ -262,23 +262,33 @@ class Plugin {
             callback: async (Player, args) => {
                 if (args[1]) {
                     const Client = await this.Server.getClient(args[1])
-                    const amount = (await this.getZMStats(Player.ClientId)).Money
+
+                    if (!Client) {
+                        Player.Tell(Localization['COMMAND_CLIENT_NOT_FOUND'])
+                        return
+                    }
+
+                    const amount = (await this.getZMStats(Client.ClientId)).Money
                         
                     if (!amount) {
                         Player.Tell(Localization['ZBANK_NO_ACCOUNT'])
                         return
                     }
 
-                    if (!Client) {
-                        Player.Tell(Utils.formatString(Localization['ZBANK_MONEY_FORMAT_SELF'], {amount}, '%')[0])
-                        return
-                    }
-
                     Player.Tell(Utils.formatString(Localization['ZBANK_MONEY_FORMAT'], {name: Client.Name, amount}, '%')[0])
-                } else {
-                    Player.Tell(Utils.formatString(Localization['ZBANK_MONEY_FORMAT_SELF'], {amount: (await this.getZMStats(Player.ClientId)).Money}, '%')[0])
+                    return
                 }
 
+                const amount = (await this.getZMStats(Player.ClientId)).Money
+
+                if (!amount) {
+                    Player.Tell(Localization['ZBANK_NO_ACCOUNT'])
+                    return
+                }
+
+                Player.Tell(Utils.formatString(Localization['ZBANK_MONEY_FORMAT_SELF'], {
+                    amount
+                }, '%')[0])
             }
         }
     }
