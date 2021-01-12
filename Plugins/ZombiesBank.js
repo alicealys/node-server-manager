@@ -262,15 +262,15 @@ class Plugin {
             callback: async (Player, args) => {
                 if (args[1]) {
                     const Client = await this.Server.getClient(args[1])
-                    const aumount = (await this.getZMStats(Player.ClientId)).Money
+                    const amount = (await this.getZMStats(Player.ClientId)).Money
                         
-                    if (!aumount) {
+                    if (!amount) {
                         Player.Tell(Localization['ZBANK_NO_ACCOUNT'])
                         return
                     }
 
                     if (!Client) {
-                        Player.Tell(Utils.formatString(Localization['ZBANK_MONEY_FORMAT_SELF'], {aumount}, '%')[0])
+                        Player.Tell(Utils.formatString(Localization['ZBANK_MONEY_FORMAT_SELF'], {amount}, '%')[0])
                         return
                     }
 
