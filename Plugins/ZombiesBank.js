@@ -179,7 +179,7 @@ class Plugin {
                         Player.Tell(Localization['ZBANK_BALANCE_ERROR'])
                     return
                 }
-                
+
                 var result = await Player.Server.Rcon.executeCommandAsync(`set bank_deposit ${Player.Guid};${depositMoney}`)
 
                 if (result) {
@@ -261,22 +261,20 @@ class Plugin {
             Permission: Permissions.Commands.COMMAND_USER_CMDS,
             callback: async (Player, args) => {
                 if (args[1]) {
-                    var Client = await this.Server.getClient(args[1])
-
-                    if (!Client) {
-                        const aumount = (await this.getZMStats(Player.ClientId)).Money
+                    const Client = await this.Server.getClient(args[1])
+                    const aumount = (await this.getZMStats(Player.ClientId)).Money
                         
-                        if (!aumount) {
-                            Player.Tell(Localization['ZBANK_NO_ACCOUNT'])
-                            return
-                        }
-
-                        Player.Tell(Utils.formatString(Localization['ZBANK_MONEY_FORMAT_SELF'], {aumount}, '%')[0])
-
+                    if (!aumount) {
+                        Player.Tell(Localization['ZBANK_NO_ACCOUNT'])
                         return
                     }
 
-                    Player.Tell(Utils.formatString(Localization['ZBANK_MONEY_FORMAT'], {name: Client.Name, amount: (await this.getZMStats(Client.ClientId)).Money}, '%')[0])
+                    if (!Client) {
+                        Player.Tell(Utils.formatString(Localization['ZBANK_MONEY_FORMAT_SELF'], {aumount}, '%')[0])
+                        return
+                    }
+
+                    Player.Tell(Utils.formatString(Localization['ZBANK_MONEY_FORMAT'], {name: Client.Name, amount}, '%')[0])
                 } else {
                     Player.Tell(Utils.formatString(Localization['ZBANK_MONEY_FORMAT_SELF'], {amount: (await this.getZMStats(Player.ClientId)).Money}, '%')[0])
                 }
