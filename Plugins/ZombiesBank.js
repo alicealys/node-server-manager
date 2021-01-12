@@ -179,7 +179,9 @@ class Plugin {
                         Player.Tell(Localization['ZBANK_BALANCE_ERROR'])
                     return
                 }
+                
                 var result = await Player.Server.Rcon.executeCommandAsync(`set bank_deposit ${Player.Guid};${depositMoney}`)
+
                 if (result) {
                     Player.Data.lastDeposit = new Date()
                     Player.Tell(Utils.formatString(Localization['ZBANK_DEPOSIT_SUCCESS'], {amount: depositMoney}, '%')[0])
@@ -197,17 +199,21 @@ class Plugin {
             Permission: Permissions.Commands.COMMAND_USER_CMDS,
             callback: async (Player, args) => {
                 var Target = await this.Server.getClient(args[1])
+
                 switch (true) {
                     case (!Target):
                         Player.Tell(Localization['COMMAND_CLIENT_NOT_FOUND'])
                     return
                 }
+
                 var totalMoney = (await this.getZMStats(Player.ClientId)).Money
                 var moneyToGive = parseInt(args[2])
+
                 switch (true) {
                     case (!Number.isInteger(moneyToGive) || moneyToGive < 0):
                         Player.Tell(Localization['ZBANK_PARSE_ERROR'])
                     return
+                    case (!totalMoney):
                     case (totalMoney < parseInt(moneyToGive * 1.05) && Player.Guid != 'Node'):
                         Player.Tell(Localization['ZBANK_BALANCE_ERROR'])
                     return
@@ -215,6 +221,7 @@ class Plugin {
 
                 await this.addPlayerMoney(Player.ClientId, -1 * parseInt(parseInt(moneyToGive) * 1.05))
                 this.addPlayerMoney(Target.ClientId, parseInt(moneyToGive))
+
                 Player.Tell(Utils.formatString(Localization['ZBANK_TRANSFER_FORMAT'], {amount: moneyToGive, name: Target.Name, fee: parseInt(moneyToGive * 0.05), id: Utils.getRandomInt(10000000, 90000000)}, '%')[0])
                 Target.inGame = Utils.findClient(Target.ClientId, this.Managers)
                 Target.inGame && Target.inGame.Tell(Utils.formatString(Localization['ZBANK_RECEIVE_FORMAT'], {amount: moneyToGive, name: Player.Name}, '%')[0])
@@ -255,10 +262,20 @@ class Plugin {
             callback: async (Player, args) => {
                 if (args[1]) {
                     var Client = await this.Server.getClient(args[1])
+
                     if (!Client) {
-                        Player.Tell(Utils.formatString(Localization['ZBANK_MONEY_FORMAT_SELF'], {amount: (await this.getZMStats(Player.ClientId)).Money}, '%')[0])
+                        const aumount = (await this.getZMStats(Player.ClientId)).Money
+                        
+                        if (!aumount) {
+                            Player.Tell(Localization['ZBANK_NO_ACCOUNT'])
+                            return
+                        }
+
+                        Player.Tell(Utils.formatString(Localization['ZBANK_MONEY_FORMAT_SELF'], {aumount}, '%')[0])
+
                         return
                     }
+
                     Player.Tell(Utils.formatString(Localization['ZBANK_MONEY_FORMAT'], {name: Client.Name, amount: (await this.getZMStats(Client.ClientId)).Money}, '%')[0])
                 } else {
                     Player.Tell(Utils.formatString(Localization['ZBANK_MONEY_FORMAT_SELF'], {amount: (await this.getZMStats(Player.ClientId)).Money}, '%')[0])

@@ -689,7 +689,7 @@ class Database {
                 ]
             })).map(s => s = {x: i, y: s.Performance})
         }
-
+        
         this.cache[`statHistory_${page};${limit}`] = Stats
 
         return Stats
