@@ -120,7 +120,7 @@ class Plugin {
                     return
                 }
 
-                if (Player.Data.lastWithdraw && (new Date() - Player.Data.lastWithdraw) / 1000 < 5) {
+                if (Player.Data && Player.Data.lastWithdraw && (new Date() - Player.Data.lastWithdraw) / 1000 < 5) {
                     Player.Tell(Localization['COMMAND_COOLDOWN'])
                     return
                 }
@@ -161,7 +161,7 @@ class Plugin {
                     return
                 }
 
-                if ((new Date() - Player.Data.lastDeposit) / 1000 < 5) {
+                if (Player.Data && (new Date() - Player.Data.lastDeposit) / 1000 < 5) {
                     Player.Tell(Localization['COMMAND_COOLDOWN'])
                     return
                 }
@@ -270,8 +270,8 @@ class Plugin {
 
                     const amount = (await this.getZMStats(Client.ClientId)).Money
                         
-                    if (!amount) {
-                        Player.Tell(Localization['ZBANK_NO_ACCOUNT'])
+                    if (amount == undefined) {
+                        Player.Tell(Localization['ZBANK_PLAYER_NO_ACCOUNT'])
                         return
                     }
 
@@ -281,7 +281,7 @@ class Plugin {
 
                 const amount = (await this.getZMStats(Player.ClientId)).Money
 
-                if (!amount) {
+                if (amount == undefined) {
                     Player.Tell(Localization['ZBANK_NO_ACCOUNT'])
                     return
                 }
