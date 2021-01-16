@@ -251,8 +251,8 @@ class Plugin {
         }
 
         channel.webhook = webhook
-
         Server.channel = channel
+
         Server.emit('discord_ready')
 
         this.serverLogger(category, guild, Server)
@@ -331,8 +331,10 @@ class Plugin {
             var args = msg.content.substr(1).split(/\s+/g)
 
             var buffer = []
+
             var Player = {
                 PermissionLevel: 0,
+                discordUser: msg.author.id,
                 ClientId: 0,
                 inGame: false,
                 Tell: (msg) => {

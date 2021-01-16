@@ -382,6 +382,9 @@ class Plugin {
                     var Client = await this.Server.DB.getClient(Player.ClientId)
 
                     switch (true) {
+                        case (Player.discordUser):
+                            Player.Tell(Localization['COMMAND_ENV_ERROR'])
+                        return
                         case (!Client):
                             Player.Tell(Localization['COMMAND_CLIENT_NOT_FOUND'])
                         return
