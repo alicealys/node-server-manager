@@ -118,8 +118,6 @@ class Plugin {
 
                 var censoredName = await this.Server.DB.metaService.getPersistentMeta('censored_name', Client.ClientId, 'bool')
 
-                console.log(censoredName)
-
                 if (censoredName && censoredName.Value) {
                     this.Server.DB.metaService.addPersistentMeta('censored_name', false, Client.ClientId)
 
