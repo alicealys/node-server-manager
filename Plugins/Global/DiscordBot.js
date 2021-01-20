@@ -17,7 +17,7 @@ const colors = ['#FF3131', '#86C000', '#FFAD22', '#0082BA', '#25BDF1', '#9750DD'
 
 var databaseCache = {}
 
-var stringInsert = (string, index, length, substr) => {
+const stringInsert = (string, index, length, substr) => {
     var left = string.slice(0, index)
     var right = string.slice(index + length, string.length)
 
@@ -27,7 +27,7 @@ var stringInsert = (string, index, length, substr) => {
     return left
 }
 
-var formatColors = (string) => {
+const formatColors = (string) => {
     var open = false
 
     for (var i = 0; i < string.length; i++) {
@@ -93,7 +93,7 @@ const pagedMessage = async (original, callback, options) => {
     bot.on('messageReactionAdd', onReaction)
 
     setTimeout(() => {
-        bot.removeListener('messageReactionAdd', callback)
+        bot.removeListener('messageReactionAdd', onReaction)
     }, options.timeout)
 
     return msg
