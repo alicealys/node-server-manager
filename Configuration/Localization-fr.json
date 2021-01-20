@@ -11,6 +11,7 @@
         "COMMAND_ENV_ERROR": "Cette commande peux etre executer seulement en jeu",
         "ROLE_SELF_ERROR" : "Vous ne pouvez pas modifier votre propre roles",
         "COMMAND_STATS_FORMAT" : "[ ^5%NAME% ^7] => ^5%KILLS% ^7Kills | ^5%DEATHS% ^7Morts | ^5%KDR% ^7Ratio | ^5%PERFORMANCE% ^7Performance | ^5%PLAYEDTIME% ^7Temps de jeu ",
+        "COMMAND_FIND_FORMAT": "#%INDEX% - ^5%NAME%^7 | ^5@%CLIENTID%^7 | ^5%ROLE%^7 | Active ^5%ACTIVE%^7, | Joined ^5%JOINED%^7",
         "COMMAND_FORBIDDEN" : "Vous n'avez pas les permissions pour faire ceci",
         "ROLE_NOT_EXIST" : "Le role specifie n'existe pas",
         "COMMAND_HELP": "Montre une liste de commande",

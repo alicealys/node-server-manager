@@ -598,6 +598,16 @@ class Plugin {
                     var Reason = args.slice(3).join(' ')
                     var Duration = parseInt(parts[0] * timeVars[parts[1]])
 
+                    Reason = Reason.replace(new RegExp(/rule([0-9]+)/g), (rule) => {
+                        var num = Math.max(parseInt(rule.substr(4)), 1) - 1
+            
+                        if (this.Server.config.rules[num]) {
+                            return this.Server.config.rules[num]
+                        }
+            
+                        return rule
+                    })
+
                     if (Duration > 86400 * 32) {
                         Player.Tell(Localization['COMMAND_PARSE_TIME_ERROR'])
                         return
@@ -642,6 +652,16 @@ class Plugin {
         
                     var Reason = args.slice(2).join(' ')
         
+                    Reason = Reason.replace(new RegExp(/rule([0-9]+)/g), (rule) => {
+                        var num = Math.max(parseInt(rule.substr(4)), 1) - 1
+            
+                        if (this.Server.config.rules[num]) {
+                            return this.Server.config.rules[num]
+                        }
+            
+                        return rule
+                    })
+
                     var Target = this.Server.findClient(Client.ClientId)
                     if (Target) {
                         Target.Ban(Reason, Player)
@@ -667,7 +687,7 @@ class Plugin {
                     Permission: Permissions.Commands.COMMAND_USER_CMDS,
                     inGame: false,
                     callback: async (Player, args, delay) => {
-                        var MatchedClients = await this.Server.DB.getClientByName(args.slice(1).join(' '))
+                        var MatchedClients = await this.Server.DB.getClientByName(args.slice(1).join(' '), 10)
     
                         if (MatchedClients.length <= 0) { 
                             Player.Tell(Localization['COMMAND_CLIENT_NOT_FOUND'])

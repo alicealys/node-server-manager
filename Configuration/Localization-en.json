@@ -12,6 +12,7 @@
         "COMMAND_ENV_ERROR": "This command can only be executed in-game",
         "ROLE_SELF_ERROR" : "You can't set your own role",
         "COMMAND_STATS_FORMAT" : "[ ^5%NAME% ^7] => ^5%KILLS%^7 Kills | ^5%DEATHS% ^7Deaths | ^5%KDR% ^7KDR | ^5%PERFORMANCE%^7 Performance | ^7Play time ^5%PLAYEDTIME%",
+        "COMMAND_FIND_FORMAT": "#%INDEX% - ^5%NAME%^7 | ^5@%CLIENTID%^7 | ^5%ROLE%^7 | Active ^5%ACTIVE%^7, | Joined ^5%JOINED%^7",
         "COMMAND_FORBIDDEN" : "You don't have enough permissions for this",
         "ROLE_NOT_EXIST" : "Specified role doesn't exist",
         "COMMAND_HELP": "Display the list of commands",

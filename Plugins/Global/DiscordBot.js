@@ -9,10 +9,97 @@ const Permissions   = require(path.join(__dirname, `../../Configuration/NSMConfi
 const Localization  = require(path.join(__dirname, `../../Configuration/Localization-${process.env.LOCALE}.json`)).lookup
 const fs            = require('fs')
 const wait          = require('delay')
+const moment        = require('moment')
+
+const clamp = (num, min, max) => Math.min(Math.max(num, min), max)
 
 const colors = ['#FF3131', '#86C000', '#FFAD22', '#0082BA', '#25BDF1', '#9750DD']
 
 var databaseCache = {}
+
+var stringInsert = (string, index, length, substr) => {
+    var left = string.slice(0, index)
+    var right = string.slice(index + length, string.length)
+
+    left += substr
+    left += right
+
+    return left
+}
+
+var formatColors = (string) => {
+    var open = false
+
+    for (var i = 0; i < string.length; i++) {
+        if (string[i] == '^' && string[i + 1] && string[i + 1].match(/[0-9]/g)) {
+            if (string[i + 1] == '7') {
+                open = false
+
+                string = stringInsert(string, i, 2, '\u200B**\u200B')
+
+                continue
+            }
+
+            string = stringInsert(string, i, 2, open ? '\u200B**\u200B**\u200B' : '\u200B**\u200B')
+
+            open = true
+        }
+    }
+    
+    if (open) {
+        string += '\u200B**\u200B'
+    }
+
+    return string
+}
+
+const pagedMessage = async (original, callback, options) => {
+    var defaultOptions = {timeout: 60 * 1000, max: 0}
+    options = {...defaultOptions, ...options}
+
+    var page = 0
+
+    var msg = await original.channel.send(callback(page))
+
+    const backward = '⬅'
+    const forward = '➡'
+
+    await msg.react(backward)
+    await msg.react(forward)
+
+    var onReaction = async (reaction, user) => {
+        if (reaction.message.id != msg.id || user.id != original.author.id) {
+            return
+        }
+
+        switch (reaction.emoji.name) {
+            case (backward):
+                previous = page
+                page = clamp(--page, 0, options.max)
+
+                previous != page && msg.edit(callback(page))
+                break
+            case (forward):
+                previous = page
+                page = clamp(++page, 0, options.max)
+
+                previous != page && msg.edit(callback(page))
+                break
+        }
+
+        reaction.users.remove(user.id)
+    }
+
+    bot.on('messageReactionAdd', onReaction)
+
+    setTimeout(() => {
+        bot.removeListener('messageReactionAdd', callback)
+    }, options.timeout)
+
+    return msg
+}
+
+var discordUsers = {}
 
 class Plugin {
     constructor(Managers) {
@@ -20,6 +107,91 @@ class Plugin {
         this.Manager = Managers[0]
         this.Server = this.Manager.Server
         this.clientCache = {}
+
+        this.commands = {
+            'help': async (msg, user, args) => {
+                var commands = Object.entries({...this.Manager.commands, ...this.Manager.Commands.Commands})
+                .filter(command => { 
+                    return !command[1].isMiddleware && (Permissions.Levels[command[1].Permission] == 0 || command[1].PermissionLevel == 0)
+                })
+
+                var chunkedCommands = Utils.chunkArray(commands, 5)
+
+                pagedMessage(msg, (page) => {
+                    let embed = new Discord.MessageEmbed()
+                    .setTitle(`Page ${page + 1} / ${chunkedCommands.length}`)
+
+                    for (var i = 0; i < chunkedCommands[page].length; i++) {
+                        embed.addField(
+                            chunkedCommands[page][i][0],
+                            Localization[`COMMAND_${chunkedCommands[page][i][0].toLocaleUpperCase()}`],
+                            false
+                        )
+                    }
+
+                    return embed
+                }, { max: chunkedCommands.length - 1})
+            },
+            'find': async (msg, user, args) => {
+                var name = args.splice(1).join(' ')
+                var matches = await this.Server.DB.getClientByName(name, 20)
+
+                if (matches.length <= 0) { 
+                    msg.author.tell(Localization['COMMAND_CLIENT_NOT_FOUND'])
+                    return 
+                }
+
+                user.lastMatches = matches
+
+                var chunkedMatches = Utils.chunkArray(matches, 5)
+
+                pagedMessage(msg, (page) => {
+                    let embed = new Discord.MessageEmbed()
+                    .setTitle(`Page ${page + 1} / ${chunkedMatches.length}`)
+
+                    for (var i = 0; i < chunkedMatches[page].length; i++) {
+                        var text = formatColors(Utils.formatString(Localization['COMMAND_FIND_FORMAT'], {
+                            index: page * 5 + i + 1,
+                            Name: chunkedMatches[page][i].Name,
+                            ClientId: chunkedMatches[page][i].ClientId,
+                            Role: Utils.stripString(Utils.getRoleFrom(chunkedMatches[page][i].PermissionLevel, 1).Name),
+                            Active: moment(chunkedMatches[page][i].LastConnection).calendar(),
+                            Joined: moment(chunkedMatches[page][i].FirstConnection).calendar()
+                        }, '%')[0])
+
+                        embed.addField(
+                            '\u200B',
+                            text,
+                            false
+                        )
+                    }
+
+                    return embed
+                }, {max: chunkedMatches.length - 1})
+            },
+            'servers': async (msg, user, args) => {
+                if (this.Managers.length <= 0) {
+                    return
+                }
+
+                var chunkedManagers = Utils.chunkArray(this.Managers.concat().filter(m => m.Server.dvarsLoaded), 5)
+
+                pagedMessage(msg, (page) => {
+                    let embed = new Discord.MessageEmbed()
+                    .setTitle(`Page ${page + 1} / ${chunkedManagers.length}`)
+
+                    for (var i = 0; i < chunkedManagers[page].length; i++) {
+                        embed.addField(
+                            `${Utils.stripString(chunkedManagers[page][i].Server.Hostname)} - ${chunkedManagers[page][i].Server.externalIP}`,
+                            `${chunkedManagers[page][i].Server.getMapname().Alias} - ${chunkedManagers[page][i].Server.getClients().length} / ${chunkedManagers[page][i].Server.Clients.length}`,
+                            false
+                        )
+                    }
+
+                    return embed
+                })
+            }
+        }
 
         if (!token) return
         this.discordBot()
@@ -328,9 +500,40 @@ class Plugin {
             var ClientId = await this.Server.DB.metaService.reversePersistentMeta('discord_id', msg.author.id)
             var Client = ClientId ? await this.Server.DB.getClient(ClientId.ClientId) : false
 
+            if (!discordUsers[msg.author.id.toString()]) {
+                discordUsers[msg.author.id.toString()] = {}
+            }
+
+            var user = discordUsers[msg.author.id.toString()]
+
+            if (user.lastMatches) {
+                msg.content = msg.content.replace(new RegExp(/#([0-9]+)/g), (n) => {
+                    var num = Math.max(parseInt(n.substr(1)), 1) - 1
+
+                    if (user.lastMatches[num]) {
+                        return `@${user.lastMatches[num].ClientId}`
+                    }
+
+                    return n
+                })
+            }
+
             var args = msg.content.substr(1).split(/\s+/g)
 
             var buffer = []
+
+            if (this.commands[args[0].toLocaleLowerCase()]) {
+                msg.author.tell = (text) => {
+                    let embed = new Discord.MessageEmbed()
+                    .setColor(colors[Utils.getRandomInt(0, colors.length)])
+                    .addField('\u200B', `${text.substr(0, 1000)}`, true)
+
+                    msg.channel.send(embed)
+                }
+
+                this.commands[args[0].toLocaleLowerCase()](msg, user, args)
+                return
+            }
 
             var Player = {
                 PermissionLevel: 0,
