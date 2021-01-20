@@ -131,7 +131,7 @@ class Plugin {
                     }
 
                     return embed
-                }, { max: chunkedCommands.length - 1})
+                }, {max: chunkedCommands.length - 1})
             },
             'find': async (msg, user, args) => {
                 var name = args.splice(1).join(' ')
@@ -190,7 +190,7 @@ class Plugin {
                     }
 
                     return embed
-                })
+                }, {max: chunkedManagers.length - 1})
             }
         }
 
