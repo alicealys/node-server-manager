@@ -5,7 +5,6 @@ const _EventDispatcher  = require('./EventDispatcher.js')
 class EventLogWatcher extends EventParser {
     constructor (logServerURI, Server, Manager) {
         super(Server)
-        this.previousMD5 = null
         this.logServerURI = logServerURI
         this.Server = Server
         this.Manager = Manager
@@ -17,6 +16,14 @@ class EventLogWatcher extends EventParser {
             
             socket.onmessage = (msg) => {
                 this.onLine(msg.data)
+            }
+
+            socket.onclose = () => {
+                console.log(`Connection to log server (${this.logServerURI}) lost, reconnecting in 15 seconds...`)
+
+                setTimeout(() => {
+                    this.init()
+                }, 15 * 1000)
             }
         }
         catch (e) {
