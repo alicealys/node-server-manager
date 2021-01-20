@@ -93,8 +93,67 @@ class Plugin {
 
             this.Manager.Commands.add(command)
         })(this);
+
+        (() => {
+            let command = new Command()
+            .setName('censorname')
+            .setAlias('cn')
+            .setPermission('ROLE_MODERATOR')
+            .addParams([
+                {
+                    name: 'target',
+                    index: 0,
+                    join: true
+                }
+            ])
+            .addCallback(async (Player, params) => {
+                var Client = await this.Server.getClient(params.target)
+
+                if (!Client) {
+                    Player.Tell(Localization['COMMAND_CLIENT_NOT_FOUND'])
+                    return
+                }
+
+                var inGame = this.Server.findClient(Client.ClientId)
+
+                var censoredName = await this.Server.DB.metaService.getPersistentMeta('censored_name', Client.ClientId, 'bool')
+
+                console.log(censoredName)
+
+                if (censoredName && censoredName.Value) {
+                    this.Server.DB.metaService.addPersistentMeta('censored_name', false, Client.ClientId)
+
+                    inGame && this.Server.Rcon.executeCommandAsync(`rename ${inGame.Clientslot} ""`)
+
+                    Player.Tell(Utils.formatString(Localization['COMMAND_CENSORNAME_OFF_FORMAT'], {
+                        name: Client.Name
+                    }))
+                    return
+                }
+
+                this.Server.DB.metaService.addPersistentMeta('censored_name', true, Client.ClientId)
+
+                var name = `user${Client.ClientId}`
+
+                inGame && this.Server.Rcon.executeCommandAsync(`rename ${inGame.Clientslot} "${name}"`)
+
+                Player.Tell(Utils.formatString(Localization['COMMAND_CENSORNAME_ON_FORMAT'], {
+                    name: Client.Name
+                }))
+            })
+
+            this.Manager.Commands.add(command)
+        })(this);
     }
     async onPlayerConnect(Player) {
+        var censoredName = await Player.getPersistentMeta('censored_name', 'bool')
+
+        if (censoredName && censoredName.Value) {
+            var name = `user${Player.ClientId}`
+
+            this.Server.Rcon.executeCommandAsync(`rename ${Player.Clientslot} "${name}"`)
+        }
+
         var role = Utils.getRoleFrom(Player.PermissionLevel, 1).Name
 
         var customTag = await this.Server.DB.metaService.getPersistentMeta('custom_tag', Player.ClientId)
@@ -103,6 +162,7 @@ class Plugin {
         this.Server.Rcon.executeCommandAsync(`setclantagraw ${Player.Clientslot} "${role}"`)
     }
     async onPlayerDisconnect(Player) {
+        this.Server.Rcon.executeCommandAsync(`rename ${Player.Clientslot} ""`)
         this.Server.Rcon.executeCommandAsync(`setclantagraw ${Player.Clientslot} ""`)
     }
 }

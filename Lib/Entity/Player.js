@@ -35,6 +35,11 @@ class ePlayer extends EventEmitter {
         }
         catch(e) { }
     }
+    async getPersistentMeta(name, type = '') {
+        var result = await this.Server.DB.metaService.getPersistentMeta(name, this.ClientId, type)
+
+        return result
+    }
     Report(Reason, Origin = NodeServerManager) {
         this.Server.DB.addReport(Origin.ClientId, this.ClientId, Reason)
         this.Server.emit('report', Origin, this, Reason)

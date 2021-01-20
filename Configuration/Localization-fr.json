@@ -237,7 +237,9 @@
         "SERVERCHAT_DISCONNECTED": "^5%NAME%^7 disconnected from this server's chat",
         "COMMAND_RULES_UNDEFINED": "This server has no rules...",
         "COMMAND_RULES_FORMAT": "^3#%n^7: ^5%s",
-        "COMMAND_RESETSTATS_RESET": "Your stats have been reset"
+        "COMMAND_RESETSTATS_RESET": "Your stats have been reset",
+        "COMMAND_CENSORNAME_ON_FORMAT": "^5%NAME%^7's name has been censored",
+        "COMMAND_CENSORNAME_OFF_FORMAT": "^5%NAME%^7's name has been uncensored"
     },
     "Games": {
       "T6": {

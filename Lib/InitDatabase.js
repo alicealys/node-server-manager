@@ -53,7 +53,7 @@ class MetaService {
 
         return meta.length ? meta[0] : null
     }
-    async getPersistentMeta(Key, ClientId) {
+    async getPersistentMeta(Key, ClientId, type = '') {
         if (!ClientId) return null
         
         var meta = await this.Models.NSMMeta.findAll({
@@ -63,6 +63,23 @@ class MetaService {
             },
             raw: true
         })
+
+        if (meta.length) {
+            switch (type) {
+                case 'bool':
+                    meta[0].Value = parseInt(meta[0].Value) == 1
+                    break
+                case 'int':
+                    meta[0].Value = parseInt(meta[0].Value)
+                    break
+                case 'float':
+                    meta[0].Value = parseFloat(meta[0].Value)
+                    break
+                case 'json':
+                    meta[0].Value = JSON.parse(meta[0].Value)
+                    break
+            }
+        }
 
         return meta.length ? meta[0] : null
     }
