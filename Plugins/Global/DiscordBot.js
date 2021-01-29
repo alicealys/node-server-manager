@@ -105,93 +105,6 @@ const pagedMessage = async (original, callback, options) => {
     return msg
 }
 
-var commands = {
-    'help': async (msg, user, args) => {
-        var commands = Object.entries({...this.Manager.commands, ...this.Manager.Commands.Commands})
-        .filter(command => { 
-            return !command[1].isMiddleware && (Permissions.Levels[command[1].Permission] == 0 || command[1].PermissionLevel == 0)
-        })
-
-        var chunkedCommands = Utils.chunkArray(commands, 5)
-
-        pagedMessage(msg, (page) => {
-            let embed = new Discord.MessageEmbed()
-            .setTitle(`Page ${page + 1} / ${chunkedCommands.length}`)
-
-            for (var i = 0; i < chunkedCommands[page].length; i++) {
-                embed.addField(
-                    chunkedCommands[page][i][0],
-                    Localization[`COMMAND_${chunkedCommands[page][i][0].toLocaleUpperCase()}`],
-                    false
-                )
-            }
-
-            return embed
-        }, {max: chunkedCommands.length - 1})
-    },
-    'find': async (msg, user, args) => {
-        var name = args.splice(1).join(' ')
-        var matches = await this.Server.DB.getClientByName(name, 20)
-
-        if (matches.length <= 0) { 
-            msg.author.tell(Localization['COMMAND_CLIENT_NOT_FOUND'])
-            return 
-        }
-
-        user.lastMatches = matches
-
-        var chunkedMatches = Utils.chunkArray(matches, 5)
-
-        pagedMessage(msg, (page) => {
-            let embed = new Discord.MessageEmbed()
-            .setTitle(`Page ${page + 1} / ${chunkedMatches.length}`)
-
-            for (var i = 0; i < chunkedMatches[page].length; i++) {
-                var text = formatColors(Utils.formatString(Localization['COMMAND_FIND_FORMAT'], {
-                    index: page * 5 + i + 1,
-                    Name: chunkedMatches[page][i].Name,
-                    ClientId: chunkedMatches[page][i].ClientId,
-                    Role: Utils.stripString(Utils.getRoleFrom(chunkedMatches[page][i].PermissionLevel, 1).Name),
-                    Active: moment(chunkedMatches[page][i].LastConnection).calendar(),
-                    Joined: moment(chunkedMatches[page][i].FirstConnection).calendar()
-                }, '%')[0])
-
-                embed.addField(
-                    '\u200B',
-                    text,
-                    false
-                )
-            }
-
-            return embed
-        }, {max: chunkedMatches.length - 1})
-    },
-    'servers': async (msg, user, args) => {
-        if (this.Managers.length <= 0) {
-            return
-        }
-
-        var chunkedManagers = Utils.chunkArray(this.Managers.concat().filter(m => m.Server.dvarsLoaded), 5)
-
-        pagedMessage(msg, (page) => {
-            let embed = new Discord.MessageEmbed()
-            .setTitle(`Page ${page + 1} / ${chunkedManagers.length}`)
-
-            for (var i = 0; i < chunkedManagers[page].length; i++) {
-                embed.addField(
-                    `${Utils.stripString(chunkedManagers[page][i].Server.Hostname)} - ${chunkedManagers[page][i].Server.externalIP}`,
-                    `${chunkedManagers[page][i].Server.getMapname().Alias} - ${chunkedManagers[page][i].Server.getClients().length} / ${chunkedManagers[page][i].Server.Clients.length}`,
-                    false
-                )
-            }
-
-            return embed
-        }, {max: chunkedManagers.length - 1})
-    }
-}
-
-commands['f'] = commands['find']
-
 var discordUsers = {}
 
 class Plugin {
@@ -200,6 +113,93 @@ class Plugin {
         this.Manager = Managers[0]
         this.Server = this.Manager.Server
         this.clientCache = {}
+
+        this.commands = {
+            'help': async (msg, user, args) => {
+                var commands = Object.entries({...this.Manager.commands, ...this.Manager.Commands.Commands})
+                .filter(command => { 
+                    return !command[1].isMiddleware && (Permissions.Levels[command[1].Permission] == 0 || command[1].PermissionLevel == 0)
+                })
+        
+                var chunkedCommands = Utils.chunkArray(commands, 5)
+        
+                pagedMessage(msg, (page) => {
+                    let embed = new Discord.MessageEmbed()
+                    .setTitle(`Page ${page + 1} / ${chunkedCommands.length}`)
+        
+                    for (var i = 0; i < chunkedCommands[page].length; i++) {
+                        embed.addField(
+                            chunkedCommands[page][i][0],
+                            Localization[`COMMAND_${chunkedCommands[page][i][0].toLocaleUpperCase()}`],
+                            false
+                        )
+                    }
+        
+                    return embed
+                }, {max: chunkedCommands.length - 1})
+            },
+            'find': async (msg, user, args) => {
+                var name = args.splice(1).join(' ')
+                var matches = await this.Server.DB.getClientByName(name, 20)
+        
+                if (matches.length <= 0) { 
+                    msg.author.tell(Localization['COMMAND_CLIENT_NOT_FOUND'])
+                    return 
+                }
+        
+                user.lastMatches = matches
+        
+                var chunkedMatches = Utils.chunkArray(matches, 5)
+        
+                pagedMessage(msg, (page) => {
+                    let embed = new Discord.MessageEmbed()
+                    .setTitle(`Page ${page + 1} / ${chunkedMatches.length}`)
+        
+                    for (var i = 0; i < chunkedMatches[page].length; i++) {
+                        var text = formatColors(Utils.formatString(Localization['COMMAND_FIND_FORMAT'], {
+                            index: page * 5 + i + 1,
+                            Name: chunkedMatches[page][i].Name,
+                            ClientId: chunkedMatches[page][i].ClientId,
+                            Role: Utils.stripString(Utils.getRoleFrom(chunkedMatches[page][i].PermissionLevel, 1).Name),
+                            Active: moment(chunkedMatches[page][i].LastConnection).calendar(),
+                            Joined: moment(chunkedMatches[page][i].FirstConnection).calendar()
+                        }, '%')[0])
+        
+                        embed.addField(
+                            '\u200B',
+                            text,
+                            false
+                        )
+                    }
+        
+                    return embed
+                }, {max: chunkedMatches.length - 1})
+            },
+            'servers': async (msg, user, args) => {
+                if (this.Managers.length <= 0) {
+                    return
+                }
+        
+                var chunkedManagers = Utils.chunkArray(this.Managers.concat().filter(m => m.Server.dvarsLoaded), 5)
+        
+                pagedMessage(msg, (page) => {
+                    let embed = new Discord.MessageEmbed()
+                    .setTitle(`Page ${page + 1} / ${chunkedManagers.length}`)
+        
+                    for (var i = 0; i < chunkedManagers[page].length; i++) {
+                        embed.addField(
+                            `${Utils.stripString(chunkedManagers[page][i].Server.Hostname)} - ${chunkedManagers[page][i].Server.externalIP}`,
+                            `${chunkedManagers[page][i].Server.getMapname().Alias} - ${chunkedManagers[page][i].Server.getClients().length} / ${chunkedManagers[page][i].Server.Clients.length}`,
+                            false
+                        )
+                    }
+        
+                    return embed
+                }, {max: chunkedManagers.length - 1})
+            }
+        }
+
+        this.commands['f'] = this.commands['find']
 
         if (!token) return
         this.discordBot()
@@ -531,7 +531,7 @@ class Plugin {
 
             var buffer = []
 
-            if (commands[args[0].toLocaleLowerCase()]) {
+            if (this.commands[args[0].toLocaleLowerCase()]) {
                 msg.author.tell = (text) => {
                     let embed = new Discord.MessageEmbed()
                     .setColor(colors[Utils.getRandomInt(0, colors.length)])
@@ -540,7 +540,7 @@ class Plugin {
                     msg.channel.send(embed)
                 }
 
-                commands[args[0].toLocaleLowerCase()](msg, user, args)
+                this.commands[args[0].toLocaleLowerCase()](msg, user, args)
                 return
             }
 
