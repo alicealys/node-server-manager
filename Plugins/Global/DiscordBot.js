@@ -221,6 +221,8 @@ class Plugin {
             'players': async (msg, user, args) => {
                 var allClients = getAllClients(this.Managers)
 
+                user.lastMatches = allClients
+
                 if (!allClients.length) {
                     msg.author.tell(Localization['NO_PLAYERS_ONLINE'])
                     return
@@ -234,11 +236,11 @@ class Plugin {
                     
                     var buffer = []
         
-                    chunkedClients[page].forEach(Client => {
+                    var i = 0; chunkedClients[page].forEach(Client => {
                         const role = Utils.stripString(Utils.getRoleFrom(Client.PermissionLevel, 1).Name)
                         const hostname = formatColors(Client.Server.Hostname)
 
-                        buffer.push(`[[${role}] **${Client.Name}**](${process.env.webfrontUrl}/id/${Client.ClientId}) - ${hostname}`)
+                        buffer.push(`#${page * 10 + i++ + 1} - [[${role}] **${Client.Name}**](${process.env.webfrontUrl}/id/${Client.ClientId}) - ${hostname}`)
                     })
 
                     embed.addField(`\u200B`, buffer.join('\n').substr(0, 1020), false)
