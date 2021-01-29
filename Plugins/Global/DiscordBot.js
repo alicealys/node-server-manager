@@ -18,6 +18,8 @@ const colors = ['#FF3131', '#86C000', '#FFAD22', '#0082BA', '#25BDF1', '#9750DD'
 
 var databaseCache = {}
 
+const color = () => colors[Utils.getRandomInt(0, colors.length)]
+
 const stringInsert = (string, index, length, substr) => {
     var left = string.slice(0, index)
     var right = string.slice(index + length, string.length)
@@ -86,8 +88,15 @@ const pagedMessage = async (original, callback, options) => {
     const backward = '⬅'
     const forward = '➡'
 
+    const fastforward = '⏩'
+    const rewind = '⏪'
+
+    await msg.react(rewind)
+
     await msg.react(backward)
     await msg.react(forward)
+
+    await msg.react(fastforward)
 
     var onReaction = async (reaction, user) => {
         if (user.id == bot.user.id) {
@@ -100,18 +109,30 @@ const pagedMessage = async (original, callback, options) => {
         }
 
         switch (reaction.emoji.name) {
+            case (fastforward):
+                previous = page
+                page = options.max
+
+                previous != page && msg.edit(callback(page))
+            break
+            case (rewind):
+                previous = page
+                page = 0
+
+                previous != page && msg.edit(callback(page))
+            break
             case (backward):
                 previous = page
                 page = clamp(--page, 0, options.max)
 
                 previous != page && msg.edit(callback(page))
-                break
+            break
             case (forward):
                 previous = page
                 page = clamp(++page, 0, options.max)
 
                 previous != page && msg.edit(callback(page))
-                break
+            break
         }
 
         reaction.users.remove(user.id)
@@ -147,6 +168,7 @@ class Plugin {
                 pagedMessage(msg, (page) => {
                     let embed = new Discord.MessageEmbed()
                     .setTitle(`Page ${page + 1} / ${chunkedCommands.length}`)
+                    .setColor(color())
         
                     for (var i = 0; i < chunkedCommands[page].length; i++) {
                         embed.addField(
@@ -175,7 +197,8 @@ class Plugin {
                 pagedMessage(msg, (page) => {
                     let embed = new Discord.MessageEmbed()
                     .setTitle(`Page ${page + 1} / ${chunkedMatches.length}`)
-        
+                    .setColor(color())
+
                     for (var i = 0; i < chunkedMatches[page].length; i++) {
                         var text = formatColors(Utils.formatString(Localization['COMMAND_FIND_FORMAT'], {
                             index: page * 5 + i + 1,
@@ -206,7 +229,8 @@ class Plugin {
                 pagedMessage(msg, (page) => {
                     let embed = new Discord.MessageEmbed()
                     .setTitle(`Page ${page + 1} / ${chunkedManagers.length}`)
-        
+                    .setColor(color())
+
                     for (var i = 0; i < chunkedManagers[page].length; i++) {
                         embed.addField(
                             `${Utils.stripString(chunkedManagers[page][i].Server.Hostname)} - ${chunkedManagers[page][i].Server.externalIP}`,
@@ -233,7 +257,8 @@ class Plugin {
                 pagedMessage(msg, (page) => {
                     let embed = new Discord.MessageEmbed()
                     .setTitle(`Page ${page + 1} / ${chunkedClients.length}`)
-                    
+                    .setColor(color())
+
                     var buffer = []
         
                     var i = 0; chunkedClients[page].forEach(Client => {
