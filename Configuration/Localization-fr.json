@@ -5,6 +5,7 @@
         "COMMAND_ARGUMENT_INVALID": "^1Invalid argument ^3%s^7,^1 expected ^5%s^7",
         "COMMAND_CLIENT_NOT_FOUND" : "Joueur non trouve",
         "COMMAND_CLIENT_NOT_INGAME" : "Le joueur n'est pas dans la partie",
+        "COMMAND_COMMAND_USAGE": "Usage: %PREFIX%^7%USAGE%",
         "ROLE_HIERARCHY_ERROR" : "Vous ne pouvez pas mettre ce role",
         "CLIENT_HIERARCHY_ERROR": "Vous ne pouvez pas executer cette commande ici",
         "COMMAND_EXECUTE_SUCCESS" : "Commande bien executee",

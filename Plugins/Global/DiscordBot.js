@@ -28,6 +28,23 @@ const stringInsert = (string, index, length, substr) => {
     return left
 }
 
+const trySend = async (channel, msg) => {
+    try {
+        return await channel.send(msg)
+    }
+    catch (e) {}
+}
+
+const getAllClients = (Managers) => {
+    var Clients = []
+
+    Managers.forEach(Manager => {
+        Clients = Clients.concat(Manager.Server.getClients())
+    })
+
+    return Clients
+}
+
 const formatColors = (string) => {
     var open = false
 
@@ -60,7 +77,11 @@ const pagedMessage = async (original, callback, options) => {
 
     var page = 0
 
-    var msg = await original.channel.send(callback(page))
+    var msg = await trySend(original.channel, callback(page))
+
+    if (!msg) {
+        return
+    }
 
     const backward = '⬅'
     const forward = '➡'
@@ -196,6 +217,34 @@ class Plugin {
         
                     return embed
                 }, {max: chunkedManagers.length - 1})
+            },
+            'players': async (msg, user, args) => {
+                var allClients = getAllClients(this.Managers)
+
+                if (!allClients.length) {
+                    msg.author.tell(Localization['NO_PLAYERS_ONLINE'])
+                    return
+                }
+
+                var chunkedClients = Utils.chunkArray(allClients, 10)
+
+                pagedMessage(msg, (page) => {
+                    let embed = new Discord.MessageEmbed()
+                    .setTitle(`Page ${page + 1} / ${chunkedClients.length}`)
+                    
+                    var buffer = []
+        
+                    chunkedClients[page].forEach(Client => {
+                        const role = Utils.stripString(Utils.getRoleFrom(Client.PermissionLevel, 1).Name)
+                        const hostname = formatColors(Client.Server.Hostname)
+
+                        buffer.push(`[[${role}] **${Client.Name}**](${process.env.webfrontUrl}/id/${Client.ClientId}) - ${hostname}`)
+                    })
+
+                    embed.addField(`\u200B`, buffer.join('\n').substr(0, 1020), false)
+        
+                    return embed
+                }, {max: chunkedClients.length - 1})
             }
         }
 
@@ -305,7 +354,7 @@ class Plugin {
 
             Duration > 0 && embed.addField('Duration', Utils.time2str(Duration), true)
 
-            guild.eventChannel.send(embed)
+            trySend(guild.eventChannel, embed)
         })
 
         Server.on('report', async (Origin, Target, Reason) => {
@@ -328,7 +377,7 @@ class Plugin {
             .setColor(colors[Utils.getRandomInt(0, colors.length)])
 
             modRoles.join(' ').length && await guild.eventChannel.send(modRoles.join(' '))
-            guild.eventChannel.send(embed)
+            trySend(guild.eventChannel, embed)
         })
 
         Server.on('round_start', async (roundNumber) => {
@@ -341,7 +390,7 @@ class Plugin {
             .setTimestamp()
             .setFooter(`${Server.getClients().length} / ${Server.Clients.length}`)
 
-            Server.channel.send(embed)
+            trySend(Server.channel, embed)
         })
 
         Server.on('disconnect', async (Player) => {
@@ -354,7 +403,7 @@ class Plugin {
             .setAuthor(`${Player.Name} disconnected`, discordUser ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png` : `https://cdn.discordapp.com/embed/avatars/0.png`)
             .setFooter(`${Server.getClients().length} / ${Server.Clients.length}`)
 
-            Server.channel.send(embed)
+            trySend(Server.channel, embed)
 
             this.updateActivity()
         })
@@ -369,7 +418,7 @@ class Plugin {
             .setAuthor(`${Player.Name} connected`, discordUser ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png` : `https://cdn.discordapp.com/embed/avatars/0.png`)
             .setFooter(`${Server.getClients().length} / ${Server.Clients.length}`)
 
-            Server.channel.send(embed)
+            trySend(Server.channel, embed)
 
             this.updateActivity()
         })
@@ -385,7 +434,7 @@ class Plugin {
             .setTimestamp()
             .setFooter(`${Server.getClients().length} / ${Server.Clients.length}`)
 
-            Server.channel.send(embed)
+            trySend(Server.channel, embed)
 
             this.updateActivity()
         })
@@ -537,7 +586,7 @@ class Plugin {
                     .setColor(colors[Utils.getRandomInt(0, colors.length)])
                     .addField('\u200B', `${text.substr(0, 1000)}`, true)
 
-                    msg.channel.send(embed)
+                    trySend(msg.channel, embed)
                 }
 
                 this.commands[args[0].toLocaleLowerCase()](msg, user, args)
@@ -562,7 +611,7 @@ class Plugin {
                     .setColor(colors[Utils.getRandomInt(0, colors.length)])
                     .addField('\u200B', `${buffer.join('\n').substr(0, 1000)}`, true)
 
-                    msg.channel.send(embed)
+                    trySend(msg.channel, embed)
                 }
                 catch (e) {}
             }
