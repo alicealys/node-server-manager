@@ -10,15 +10,19 @@ class EventLogWatcher extends EventParser {
         this.Manager = Manager
         this.EventDispatcher = new _EventDispatcher(Server, Manager)
     }
-    init () {
+    async init () {
         try {
             var socket = new ws(this.logServerURI)
             
-            socket.onmessage = (msg) => {
+            socket.onmessage = async (msg) => {
                 this.onLine(msg.data)
             }
 
-            socket.onclose = () => {
+            socket.on('error', (error) => {
+                console.log(`Server Log Watcher: ${error}`)
+            })
+
+            socket.onclose = async () => {
                 console.log(`Connection to log server (${this.logServerURI}) lost, reconnecting in 15 seconds...`)
 
                 setTimeout(() => {
@@ -29,7 +33,6 @@ class EventLogWatcher extends EventParser {
         catch (e) {
             this.Manager.logger.writeLn(`Remote log server generated an error: ${e.toString()}`)
         }
-
     }
     async onLine(line) {
         line = line.replace(/[^\x20-\x7E]+/g, '')
