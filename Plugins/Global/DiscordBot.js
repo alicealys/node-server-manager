@@ -103,7 +103,11 @@ const pagedMessage = async (original, callback, options) => {
             return
         }
 
-        if (reaction.message.id != msg.id || user.id != original.author.id) {
+        if (reaction.message.id != msg.id) {
+            return
+        }
+
+        if (user.id != original.author.id) {
             reaction.users.remove(user.id)
             return
         }
