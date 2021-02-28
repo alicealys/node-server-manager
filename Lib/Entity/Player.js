@@ -2,7 +2,6 @@ const EventEmitter          = require('events')
 const path                  = require('path')
 const { NodeServerManager } = require(path.join(__dirname, '../Classes.js'))
 const Utils                 = new (require(path.join(__dirname, `../../Utils/Utils.js`)))()
-const { ChaiPlayer }        = require('../ChaiscriptApi.js')
 const Localization          = require(path.join(__dirname, `../../Configuration/Localization-${process.env.LOCALE}.json`)).lookup
 
 class ePlayer extends EventEmitter {
@@ -10,7 +9,6 @@ class ePlayer extends EventEmitter {
         super()
         this.Guid = Guid
         this.Name = Name
-        this.chai = new ChaiPlayer(Server, Clientslot)
         this.inGame = true
         this.lastSeen = new Date()
         this.IPAddress = IPAddress

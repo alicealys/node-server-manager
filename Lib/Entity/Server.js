@@ -7,7 +7,6 @@ const Game              = require(path.join(__dirname, `../../Configuration/Defa
 const Maps              = Game.Maps
 const Gametypes         = Game.Gametypes
 const Permissions       = require(path.join(__dirname, `../../Configuration/NSMConfiguration.json`)).Permissions
-const { ChaiscriptApi } = require('../ChaiscriptApi.js')
 const wait              = require('delay')
 const Utils             = new (require(path.join(__dirname, `../../Utils/Utils.js`)))()
 
@@ -41,7 +40,6 @@ class Server extends EventEmitter {
         this.on('init', this.onInitGame.bind(this))
         this.config = config
         this.reservedSlots = config.reservedSlots
-        this.chai = new ChaiscriptApi(this)
         Manager.Commands = new Commands()
         this.setMaxListeners(50)
     }

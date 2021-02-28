@@ -3,6 +3,7 @@ const readline        = require('readline')
 const Utils            = new (require(path.join(__dirname, '../Utils/Utils.js')))()
 const Localization     = require(path.join(__dirname, `../Configuration/Localization-${process.env.LOCALE}.json`)).lookup
 const Permissions      = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
+
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
