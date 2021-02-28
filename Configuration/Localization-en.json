@@ -192,7 +192,7 @@
         "ZBANK_MONEY_FORMAT": "^5%NAME%^7's balance: ^2$%AMOUNT%^7",
         "ZBANK_RECEIVE_FORMAT": "Received ^2$%AMOUNT%^7 from ^5%NAME%^7!",
         "ZBANK_NEWBALANCE_FORMAT": "Your balance is now: ^2$%AMOUNT%^7",
-        "ZBANK_TRANSFER_FORMAT": "Successfully transfered ^2$%AMOUNT%^7 to ^5%NAME%^7's bank account! You payed a ^1$%FEE%^7 fee, Transaction ID: ^6#%ID%",
+        "ZBANK_TRANSFER_FORMAT": "Successfully transfered ^2$%AMOUNT%^7 to ^5%NAME%^7's bank account! You paid a ^1$%FEE%^7 fee, Transaction ID: ^6#%ID%",
         "ZBANK_SETMONEY_FORMAT": "Successfully set ^5%NAME%^7's bank account as ^2$%AMOUNT%^7!",
         "ZBANK_NO_ACCOUNT": "You don't have a bank account",
         "ZBANK_PLAYER_NO_ACCOUNT": "Player doesn't have a bank account",
