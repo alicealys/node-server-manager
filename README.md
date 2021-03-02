@@ -273,3 +273,10 @@ This will create a category named "NSM-Servers" on your discord server, then it 
 Players who have connected their discord account will have their profile picture show up when they send a message on a server and will be able to send messages to the server's chat from the discord channel. 
 
 In addition their profile picture and discord id (name#discriminator) will show up on their profile
+
+# Script Commands
+This plugin adds commands such as !kill, !give... to IW5
+
+For this plugin to work you must also install this plugin on your IW5 Server:
+
+https://github.com/fedddddd/iw5-chai-utils
