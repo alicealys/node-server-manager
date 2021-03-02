@@ -3,11 +3,10 @@ const { Command }           = require(path.join(__dirname, `../Lib/Classes.js`))
 const Localization          = require(path.join(__dirname, `../Configuration/Localization-${process.env.LOCALE}.json`)).lookup
 const Utils                 = new (require(path.join(__dirname, '../Utils/Utils.js')))()
 
-var _Server = null
-
 class Entity {
-    constructor(entnum) {
+    constructor(Server, entnum) {
         this.entnum = entnum
+        this.Server = Server
     }
     async call(name, ..._args) {
         const args = [..._args]
@@ -34,7 +33,7 @@ class Entity {
 
         buffer += ')'
 
-        await _Server.Rcon.executeCommandAsync(`chai_eval ${buffer}`)
+        await this.Server.Rcon.executeCommandAsync(`chai_eval ${buffer}`)
     }
     format(name, ..._args) {
         const args = [..._args]
@@ -66,18 +65,15 @@ class Entity {
 }
 
 const scripting = {
-    entity: (entnum) => {
-        return new Entity(entnum)
+    entity: (Server, entnum) => {
+        return new Entity(Server, entnum)
     },
     vector: (arr) => {
         return {
             code: `[${parseFloat(arr[0])},${parseFloat(arr[1])},${parseFloat(arr[2])}]`
         }
-    },  
-    eval: async (code) => {
-        await _Server.Rcon.executeCommandAsync(`chai_eval ${code}`)
     },
-    call: async (name, ..._args) => {
+    call: async (Server, name, ..._args) => {
         const args = [..._args]
 
         var buffer = `gsc.${name}(`
@@ -102,7 +98,7 @@ const scripting = {
     
         buffer += ')'
     
-        await _Server.Rcon.executeCommandAsync(`chai_eval ${buffer}`)
+        await Server.Rcon.executeCommandAsync(`chai_eval ${buffer}`)
     }
 }
 
@@ -117,8 +113,6 @@ class Plugin {
         if (this.Server.Gamename != 'IW5') {
             return
         }
-
-        _Server = this.Server
 
         this.Manager.Commands.add(
             new Command({
@@ -138,7 +132,7 @@ class Plugin {
                     return
                 }
 
-                scripting.entity(Target.Clientslot).call('suicide')
+                scripting.entity(this.Server, Target.Clientslot).call('suicide')
             })
         )
 
@@ -166,7 +160,7 @@ class Plugin {
                 }
 
                 const weaponName = params.weapon.replace(new RegExp(/(\\|\")/g), '')
-                const entity = scripting.entity(Target.Clientslot)
+                const entity = scripting.entity(this.Server, Target.Clientslot)
 
                 await entity.call('giveweapon', weaponName)
                 await entity.call('switchtoweapon', weaponName)
@@ -197,8 +191,8 @@ class Plugin {
                     coords: ''
                 }))
 
-                const entity = scripting.entity(Player.Clientslot)
-                const target = scripting.entity(Target.Clientslot)
+                const entity = scripting.entity(this.Server, Player.Clientslot)
+                const target = scripting.entity(this.Server, Target.Clientslot)
 
                 entity.call('setorigin', target.format('getorigin'))
             })
@@ -228,8 +222,8 @@ class Plugin {
                     coords: ''
                 }))
 
-                const entity = scripting.entity(Player.Clientslot)
-                const target = scripting.entity(Target.Clientslot)
+                const entity = scripting.entity(this.Server, Player.Clientslot)
+                const target = scripting.entity(this.Server, Target.Clientslot)
 
                 target.call('setorigin', entity.format('getorigin'))
             })
@@ -258,7 +252,7 @@ class Plugin {
                     return
                 }
 
-                const entity = scripting.entity(Player.Clientslot)
+                const entity = scripting.entity(this.Server, Player.Clientslot)
                 const velocity = params.velocity.split(',').map(f => parseFloat(f))
                 const vector = [0.0, 0.0, 0.0]
 
