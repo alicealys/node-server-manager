@@ -161,7 +161,7 @@ class Plugin {
     }
     async onPlayerDisconnect(Player) {
         this.Server.Rcon.executeCommandAsync(`rename ${Player.Clientslot} ""`)
-        this.Server.Rcon.executeCommandAsync(`resetrename ${Player.Clientslot}`)
+        this.Server.Rcon.executeCommandAsync(`resetname ${Player.Clientslot}`)
         this.Server.Rcon.executeCommandAsync(`setclantagraw ${Player.Clientslot} ""`)
     }
 }
