@@ -122,6 +122,7 @@ class Plugin {
                     this.Server.DB.metaService.addPersistentMeta('censored_name', false, Client.ClientId)
 
                     inGame && this.Server.Rcon.executeCommandAsync(`rename ${inGame.Clientslot} ""`)
+                    inGame && this.Server.Rcon.executeCommandAsync(`resetname ${inGame.Clientslot}`)
 
                     Player.Tell(Utils.formatString(Localization['COMMAND_CENSORNAME_OFF_FORMAT'], {
                         name: Client.Name
