@@ -8,11 +8,13 @@ class Plugin {
         this.Server = Server
         this.Manager = Manager
         this.Managers = Managers
+        
         this.lockerCost = 100000
         this.defaultLockerSize = 1
+
         this.Server.on('preconnect', this.onPlayerConnect.bind(this))
         this.Server.on('connect', this.onPlayerConnect.bind(this))
-        this.Server.on('disconnect', this.onPlayerDisconnect.bind(this))
+
         this.init()
     }
     async init() {
@@ -159,11 +161,6 @@ class Plugin {
         role = customTag ? customTag.Value : Utils.stripString(role)
 
         this.Server.Rcon.executeCommandAsync(`setclantagraw ${Player.Clientslot} "${role}"`)
-    }
-    async onPlayerDisconnect(Player) {
-        this.Server.Rcon.executeCommandAsync(`rename ${Player.Clientslot} ""`)
-        this.Server.Rcon.executeCommandAsync(`resetname ${Player.Clientslot}`)
-        this.Server.Rcon.executeCommandAsync(`setclantagraw ${Player.Clientslot} ""`)
     }
 }
 
