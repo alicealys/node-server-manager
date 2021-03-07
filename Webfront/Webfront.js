@@ -947,6 +947,31 @@ class Webfront {
             return result
         }
 
+        this.app.get('/api/client', async (req, res, next) => {
+            if (!req.query.id) {
+                res.status(400)
+                res.end(JSON.stringify({ error: 'Parameters missing' }))
+                return
+            }
+
+            const Client = await db.getClient(req.query.id)
+
+            if (!Client) {
+                res.status(400)
+                res.end(JSON.stringify({ error: 'Not found' }))
+                return
+            }
+
+            const result = JSON.stringify({
+                Name: Client.Name,
+                ClientId: Client.ClientId,
+                PermissionLevel: Client.PermissionLevel,
+                Role: Utils.getRoleFrom(Client.PermissionLevel, 1).Name
+            })
+
+            res.end(result)
+        })
+
         this.app.get('/api/info', async (req, res, next) => {
             if (!req.query.id) {
                 res.status(400)
