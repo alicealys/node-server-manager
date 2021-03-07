@@ -1,5 +1,3 @@
-const { MessageBuilder } = require("discord-webhook-node")
-
 window.addEventListener('load', () => {
   var wsProtocol = location.protocol === 'https:' ? 'wss' : 'ws'
   var socket = new WebSocket(`${wsProtocol}://${window.location.host}/?action=socket_listen_messages`)
