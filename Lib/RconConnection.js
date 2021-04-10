@@ -2,6 +2,23 @@ const dgram             = require('dgram')
 const path              = require('path')
 const Utils             = new (require(path.join(__dirname, '../Utils/Utils.js')))()
 const fs                = require('fs')
+const wait              = require('delay')
+const EventEmitter      = require('events')
+
+const waittill = async (object, event, value) => {
+    return new Promise(async (resolve, reject) => {
+        const callback = (v) => {
+            if (v == value) {
+                resolve()
+                object.removeListener(event, callback)
+            }
+        }
+
+        object.on(event, callback)
+    })
+}
+
+const eventEmitter = new EventEmitter()
 
 class Rcon {
     constructor (ip, port, password, gamename) {
@@ -16,6 +33,8 @@ class Rcon {
         this.isRunning = false
         this.commandRetries = 3
         this.previousClients = []
+        this.canExecute = true
+        this.commandQueue = 0
         this.client = dgram.createSocket('udp4')
     }
     async sendCommand(command) {
@@ -55,7 +74,29 @@ class Rcon {
         })
     }
     async executeCommandAsync(command) {
+        if (this.canExecute) {
+            this.commandQueue = 0
+        }
+
         return new Promise(async (resolve, reject) => {
+            const index = ++this.commandQueue
+
+            const _resolve = async (a) => {
+                resolve(a)
+                
+                if (this.commandPrefixes.Rcon.commandDelay) {
+                    await wait(this.commandPrefixes.Rcon.commandDelay)
+                    this.canExecute = true
+                    eventEmitter.emit('command_done', index + 1)
+                }
+            }
+
+            if (!this.canExecute && this.commandPrefixes.Rcon.commandDelay) {
+                await waittill(eventEmitter, 'command_done', index)
+            }
+
+            this.canExecute = false
+
             var client =  dgram.createSocket('udp4')
             var message = new Buffer.from(this.commandPrefixes.Rcon.prefix
                 .replace('%PASSWORD%', this.password)
@@ -66,7 +107,7 @@ class Rcon {
                     if (err) {
                         client.close()
                         resolved = true
-                        resolve(false)
+                        _resolve(false)
                     }
                 })
             })
@@ -78,16 +119,17 @@ class Rcon {
                 client.close()
                 client.removeAllListeners()
                 resolved = true
-                resolve(msg.toString())
+
+                _resolve(msg.toString())
             }
 
-            client.on('message', onMessage);
+            client.on('message', onMessage)
 
             setTimeout(() => {
                 if (!resolved) {
                     client.close()
                     client.removeAllListeners()
-                    resolve(false)
+                    _resolve(false)
                 }
             }, 5000)
         })
@@ -144,10 +186,13 @@ class Rcon {
         return {success: true, data : { map, clients }}
     }
     async getClients() {
-        var status = await this.executeCommandAsync(this.commandPrefixes.Rcon.status);
+        var status = await this.executeCommandAsync(this.commandPrefixes.Rcon.status)
         if (!status) return this.previousClients
-        status = status.trim().split('\n').slice(4).map(x => x.trim().split(/\s+/));
+
+        status = status.trim().split('\n').slice(4).map(x => x.trim().split(/\s+/))
+
         var clients = new Array(18).fill(null)
+
         for (var i = 0; i < status.length; i++) {
             var client = {
                 Clientslot: status[i][0],
@@ -155,13 +200,16 @@ class Rcon {
                 Guid: status[i][4],
                 IPAddress: status[i][7]
             }
+
             clients[client.Clientslot] = client
         }
+        
         this.previousClients = clients
         return clients
     }
     async getClientByGuid(guid) {
         var clients = (await this.getStatus()).data.clients
+
         for (var i = 0; i < clients.length; i++) {
             if (clients[i].guid == guid) {
                 return clients[i]

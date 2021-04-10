@@ -1,3 +1,7 @@
+process.on('uncaughtException', (err) => {
+    console.log('Caught exception: ' + err + err.stack)
+})
+
 const fs                      = require('fs')
 const path                    = require('path')
 const configured              = fs.existsSync(path.join(__dirname, `../Configuration/NSMConfiguration.json`))

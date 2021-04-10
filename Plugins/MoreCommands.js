@@ -203,39 +203,6 @@ class Plugin {
 
         (() => {
             let command = new Command()
-            .setName('whereis')
-            .addParam({
-                index: 0,
-                name: 'player',
-                join: true
-            })
-            .addCallback(async (Player, params, args, options, funcs) => {
-                var Client = await this.Server.getClient(params.player)
-                if (!Client) {
-                    funcs.Tell(Localization['COMMAND_CLIENT_NOT_FOUND'])
-                    return
-                }
-
-                var Client = this.Server.findClient(Client.ClientId)
-                if (!Client) {
-                    funcs.Tell(Localization['COMMAND_CLIENT_NOT_INGAME'])
-                    return
-                }
-
-                funcs.Tell(Utils.formatString(Localization['COMMAND_WHEREIS_FORMAT'], {
-                    Name: Client.Name, 
-                    ClientId: Client.ClientId,
-                    Game: `^${Games[Client.Server.Gamename]['COLOR']}${Games[Client.Server.Gamename]['CLIENT']}`,
-                    Hostname: Client.Server.HostnameRaw, 
-                    address: `${Client.Server.externalIP}:${Client.Server.PORT}`
-                }, '%')[0])
-            })
-
-            this.Manager.Commands.add(command)
-        })(this);
-
-        (() => {
-            let command = new Command()
             .setName('eval')
             .addParam({
                 index: 0,

@@ -101,28 +101,23 @@ class Server extends EventEmitter {
     async setDvarsAsync() {
         try {
             this.Gametype = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.gametype)
-            await wait(200)
             this.Gamename = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.gamename)
-            await wait(200)
 
             this.Maps = this.Gamename != 'UNKNOWN' ? Maps.find(x => x.Game == this.Gamename) ? Maps.find(x => x.Game == this.Gamename).Maps : [] : []
 
             this.mapRotation = (await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.maprotation))
-            this.mapRotation = this.mapRotation.match(/((?:gametype|exec) +(?:([a-z]{1,4})(?:.cfg)?))? *map ([a-z|_|\d]+)/gi) 
-                ? this.mapRotation.match(/((?:gametype|exec) +(?:([a-z]{1,4})(?:.cfg)?))? *map ([a-z|_|\d]+)/gi).map(x => x.trim().split(/\s+/g)[1])
+            this.mapRotation = this.mapRotation.match(/map +([a-z|_|\d]+)/gi) 
+                ? this.mapRotation.match(/map +([a-z|_|\d]+)/gi).map(x => x.trim().split(/\s+/g)[1])
                 : []
-            
-            await wait(200)
 
             this.Hostname = await this.Rcon.getDvarRaw(this.Rcon.commandPrefixes.Dvars.hostname)
-
             this.HostnameRaw = this.Hostname
-            await wait(200)
 
             this.Mapname = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.mapname)
 
-            await wait(200)
-            this.MaxClients = parseInt(this.config.maxClientsOverride ? this.config.maxClientsOverride : await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.maxclients))
+            this.MaxClients = parseInt(this.config.maxClientsOverride 
+                ? this.config.maxClientsOverride 
+                : await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.maxclients))
 
             this.Clients = new Array(this.MaxClients).fill(null)
 
