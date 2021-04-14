@@ -4,10 +4,6 @@ window.addEventListener('load', () => {
     var wsProtocol = location.protocol === 'https:' ? 'wss' : 'ws'
     socket = new WebSocket(`${wsProtocol}://${window.location.host}/?action=socket_listen_servers`)
 
-    socket.addEventListener('connect', (e) => {
-        console.log('%c[ NSMSocket ]%c Connected', 'color:cyan, color: white')
-    })
-
     socket.onopen = (e) => {
         setInterval(() => {
             socket.send(JSON.stringify({action: 'heartbeat'}))
@@ -16,9 +12,9 @@ window.addEventListener('load', () => {
 
     socket.onmessage = (e) => {
         var msg = JSON.parse(e.data)
-        console.log(msg)
         logMessage(msg, true)
     }
+
     renderServerList()
 })
 
@@ -30,11 +26,11 @@ function escapeHtml(text) {
       '"': '&quot;',
       "'": '&#039;'
     }
-    return text.replace(/[&<>"']/g, function(m) { return map[m] })
+
+    return text.replace(/[&<>"']/g, function(m) {return map[m]})
   }
 
 function logMessage(msg, refresh) {
-    console.log(msg)
     if (!msg.data || msg.data.private || msg.data.ServerId == undefined) return
     var feed = document.querySelector(`*[data-serverid='${msg.data.ServerId}']`).querySelector('.wf-more-feed')
     switch (msg.event) {
