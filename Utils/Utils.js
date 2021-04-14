@@ -2,14 +2,6 @@ const path        = require('path')
 const Permissions = require(path.join(__dirname, `../Configuration/NSMConfiguration.json`)).Permissions
 
 class Utils {
-    convertGuid(Guid, Gamename) {
-        switch (Gamename) {
-            case 'T6':
-                return parseInt(Guid, 16).toString();
-            default:
-                return Guid;
-        }
-    }
     getRandomInt(min, max) {
         min = Math.ceil(min)
         max = Math.floor(max)
