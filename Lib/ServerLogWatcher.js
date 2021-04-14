@@ -40,11 +40,16 @@ class EventLogWatcher extends EventParser {
         this.Server.Rcon.isRunning = true
         this.Server.emit('line', line)
         this.Server.emit('stripped_line', line.trim().replace(new RegExp(/([0-9]+:[0-9]+)\s+/g), ''))
-        var event = this.parseEvent(line)
 
-        if (!event) return
+        const lines = line.split('\n').filter(l => l.length > 0)
 
-        this.EventDispatcher.dispatchCallback(event)
+        for (var i = 0; i < lines.length; i++) {
+            const event = this.parseEvent(lines[i].trim())
+
+            if (!event) return
+
+            this.EventDispatcher.dispatchCallback(event)
+        }
     }
 }
 

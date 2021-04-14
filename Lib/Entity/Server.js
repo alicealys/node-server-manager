@@ -12,16 +12,16 @@ const Utils             = new (require(path.join(__dirname, `../../Utils/Utils.j
 
 var wasRunning = true
 class Server extends EventEmitter {
-    constructor(IP, PORT, RCON, DATABASE, sessionStore, clientData, Managers, Id, Manager, config) {
+    constructor(IP, Port, Rcon, Database, sessionStore, clientData, Managers, Id, Manager, config) {
         super()
         this.Clients = []
-        this.Rcon = RCON
+        this.Rcon = Rcon
         this.IP = IP
         this.Id = Id
-        this.PORT = PORT
+        this.PORT = Port
         this.clientHistory = []
         this.clientActivity = []
-        this.DB = DATABASE
+        this.DB = Database
         this.MaxClients = 18
         this.Mapname = ''
         this.clientData = clientData
@@ -194,7 +194,7 @@ class Server extends EventEmitter {
                     wasRunning = false
                 }
                 this.heartbeatRetry > 0 && this.heartbeatRetry--
-            } else  {
+            } else {
                 this.heartbeatRetry = 2
                 this.Rcon.isRunning = true
             }

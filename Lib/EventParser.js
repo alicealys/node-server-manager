@@ -29,22 +29,6 @@ class EventParser {
             init: /^( +|)(.+) (InitGame|InitGame(.+))$/g
         }
 
-        if (eventString.includes('InitGame')) {
-            var lines = eventString.split('\n')
-            for (var i = 0; i < lines.length; i++) {
-                if (!lines[i].trim().match(eventRegex.init)) {
-                    return
-                }
-
-                var eventVars = eventRegex.init.exec(lines[i])
-                eventVars[0] = this.parseTimeStamp(eventVars[0])
-
-                eventData = { type: 'init', vars: eventVars }
-
-                return eventData
-            }
-        }
-
         var eventData = { type: null, data: null }
         Object.entries(eventRegex).forEach((r) => {
             if (!eventString.match(r[1])) {
@@ -84,7 +68,7 @@ class EventParser {
                 parsedEvent.data = {
                     TimeOffset: eventData.vars[0],
                     Origin: {
-                        Guid: eventData.vars[3],
+                        Guid: this.Server.Rcon.commandPrefixes.convertGuid(eventData.vars[3]),
                         Clientslot: eventData.vars[4],
                         Name: eventData.vars[5].replace(/\[.*\]/g, '')
                     },
