@@ -77,10 +77,12 @@ class Rcon {
                 }
             }
 
-            var client =  dgram.createSocket('udp4')
-            var message = new Buffer.from(this.commandPrefixes.Rcon.prefix
-                .replace('%PASSWORD%', this.password)
-                .replace('%COMMAND%', command), 'binary')
+            const client =  dgram.createSocket('udp4')
+
+            const message = new Buffer.from(Utils.formatString(this.commandPrefixes.Rcon.prefix, {
+                password: this.password,
+                command
+            })[0], 'binary')
 
             const timeout = setTimeout(() => {
                 client.close()
@@ -94,6 +96,7 @@ class Rcon {
                     if (err) {
                         clearTimeout(timeout)
                         client.close()
+                        client.removeAllListeners()
 
                         resolve(false)
                     }
@@ -102,6 +105,8 @@ class Rcon {
 
             client.once('message', (data) => {
                 clearTimeout(timeout)
+                client.close()
+
                 resolve(data.toString())
             })
 
