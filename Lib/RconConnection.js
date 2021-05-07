@@ -4,7 +4,6 @@ const Utils             = new (require(path.join(__dirname, '../Utils/Utils.js')
 const Mutex             = require(path.join(__dirname, '../Utils/Mutex.js'))
 const fs                = require('fs')
 const wait              = require('delay')
-const EventEmitter      = require('events')
 
 class Rcon {
     constructor (ip, port, password, gamename) {

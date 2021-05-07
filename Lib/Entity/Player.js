@@ -27,8 +27,14 @@ class ePlayer extends EventEmitter {
         this.matchData = {}
 
         try {
+            const id = this.IPAddress && this.IPAddress.split(':')[0] 
+                ? this.IPAddress.split(':')[0]
+                : crypto.randomBytes(8).toString('hex')
+
             this.Data = this.Server.clientData.getData(this.ClientId)
-            this.Session = this.Server.sessionStore.createSession(this.IPAddress.split(':')[0] ? this.IPAddress.split(':')[0] : crypto.randomBytes(8).toString('hex'))
+
+            this.Session = this.Server.sessionStore.createSession(id)
+            
             this.Session && (this.Session.Data.Authorized = this.Session.Data.Authorized != undefined ? this.Session.Data.Authorized : false)
         }
         catch(e) { }

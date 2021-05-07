@@ -101,7 +101,10 @@ class Server extends EventEmitter {
     async setDvarsAsync() {
         try {
             this.Gametype = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.gametype)
-            this.Gamename = await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.gamename)
+
+            this.Gamename = !this.configGamename 
+                ? await this.Rcon.getDvar(this.Rcon.commandPrefixes.Dvars.gamename)
+                : this.configGamename
 
             this.Maps = this.Gamename != 'UNKNOWN' ? Maps.find(x => x.Game == this.Gamename) ? Maps.find(x => x.Game == this.Gamename).Maps : [] : []
 
