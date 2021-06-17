@@ -17,7 +17,7 @@ module.exports = {
                 score: match[2],
                 bot,
                 ping: match[4],
-                guid: bot ? match[6] : parseInt(match[5].substr(8), 16).toString(),
+                guid: bot ? match[5] : parseInt(match[5].substr(8), 16).toString(),
                 name: match[6].replace(new RegExp(/\^([0-9]|\:|\;)/g, 'g'), ``),
                 address: bot ? 'localhost:27016' : match[7],
                 qport: match[8],
