@@ -68,7 +68,7 @@ class EventParser {
                 parsedEvent.data = {
                     TimeOffset: eventData.vars[0],
                     Origin: {
-                        Guid: this.Server.Rcon.commandPrefixes.convertGuid(eventData.vars[3]),
+                        Guid: eventData.vars[3].includes('bot') ? eventData.vars[3] : this.Server.Rcon.commandPrefixes.convertGuid(eventData.vars[3]),
                         Clientslot: eventData.vars[4],
                         Name: eventData.vars[5].replace(/\[.*\]/g, '')
                     },
