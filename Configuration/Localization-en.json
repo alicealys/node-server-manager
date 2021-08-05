@@ -20,7 +20,7 @@
         "COMMAND_LOCKER": "Displays and manages the locker",
         "USAGE_LOCKER": "^5locker^7 [slot]",
         "COMMAND_BUYLOCKER": "Buys an extra locker slot",
-        "USAGE_BUYLOCKER": "^buylocker^7",
+        "USAGE_BUYLOCKER": "^5buylocker^7",
         "COMMAND_PING": "Pings the server",
         "USAGE_PING": "^5ping^7",
         "COMMAND_TP" : "Teleport to player",
