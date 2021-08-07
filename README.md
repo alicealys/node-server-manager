@@ -96,6 +96,8 @@ Text Placeholders
 | tempban | tb | Moderator | Temp bans a player | @ClientId or Name, Duration, Reason |
 | ban | b | Moderator | Bans a player | @ClientId or Name, Reason |
 | find | f | User | Displays all users matching that name | Name |
+| locker |  | User | Displays and manages the locker | Slot (Optional) |
+| buylocker |  | User | Buys an extra locker slot |
 
 # Account Settings
 
