@@ -9,6 +9,7 @@ module.exports = (app, db, Webfront) => {
 
     app.get('/links', async (req, res, next) => {
         var header = await Webfront.renderDynamicHTML(req)
+        res.setHeader('Content-type', 'html')
 
         ejs.renderFile(path.join(__dirname, '../../Webfront/html/links.ejs'), {
             header, validLinks

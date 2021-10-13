@@ -131,6 +131,11 @@ class Plugin {
 
                 var totalMoney = (await this.getZMStats(Player.ClientId)).Money
                 var gameMoney = parseInt(await Player.Server.Rcon.getDvar(`${Player.Clientslot}_money`))
+                const canUseBank = await Player.Server.Rcon.getDvar(`${Player.Clientslot}_can_use_bank`)
+                if (canUseBank == "0") {
+                    Player.Tell(Localization['ZBANK_DISABLED']);
+                    return
+                }
 
                 var withdrawMoney = args[1].toLocaleLowerCase() == 'all' 
                     ? Math.min(parseInt(totalMoney), maxGameMoney - gameMoney) 
@@ -179,6 +184,12 @@ class Plugin {
                 var totalMoney = (await this.getZMStats(Player.ClientId)).Money
                 var gameMoney = parseInt(await Player.Server.Rcon.getDvar(`${Player.Clientslot}_money`))
                 var depositMoney = args[1] == 'all' ? parseInt(gameMoney) : parseInt(args[1])
+
+                const canUseBank = await Player.Server.Rcon.getDvar(`${Player.Clientslot}_can_use_bank`)
+                if (canUseBank == "0") {
+                    Player.Tell(Localization['ZBANK_DISABLED']);
+                    return
+                }
 
                 switch (true) {
                     case (!Number.isInteger(depositMoney)):

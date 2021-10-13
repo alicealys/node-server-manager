@@ -200,6 +200,7 @@
         "ZBANK_SETMONEY_FORMAT": "Successfully set ^5%NAME%^7's bank account as ^2$%AMOUNT%^7!",
         "ZBANK_NO_ACCOUNT": "You don't have a bank account",
         "ZBANK_PLAYER_NO_ACCOUNT": "Player doesn't have a bank account",
+        "ZBANK_DISABLED": "Cannot use bank right now",
         "SETTING_TOGGLE_FORMAT": "%SETTING% %VALUE%",
         "STRING_HIDDEN": "^0[Redacted]^7",
         "SETTING_NOT_EXIST": "Setting does not exist",
