@@ -50,7 +50,7 @@ class Plugin {
 
     }
     async getFlag (IPAddress) {
-        return (await (await fetch(`https://extreme-ip-lookup.com/json/${IPAddress.split(':')[0]}`)).json()).countryCode.toLocaleLowerCase()
+        return (await (await fetch(`https://extreme-ip-lookup.com/json/${IPAddress.split(':')[0]}?key=demo`)).json()).countryCode.toLocaleLowerCase()
     }
     async onPlayerPenalty(Type, Target, Reason, Origin, Duration = -1) {
         var translation = {

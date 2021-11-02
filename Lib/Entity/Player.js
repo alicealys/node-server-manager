@@ -26,18 +26,14 @@ class ePlayer extends EventEmitter {
 
         this.matchData = {}
 
-        try {
-            const id = this.IPAddress && this.IPAddress.split(':')[0] 
-                ? this.IPAddress.split(':')[0]
-                : crypto.randomBytes(8).toString('hex')
+        this.Data = this.Server.clientData.getData(this.ClientId)
 
-            this.Data = this.Server.clientData.getData(this.ClientId)
+        const id = this.IPAddress && this.IPAddress.split(':')[0] 
+            ? this.IPAddress.split(':')[0]
+            : crypto.randomBytes(8).toString('hex')
 
-            this.Session = this.Server.sessionStore.createSession(id)
-            
-            this.Session && (this.Session.Data.Authorized = this.Session.Data.Authorized != undefined ? this.Session.Data.Authorized : false)
-        }
-        catch(e) { }
+        this.Session = this.Server.sessionStore.createSession(id)
+        this.Session && (this.Session.Data.Authorized = this.Session.Data.Authorized != undefined ? this.Session.Data.Authorized : false)
     }
     async getPersistentMeta(name, type = '') {
         var result = await this.Server.DB.metaService.getPersistentMeta(name, this.ClientId, type)

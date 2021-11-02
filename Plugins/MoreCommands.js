@@ -101,7 +101,7 @@ class Plugin {
                 optional: true
             })
             .setPermission('ROLE_MODERATOR')
-            .addCallback( async (Player, params, args, options, funcs) => {
+            .addCallback(async (Player, params, args, options, funcs) => {
                 if (params.page == 'clear') {
                     this.Server.DB.clearReports()
                     Player.Tell(Localization['COMMAND_REPORTS_CLEAR'])

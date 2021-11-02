@@ -77,7 +77,7 @@ class Plugin {
         })
     }
     async getInfo(IPAddress) {
-        var result = await fetch(`https://extreme-ip-lookup.com/json/${IPAddress.split(':')[0]}`)
+        var result = await fetch(`https://extreme-ip-lookup.com/json/${IPAddress.split(':')[0]}?key=demo`)
         if (result) {
             return await result.json()
         }

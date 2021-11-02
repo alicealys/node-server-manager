@@ -942,7 +942,7 @@ class Webfront {
         var getFlag = async (IPAddress) => {
             if (apiCache[IPAddress] != undefined) return apiCache[IPAddress]
 
-            var result = (await (await fetch(`https://extreme-ip-lookup.com/json/${IPAddress}`)).json()).countryCode.toLocaleLowerCase()
+            var result = (await (await fetch(`https://extreme-ip-lookup.com/json/${IPAddress}?key=demo`)).json()).countryCode.toLocaleLowerCase()
             apiCache[IPAddress] = result
             return result
         }
