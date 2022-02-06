@@ -89,8 +89,13 @@
             </div>
             <div class='wf-profile-info'>
                 <div class='wf-profile-info-info'>
-                    <div>#<%= Client.ClientId %> (#<%= Client.Guid %>)</div>
-                    <div>ID (GUID)</div>
+                    <% if ( self && self.PermissionLevel > Client.PermissionLevel && self.PermissionLevel >= Permissions.Levels[Permissions.Commands.COMMAND_KICK] ) {%>
+                        <div>#<%= Client.ClientId %> (#<%= Client.Guid %>)</div>
+                        <div>ID (GUID)</div>
+                    <% } else {%>
+                        <div>#<%= Client.ClientId %></div>
+                        <div>ID</div>
+                    <% } %>
                 </div>
                 <% if (Client.InGame.Online) { %>
                 <div class='wf-profile-info-info'>
